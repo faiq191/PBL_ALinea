@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Register - ALinea</title>
-    @vite('resources/css/app.css')
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="relative h-screen flex items-center justify-center bg-cover bg-center"
