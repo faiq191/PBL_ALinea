@@ -68,9 +68,12 @@
                     Aktivitas Terkini
                 </h3>
 
-                <button class="bg-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-gray-300 transition">
-                    👁 Lihat Semua
+                <button
+                    class="bg-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-gray-300 transition flex items-center gap-2">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                    <span>Lihat Semua</span>
                 </button>
+
             </div>
             <div class="grid grid-cols-4 gap-5">
 
