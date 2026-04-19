@@ -39,7 +39,7 @@
 
     <p class="text-center mt-4 text-sm">
         Sudah punya akun?
-        <a href="/" class="underline">Masuk</a>
+        <a href="/login" class="underline">Masuk</a>
     </p>
 
 </div>
