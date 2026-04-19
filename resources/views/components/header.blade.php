@@ -1,5 +1,5 @@
 <nav
-    class="relative w-full h-20 bg-gradient-to-b from-[#6b4a4a] via-[#5a3e3e] to-[#4a3333] backdrop-blur-md text-white px-6 flex items-center justify-center sticky top-0 z-50 shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-b border-[#d9c2a3]/20 overflow-hidden">
+    class="relative w-full h-20 bg-gradient-to-b from-[#6b4a4a] via-[#5a3e3e] to-[#4a3333] backdrop-blur-md text-white px-6 flex items-center justify-center sticky top-0 z-50 shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-b border-[#d9c2a3]/20 overflow-visible">
 
     <div class="absolute inset-0 w-full h-full pointer-events-none">
         <div
@@ -67,19 +67,43 @@
 
     </div>
 
+    {{-- // Profile Avatar with Dropdown Button // --}}
     <div class="absolute right-8 flex items-center">
         <div class="relative group animate-[float_4s_infinite_ease-in-out]">
-            <div
+            {{-- // Button Avatar // --}}
+            <button type="button" onclick="toggleDropdown(event)"
                 class="p-[3px] rounded-full bg-gradient-to-tr from-[#d9c2a3] via-[#f5e6d3] to-[#a68b6d] shadow-[0_0_15px_rgba(217,194,163,0.3)] cursor-pointer hover:scale-110 hover:rotate-3 hover:shadow-[0_0_25px_rgba(217,194,163,0.6)] transition-all duration-500 ease-out">
 
                 <div class="p-[2px] rounded-full bg-[#5a3e3e]">
                     <img src="https://i.pinimg.com/474x/5d/a3/60/5da360c98b9af0ad709fe18606992229.jpg"
                         class="w-12 h-12 rounded-full border-2 border-[#d9c2a3]/30 object-cover" alt="Profile">
                 </div>
-            </div>
+            </button>
 
             <div
                 class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-tr from-[#d9c2a3] to-white rounded-full border-2 border-[#5a3e3e] scale-0 group-hover:scale-100 transition-transform duration-700 shadow-md animate-pulse">
+            </div>
+            {{-- // Dropdown Menu // --}}
+            <div id="profileMenu"
+                class="hidden absolute right-0 mt-4 w-52 bg-white/95 backdrop-blur-xl text-[#5a3e3e] rounded-2xl shadow-2xl overflow-hidden z-50 border border-[#d9c2a3]/40">
+
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <p class="font-semibold">Eiyu</p>
+                    <p class="text-sm text-gray-500">user@email.com</p>
+                </div>
+
+                <a href="#" class="block px-4 py-3 hover:bg-[#f5ede4] transition">
+                    Akun Saya
+                </a>
+
+                <a href="#" class="block px-4 py-3 hover:bg-[#f5ede4] transition">
+                    Settings
+                </a>
+
+                <a href="#" class="block px-4 py-3 hover:bg-red-50 text-red-500 transition">
+                    Logout
+                </a>
+
             </div>
         </div>
     </div>
@@ -108,3 +132,13 @@
         }
     }
 </style>
+<script>
+    function toggleDropdown(event) {
+        event.stopPropagation();
+        document.getElementById("profileMenu").classList.toggle("hidden");
+    }
+
+    window.addEventListener("click", function() {
+        document.getElementById("profileMenu").classList.add("hidden");
+    });
+</script>
