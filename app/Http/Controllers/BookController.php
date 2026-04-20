@@ -8,10 +8,10 @@ use App\Models\Book;
 class BookController extends Controller
 {
         public function index()
-    {
-        $books = Book::all();
-        return view('koleksi', compact('books'));
-    }
+        {
+            $books = Book::where('user_id', auth()->id())->get();
+            return view('koleksi', compact('books'));
+        }
 
     public function create()
     {
@@ -32,8 +32,19 @@ class BookController extends Controller
             'title' => $request->title,
             'author' => $request->author,
             'image' => $imagePath,
+            'user_id' => auth()->id()
         ]);
 
         return redirect('/koleksi');
     }
+
+    public function home()
+{
+    $books = auth()->check()
+        ? Book::where('user_id', auth()->id())->take(4)->get()
+        : collect();
+
+    return view('home', compact('books'));
+}
+
 }

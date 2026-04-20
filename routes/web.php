@@ -1,20 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BookController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthController;
 
+//Keter
 
 Route::get('/', function () {
     return view('home');
 });
 
-//user-login
-Route::get('/login', fn() => view('auth.login'));
+
+//Index
+Route::get('/', [BookController::class, 'home']);
+Route::get('/koleksi', [BookController::class, 'index'])->middleware('auth');
+
+//Auth-Route
+
+Route::get('/login', fn() => view('auth.login'))->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('/register', fn() => view('auth.register'));
+Route::get('/register', fn() => view('auth.register'))->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::post('/logout', function () {
@@ -22,68 +30,60 @@ Route::post('/logout', function () {
     return redirect('/');
 });
 
+//Login-User
 
-//Homepage
-Route::get('/koleksi', function () {
-    return view('koleksi');
-});
+Route::middleware('auth')->group(function () {
 
-Route::get('/perpustakaan', function () {
-    return view('perpustakaan');
-});
+    // Koleksi (Books)
+    Route::get('/koleksi', [BookController::class, 'index']);
+    Route::get('/books/create', [BookController::class, 'create']);
+    Route::post('/books', [BookController::class, 'store']);
 
-Route::get('/komunitas', function () {
-    return view('komunitas');
-});
+    // Profile
+    Route::get('/profile', function () {
+        return view('profile');
+    });
 
-Route::get('/informasi', function () {
-    return view('informasi');
-});
+    Route::post('/profile', function (Request $request) {
 
-Route::get('/admin', function () {
-    return view('admin');
-});
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'profile_photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+        ]);
 
-//Components
-//Profile
-Route::get('/profile', function () {
-    return view('profile');
-});
+        $user = auth()->user();
 
-Route::post('/profile', function (Illuminate\Http\Request $request) {
+        $data = [
+            'name' => $request->name,
+            'email' => $request->email,
+        ];
 
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email',
-        'profile_photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
-    ]);
+        if ($request->hasFile('profile_photo')) {
 
-    $user = auth()->user();
+            if ($user->profile_photo && file_exists(public_path('storage/' . $user->profile_photo))) {
+                unlink(public_path('storage/' . $user->profile_photo));
+            }
 
-    $data = [
-        'name' => $request->name,
-        'email' => $request->email,
-    ];
-
-    if ($request->hasFile('profile_photo')) {
-
-        if ($user->profile_photo && file_exists(public_path('storage/' . $user->profile_photo))) {
-            unlink(public_path('storage/' . $user->profile_photo));
+            $path = $request->file('profile_photo')->store('profiles', 'public');
+            $data['profile_photo'] = $path;
         }
 
-        $path = $request->file('profile_photo')->store('profiles', 'public');
-        $data['profile_photo'] = $path;
-    }
+        $user->update($data);
 
-    $user->update($data);
+        return back();
+    });
 
-    return back();
 });
 
-//Book Route
-Route::get('/koleksi', [BookController::class, 'index']);
-Route::get('/books/create', [BookController::class, 'create']);
-Route::post('/books', [BookController::class, 'store']);
+//Main  Pages
+
+Route::get('/perpustakaan', fn() => view('perpustakaan'));
+Route::get('/komunitas', fn() => view('komunitas'));
+Route::get('/informasi', fn() => view('informasi'));
+Route::get('/admin', fn() => view('admin'));
+
+//Routes for books
 
 Route::post('/books/{id}/borrow', function ($id) {
     return "Borrow book " . $id;

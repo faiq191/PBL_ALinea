@@ -31,21 +31,22 @@
         </div>
 
         <div class="grid grid-cols-4 gap-6">
-
-                        @foreach($books as $book)
+        @isset($books)
+            @foreach ($books as $book)
                             <x-book-card
                                 :image="$book->image"
                                 :title="$book->title"
                                 :author="$book->author"
                             />
-                        @endforeach
-
+                @endforeach
+            @endisset
         </div>
 
         <div class="flex justify-center mt-8">
-                <a href="/books/create" class="bg-green-500 text-white px-6 py-2 rounded-full">
-                    + Tambah Buku
-                </a>
+            <a href="/books/create"
+                class="bg-green-500 text-white px-4 py-2 rounded-lg">
+                + Tambah Buku
+            </a>
         </div>
 
     </div>

@@ -76,33 +76,36 @@
 
         <div class="grid grid-cols-4 gap-5">
 
-            <x-book-card
-                image="https://upload.wikimedia.org/wikipedia/en/8/87/The_Midnight_Library.jpg"
-                title="The Midnight Library"
-                author="Matt Haig"
-            />
+<div class="grid grid-cols-4 gap-5">
 
-            <x-book-card
-                image="https://i.pinimg.com/474x/7b/7a/a3/7b7aa34c1532548663545faa015676f2.jpg"
-                title="One Piece"
-                author="Eiichiro Oda"
-            />
+@foreach ($books as $book)
+    <div class="bg-white rounded-xl p-4 shadow">
 
-            <x-book-card
-                image="https://m.media-amazon.com/images/S/compressed.photo.goodreads.com/books/1646444605i/485894.jpg"
-                title="Metamorphosis"
-                author="Franz Kafka"
-            />
+        <img src="{{ asset('storage/' . $book->image) }}"
+            class="w-full h-72 object-contain rounded-lg mb-4">
 
-            <x-book-card
-                image="https://m.media-amazon.com/images/I/91eJkPxnVWL._UF350,350_QL50_.jpg"
-                title="Another : Episode S/O"
-                author="Yukito Ayatsuji"
-            />
+        <h4 class="font-semibold text-sm">
+            {{ $book->title }}
+        </h4>
 
+        <p class="text-xs text-gray-500 mb-4">
+            {{ $book->author }}
+        </p>
+
+        <div class="flex gap-2">
+            <button class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">
+                Lihat
+            </button>
+
+            <button class="flex-1 bg-[#5a3e3e] text-white py-2 rounded-lg text-sm">
+                Atur
+            </button>
         </div>
 
     </div>
+@endforeach
+
+</div>
 
 </div>
 
