@@ -1,0 +1,127 @@
+@startuml Ali_nea_Final_Discussions_ERD
+
+skinparam Linetype ortho
+skinparam shadowing false
+skinparam ClassBackgroundColor #FDF6E3
+skinparam ClassBorderColor #586E75
+
+' --- 1. GEOLOCATION & USER ---
+entity "cities" as cities {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(100)
+  province : VARCHAR(100) -- Default: Jawa Timur
+}
+
+entity "users" as users {
+  * id : BIGINT <<PK>>
+  --
+  * city_id : BIGINT <<FK>>
+  * name : VARCHAR(255)
+  * email : VARCHAR(255) <<unique>>
+  avatar : VARCHAR(255)
+}
+
+' --- 2. MASTER BOOK DATA ---
+entity "authors" as authors {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(255)
+}
+
+entity "genres" as genres {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(100)
+}
+
+entity "types" as types {
+  * id : BIGINT <<PK>>
+  --
+  * name : VARCHAR(100) -- Manga, Novel, etc.
+}
+
+entity "books" as books {
+  * id : BIGINT <<PK>>
+  --
+  * author_id : BIGINT <<FK>>
+  * type_id : BIGINT <<FK>>
+  * title : VARCHAR(255)
+  cover_image : VARCHAR(255)
+}
+
+entity "book_genre" as book_genre {
+  * book_id : BIGINT <<FK>>
+  * genre_id : BIGINT <<FK>>
+}
+
+' --- 3. PERSONAL CATALOG & LENDING ---
+entity "user_catalogs" as user_catalogs {
+  * id : BIGINT <<PK>>
+  --
+  * user_id : BIGINT <<FK>>
+  * book_id : BIGINT <<FK>>
+  * is_available : BOOLEAN <<default: true>>
+  condition : VARCHAR(100)
+}
+
+entity "p2p_transactions" as p2p {
+  * id : BIGINT <<PK>>
+  --
+  * owner_id : BIGINT <<FK>>
+  * borrower_id : BIGINT <<FK>>
+  * catalog_id : BIGINT <<FK>>
+  * status : ENUM('pending', 'borrowed', 'returned', 'rejected')
+  due_date : DATE
+}
+
+' --- 4. DISCUSSIONS (Reddit-style Logic) ---
+entity "discussions" as discussions {
+  * id : BIGINT <<PK>>
+  --
+  * user_id : BIGINT <<FK>>
+  book_id : BIGINT <<FK>> -- Optional: Link to a book if relevant
+  * title : VARCHAR(255)
+  * content : TEXT
+  created_at : TIMESTAMP
+}
+
+entity "comments" as comments {
+  * id : BIGINT <<PK>>
+  --
+  * discussion_id : BIGINT <<FK>>
+  * user_id : BIGINT <<FK>>
+  parent_id : BIGINT <<FK>> -- For nested replies
+  * content : TEXT
+}
+
+entity "votes" as votes {
+  * id : BIGINT <<PK>>
+  --
+  * user_id : BIGINT <<FK>>
+  votable_id : BIGINT -- ID of discussion or comment
+  votable_type : VARCHAR(50) -- 'Discussion' or 'Comment'
+  value : TINYINT -- 1 (up) or -1 (down)
+}
+
+' --- RELATIONSHIPS ---
+
+cities ||--o{ users
+users ||--o{ user_catalogs
+books ||--o{ user_catalogs
+user_catalogs ||--o{ p2p
+users ||--o{ p2p : "borrower"
+
+authors ||--o{ books
+types ||--o{ books
+books ||--|{ book_genre
+genres ||--|{ book_genre
+
+users ||--o{ discussions : "starts"
+books ||--o{ discussions : "subject of"
+discussions ||--o{ comments
+users ||--o{ comments : "writes"
+comments ||--o{ comments : "threaded replies"
+users ||--o{ votes : "casts"
+
+@enduml
