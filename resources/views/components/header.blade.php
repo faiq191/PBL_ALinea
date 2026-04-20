@@ -68,45 +68,64 @@
     </div>
 
     {{-- // Profile Avatar with Dropdown Button // --}}
-    <div class="absolute right-8 flex items-center">
-        <div class="relative group animate-[float_4s_infinite_ease-in-out]">
-            {{-- // Button Avatar // --}}
-            <button type="button" onclick="toggleDropdown(event)"
-                class="p-[3px] rounded-full bg-gradient-to-tr from-[#d9c2a3] via-[#f5e6d3] to-[#a68b6d] shadow-[0_0_15px_rgba(217,194,163,0.3)] cursor-pointer hover:scale-110 hover:rotate-3 hover:shadow-[0_0_25px_rgba(217,194,163,0.6)] transition-all duration-500 ease-out">
+<div class="absolute right-8 flex items-center">
 
-                <div class="p-[2px] rounded-full bg-[#5a3e3e]">
-                    <img src="https://i.pinimg.com/474x/5d/a3/60/5da360c98b9af0ad709fe18606992229.jpg"
-                        class="w-12 h-12 rounded-full border-2 border-[#d9c2a3]/30 object-cover" alt="Profile">
-                </div>
-            </button>
+    @auth
+    <div class="relative group animate-[float_4s_infinite_ease-in-out]">
 
-            <div
-                class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-tr from-[#d9c2a3] to-white rounded-full border-2 border-[#5a3e3e] scale-0 group-hover:scale-100 transition-transform duration-700 shadow-md animate-pulse">
+        <button type="button" onclick="toggleDropdown(event)"
+            class="p-[3px] rounded-full bg-gradient-to-tr from-[#d9c2a3] via-[#f5e6d3] to-[#a68b6d]">
+
+            <div class="p-[2px] rounded-full bg-[#5a3e3e]">
+                <img
+                    src="{{ auth()->user()->profile_photo
+                        ? asset('storage/' . auth()->user()->profile_photo)
+                        : 'https://ui-avatars.com/api/?name=' . auth()->user()->name }}"
+                    class="w-12 h-12 rounded-full object-cover">
             </div>
-            {{-- // Dropdown Menu // --}}
-            <div id="profileMenu"
-                class="hidden absolute right-0 mt-4 w-52 bg-white/95 backdrop-blur-xl text-[#5a3e3e] rounded-2xl shadow-2xl overflow-hidden z-50 border border-[#d9c2a3]/40">
+        </button>
 
-                <div class="px-4 py-3 border-b border-gray-200">
-                    <p class="font-semibold">Eiyu</p>
-                    <p class="text-sm text-gray-500">user@email.com</p>
-                </div>
+        <div id="profileMenu"
+            class="hidden absolute right-0 mt-4 w-52 bg-white text-[#5a3e3e] rounded-2xl shadow-xl">
 
-                <a href="#" class="block px-4 py-3 hover:bg-[#f5ede4] transition">
-                    Akun Saya
-                </a>
+            <div class="px-4 py-3 border-b">
+                <p class="font-semibold">{{ auth()->user()->name }}</p>
+                <p class="text-sm text-gray-500">{{ auth()->user()->email }}</p>
+            </div>
 
-                <a href="#" class="block px-4 py-3 hover:bg-[#f5ede4] transition">
-                    Settings
-                </a>
+            <a href="/profile" class="block px-4 py-3 hover:bg-[#f5ede4]">
+                Akun Saya
+            </a>
 
-                <a href="#" class="block px-4 py-3 hover:bg-red-50 text-red-500 transition">
+            <form method="POST" action="/logout">
+                @csrf
+                <button class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50">
                     Logout
-                </a>
+                </button>
+            </form>
 
-            </div>
         </div>
     </div>
+    @endauth
+
+
+    @guest
+    <div class="flex gap-3">
+
+        <a href="/login"
+            class="px-4 py-2 rounded-lg bg-white text-[#5a3e3e] font-medium hover:scale-105 transition">
+            Login
+        </a>
+
+        <a href="/register"
+            class="px-4 py-2 rounded-lg border border-white text-white hover:bg-white hover:text-[#5a3e3e] transition">
+            Register
+        </a>
+
+    </div>
+    @endguest
+
+</div>
 </nav>
 
 <style>

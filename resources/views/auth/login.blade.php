@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register - ALinea</title>
+    <title>Login - ALinea</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -16,30 +16,24 @@
 
     <h2 class="text-2xl text-center mb-6">ALinea</h2>
 
-    <form method="POST" action="#">
+    <form method="POST" action="/login">
         @csrf
 
-        <input type="text" placeholder="Nama Pengguna"
+        <input type="email" name="email" placeholder="Email"
             class="w-full mb-4 px-4 py-2 rounded-full bg-white/20 placeholder-white focus:outline-none">
 
-        <input type="email" placeholder="Email"
-            class="w-full mb-4 px-4 py-2 rounded-full bg-white/20 placeholder-white focus:outline-none">
-
-        <input type="password" placeholder="Kata Sandi"
-            class="w-full mb-4 px-4 py-2 rounded-full bg-white/20 placeholder-white focus:outline-none">
-
-        <input type="password" placeholder="Konfirmasi Kata Sandi"
+        <input type="password" name="password" placeholder="Kata Sandi"
             class="w-full mb-4 px-4 py-2 rounded-full bg-white/20 placeholder-white focus:outline-none">
 
         <button
             class="w-full bg-white text-black py-2 rounded-full hover:bg-gray-200 transition">
-            Daftar
+            Masuk
         </button>
     </form>
 
     <p class="text-center mt-4 text-sm">
-        Sudah punya akun?
-        <a href="/login" class="underline">Masuk</a>
+        Belum punya akun?
+        <a href="/register" class="underline">Daftar</a>
     </p>
 
 </div>
