@@ -18,7 +18,7 @@
             <div>
                 <p class="text-xs text-[#7a5c3e] font-medium uppercase tracking-widest mb-1">Perpustakaan Komunitas</p>
                 <h2 class="text-2xl font-bold text-[#2c2c2c]">
-                    Selamat datang, <span class="italic text-[#5a3e3e]">Eiyu</span> 👋
+                    Selamat datang, <span class="italic text-[#5a3e3e]"></span><!-- auth()->user()->name -->
                 </h2>
                 <p class="text-sm mt-2 text-[#5c4a36]">
                     Temukan, bagikan, dan pinjam buku di komunitas Anda.
@@ -29,7 +29,7 @@
             <div class="grid grid-cols-2 gap-2 my-4">
                 <div class="bg-[#c9ae8e] rounded-xl p-3">
                     <p class="text-xs text-[#5a3e3e] font-medium">Buku Saya</p>
-                    <p class="text-2xl font-bold text-[#2c2c2c]">3</p>
+                    <p class="text-2xl font-bold text-[#2c2c2c]">4</p>
                     <p class="text-xs text-[#7a5c3e]">sedang dipinjam</p>
                 </div>
                 <div class="bg-[#c9ae8e] rounded-xl p-3">
