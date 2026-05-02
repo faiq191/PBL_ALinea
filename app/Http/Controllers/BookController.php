@@ -4,14 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
+use App\Models\Discussion;
 
 class BookController extends Controller
 {
-        public function index()
-        {
-            $books = Book::where('user_id', auth()->id())->get();
-            return view('koleksi', compact('books'));
-        }
+    public function index()
+    {
+        $books = Book::where('user_id', auth()->id())->get();
+        return view('koleksi', compact('books'));
+    }
 
     public function create()
     {
@@ -39,12 +40,19 @@ class BookController extends Controller
     }
 
     public function home()
-{
-    $books = auth()->check()
-        ? Book::where('user_id', auth()->id())->take(4)->get()
-        : collect();
+    {
+        $books = auth()->check()
+            ? Book::where('user_id', auth()->id())->take(4)->get()
+            : collect();
 
-    return view('home', compact('books'));
-}
+        $discussions = \App\Models\Discussion::latest()->take(5)->get();
 
+        return view('home', compact('books', 'discussions'));
+    }
+
+    public function show($id)
+    {
+        $discussion = Discussion::with('user')->findOrFail($id);
+        return view('discussions.show', compact('discussion'));
+    }
 }

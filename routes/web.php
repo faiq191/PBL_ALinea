@@ -5,16 +5,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DiscussionController;
+
 
 //Keter
-
 Route::get('/', function () {
-    return view('home');
+    return app(BookController::class)->home();
 });
-
-
-//Index
-Route::get('/', [BookController::class, 'home']);
 Route::get('/koleksi', [BookController::class, 'index'])->middleware('auth');
 
 //Auth-Route
@@ -78,8 +75,17 @@ Route::middleware('auth')->group(function () {
 
 //Main  Pages
 
+// Komunitas page
+Route::get('/komunitas', [DiscussionController::class, 'index']);
+
+// Create
+Route::get('/diskusi/create', [DiscussionController::class, 'create'])->middleware('auth');
+Route::post('/diskusi', [DiscussionController::class, 'store'])->middleware('auth');
+Route::post('/diskusi/{id}/comment', [DiscussionController::class, 'storeComment'])->middleware('auth');
+
+// Detail
+Route::get('/diskusi/{id}', [DiscussionController::class, 'show']);
 Route::get('/perpustakaan', fn() => view('perpustakaan'));
-Route::get('/komunitas', fn() => view('komunitas'));
 Route::get('/informasi', fn() => view('informasi'));
 Route::get('/admin', fn() => view('admin'));
 

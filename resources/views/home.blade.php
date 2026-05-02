@@ -18,7 +18,14 @@
             <div>
                 <p class="text-xs text-[#7a5c3e] font-medium uppercase tracking-widest mb-1">Perpustakaan Komunitas</p>
                 <h2 class="text-2xl font-bold text-[#2c2c2c]">
-                    Selamat datang, <span class="italic text-[#5a3e3e]"></span><!-- auth()->user()->name -->
+                    Selamat datang,
+                    <span class="italic text-[#5a3e3e]">
+                        @auth
+                            {{ auth()->user()->name }}
+                        @else
+                            Pengunjung
+                        @endauth
+                    </span>
                 </h2>
                 <p class="text-sm mt-2 text-[#5c4a36]">
                     Temukan, bagikan, dan pinjam buku di komunitas Anda.
@@ -102,26 +109,29 @@
                 </div>
 
                 {{-- Diskusi Aktif --}}
-                <div class="bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-3">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#185FA5"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                            </svg>
-                        </div>
-                        <span class="text-xs text-gray-500">Diskusi Aktif</span>
+            <div class="bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#185FA5"
+                            stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
                     </div>
-                    <div class="flex items-end gap-3">
-                        <div class="w-16 h-16 flex-shrink-0">
-                            <canvas id="discussionChart"></canvas>
-                        </div>
-                        <div>
-                            <p class="text-3xl font-semibold text-[#2c2c2c] leading-none">24</p>
-                            <p class="text-xs text-gray-400 mt-1">topik berjalan</p>
-                        </div>
+                    <span class="text-xs text-gray-500">Diskusi Aktif</span>
+                </div>
+
+                <div class="flex items-end gap-3">
+                    <div class="w-16 h-16 flex-shrink-0">
+                        <canvas id="discussionChart"></canvas>
+                    </div>
+                    <div>
+                        <p class="text-3xl font-semibold text-[#2c2c2c] leading-none">
+                            {{ $discussions->count() }}
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">topik berjalan</p>
                     </div>
                 </div>
+            </div>
 
                 {{-- Buku Dibagikan --}}
                 <div class="bg-white rounded-2xl p-4 shadow-sm flex flex-col gap-3">
@@ -196,9 +206,9 @@
 
         <div class="grid grid-cols-4 gap-5">
 
-            <div class="grid grid-cols-4 gap-5">
+        <div class="grid grid-cols-4 gap-5">
 
-                @foreach ($books as $book)
+            @forelse ($books ?? [] as $book)
                     <div class="bg-white rounded-xl p-4 shadow">
 
                         <img src="{{ asset('storage/' . $book->image) }}"
@@ -217,13 +227,17 @@
                                 Lihat
                             </button>
 
+                            @auth
                             <button class="flex-1 bg-[#5a3e3e] text-white py-2 rounded-lg text-sm">
                                 Atur
                             </button>
+                            @endauth
                         </div>
 
                     </div>
-                @endforeach
+                    @empty
+            <p class="text-gray-500 text-sm">Belum ada buku.</p>
+        @endforelse
 
             </div>
 
