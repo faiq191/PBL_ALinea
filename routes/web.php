@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DiscussionController;
+use App\Http\Controllers\PerpustakaanController;
 
 
 //Keter
@@ -95,6 +96,11 @@ Route::post('/books/{id}/borrow', function ($id) {
     return "Borrow book " . $id;
 })->name('books.borrow');
 
-Route::get('/books/{id}', function ($id) {
-    return "Detail book " . $id;
-})->name('books.show');
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::get('/books/{id}/edit', [BookController::class, 'edit'])->middleware('auth');
+Route::put('/books/{id}', [BookController::class, 'update'])->middleware('auth');
+Route::delete('/books/{id}', [BookController::class, 'destroy'])->middleware('auth');
+
+//Route Perpustakaan
+
+Route::get('/perpustakaan', [PerpustakaanController::class, 'index']);

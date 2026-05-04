@@ -11,5 +11,11 @@ class Book extends Model
         'author',
         'image',
         'user_id',
+        'genre'
     ];
+
+        public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

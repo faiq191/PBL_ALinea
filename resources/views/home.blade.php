@@ -197,51 +197,31 @@
                 Aktivitas Terkini
             </h3>
 
-            <button
-                class="bg-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-gray-300 transition flex items-center gap-2">
-                <i data-lucide="eye" class="w-4 h-4"></i>
-                <span>Lihat Semua</span>
-            </button>
+                <a href="/koleksi"
+                class="bg-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-gray-300 transition inline-flex items-center gap-2">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                    <span>Lihat Semua</span>
+                </a>
         </div>
 
-        <div class="grid grid-cols-4 gap-5">
-
-        <div class="grid grid-cols-4 gap-5">
+        <div class="grid grid-cols-4 gap-6">
 
             @forelse ($books ?? [] as $book)
-                    <div class="bg-white rounded-xl p-4 shadow">
-
-                        <img src="{{ asset('storage/' . $book->image) }}"
-                            class="w-full h-72 object-contain rounded-lg mb-4">
-
-                        <h4 class="font-semibold text-sm">
-                            {{ $book->title }}
-                        </h4>
-
-                        <p class="text-xs text-gray-500 mb-4">
-                            {{ $book->author }}
-                        </p>
-
-                        <div class="flex gap-2">
-                            <button class="flex-1 bg-gray-200 py-2 rounded-lg text-sm">
-                                Lihat
-                            </button>
-
-                            @auth
-                            <button class="flex-1 bg-[#5a3e3e] text-white py-2 rounded-lg text-sm">
-                                Atur
-                            </button>
-                            @endauth
-                        </div>
-
-                    </div>
-                    @empty
-            <p class="text-gray-500 text-sm">Belum ada buku.</p>
-        @endforelse
-
-            </div>
+               <x-book-card
+                    :id="$book->id"
+                    :image="$book->image"
+                    :title="$book->title"
+                    :author="$book->author"
+                    :genre="$book->genre"
+                    :show-atur="auth()->check() && $book->user_id === auth()->id()"
+                />
+            @empty
+                <p class="text-gray-500 text-sm">Belum ada buku.</p>
+            @endforelse
 
         </div>
+
+            </div>
 
         <script src="https://unpkg.com/lucide@latest"></script>
         <script>

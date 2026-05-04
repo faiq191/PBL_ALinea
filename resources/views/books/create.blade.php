@@ -23,6 +23,17 @@
         <input type="file" name="image"
             class="w-full mb-3">
 
+        <select name="genre" class="w-full mb-3 p-3 border rounded-lg">
+            <option value="">Pilih Genre</option>
+
+            @foreach ($genres as $genre)
+                <option value="{{ $genre }}"
+                    {{ ($book->genre ?? '') == $genre ? 'selected' : '' }}>
+                    {{ $genre }}
+                </option>
+            @endforeach
+        </select>
+
         <button class="w-full bg-[#5a3e3e] text-white py-2 rounded">
             Simpan
         </button>
