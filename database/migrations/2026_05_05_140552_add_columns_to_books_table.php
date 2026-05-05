@@ -9,19 +9,22 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::table('books', function (Blueprint $table) {
-            if (!Schema::hasColumn('books', 'genre')) {
-                $table->string('genre')->nullable()->after('author');
-            }
+            $table->foreignId('user_id')->after('id')->constrained()->onDelete('cascade');
+            $table->string('genre')->after('author')->nullable();
         });
     }
 
-    public function down(): void
+    /**
+     * Reverse the migrations.
+     */
+    public function down()
     {
         Schema::table('books', function (Blueprint $table) {
-            $table->dropColumn('genre');
+            $table->dropForeign(['user_id']);
+            $table->dropColumn(['user_id', 'genre']);
         });
     }
 };
