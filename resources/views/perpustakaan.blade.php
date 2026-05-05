@@ -3,6 +3,10 @@
 <head>
     <title>Perpustakaan</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 <body class="bg-[#2c2c2c]">
 
@@ -11,7 +15,6 @@
     <div class="p-6">
         <div class="bg-[#f2e9e4] rounded-2xl p-6">
 
-            {{-- HEADER --}}
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <p class="text-xs text-[#7a5c3e] uppercase tracking-widest font-medium">Koleksi Komunitas</p>
@@ -28,40 +31,66 @@
                 @endauth
             </div>
 
-            {{-- SEARCH & FILTER --}}
-            <form method="GET" action="/perpustakaan">
-                <div class="flex items-center gap-3 mb-6">
-                    <input type="text"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Cari judul atau pengarang..."
-                        class="flex-1 px-4 py-2 rounded-full bg-[#d6c7be] outline-none text-sm text-[#2c2c2c] placeholder-[#7a5c3e]">
+                <form method="GET" action="/perpustakaan">
+                    <div class="flex items-center gap-3 mb-6">
+                        <input type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Cari judul atau pengarang..."
+                            class="flex-1 px-4 py-2 rounded-full bg-[#d6c7be] outline-none text-sm text-[#2c2c2c] placeholder-[#7a5c3e]">
 
-                    <select name="genre"
-                        class="px-4 py-2 rounded-full bg-[#d6c7be] outline-none text-sm text-[#2c2c2c]">
-                        <option value="">Semua Genre</option>
-                        @foreach($genres as $g)
-                            <option value="{{ $g }}" {{ request('genre') == $g ? 'selected' : '' }}>
-                                {{ $g }}
-                            </option>
-                        @endforeach
-                    </select>
+                        <button type="submit"
+                            class="bg-[#5a3e3e] text-white px-5 py-2 rounded-full text-sm">
+                            Cari
+                        </button>
 
-                    <button type="submit"
-                        class="bg-[#5a3e3e] text-white px-5 py-2 rounded-full text-sm hover:bg-[#4a3333] transition">
-                        Cari
-                    </button>
+                        <div x-data="{ open: false }" x-init="open = false">
 
-                    @if(request('search') || request('genre'))
-                        <a href="/perpustakaan"
-                            class="text-sm text-[#7a5c3e] hover:underline">
-                            Reset
-                        </a>
-                    @endif
-                </div>
-            </form>
+                            <button type="button" @click="open = true"
+                                class="bg-[#5a3e3e] text-white px-4 py-2 rounded-lg text-sm">
+                                Filter
+                            </button>
 
-            {{-- KONTEN --}}
+                            <div x-show="open"
+                                x-transition
+                                x-cloak
+                                class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+
+                                <div class="bg-white p-6 rounded-xl w-80">
+                                    <h3 class="font-bold mb-4">Filter Genre</h3>
+
+                                    <select name="genre" class="w-full p-2 border rounded mb-4">
+                                        <option value="">Semua</option>
+                                        @foreach($genres as $g)
+                                            <option value="{{ $g }}" {{ request('genre') == $g ? 'selected' : '' }}>
+                                                {{ $g }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+
+                                    <div class="flex justify-between">
+                                        <button type="button" @click="open = false"
+                                            class="text-sm text-gray-500 hover:text-gray-700">
+                                            Batal
+                                        </button>
+                                        <button type="submit"
+                                            class="bg-[#5a3e3e] text-white px-4 py-2 rounded text-sm">
+                                            Terapkan
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        @if(request('search') || request('genre'))
+                            <a href="/perpustakaan"
+                                class="text-sm text-[#7a5c3e] hover:underline">
+                                Reset
+                            </a>
+                        @endif
+                    </div>
+                </form>
             @if(request('search') || request('genre'))
                 <h3 class="text-lg font-semibold text-[#2c2c2c] mb-4">
                     Hasil Pencarian
@@ -85,7 +114,6 @@
                 @endif
 
             @else
-                {{-- Tampilkan per genre --}}
                 @forelse($booksByGenre as $genre => $genreBooks)
                     <div class="mb-8">
                         <div class="flex justify-between items-center mb-3">
@@ -116,6 +144,9 @@
 
         </div>
     </div>
+
+<script>lucide.createIcons();</script>
+<script src="//unpkg.com/alpinejs" defer></script>
 
 </body>
 </html>

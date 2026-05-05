@@ -9,7 +9,7 @@ class PerpustakaanController extends Controller
 {
     public function index(Request $request)
     {
-        $genres = ['Novel', 'Komik', 'Edukasi', 'Sejarah', 'Teknologi'];
+        $genres = ['Novel', 'Komik', 'Edukasi', 'Sejarah', 'Teknologi', 'Bisnis', 'Kesehatan', 'Sains', 'Biografi', 'Makanan'];
 
         $query = Book::with('user');
 

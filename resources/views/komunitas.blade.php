@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Homepage</title>
+    <title>Komunitas</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -12,15 +12,18 @@
 
     <!-- SEARCH -->
     <div class="max-w-7xl mx-auto px-6 mb-6">
-        <div class="relative">
-            <input type="text"
-                class="w-full bg-[#4a4a4a] text-white rounded-full py-3 px-12 focus:outline-none focus:ring-2 focus:ring-[#d9c2a3]"
-                placeholder="Cari diskusi atau topik...">
-
-            <div class="absolute left-4 top-3.5">
-                <img src="Logo/search.png" class="w-5 h-5 opacity-50 invert">
+        <form method="GET" action="/komunitas">
+            <div class="relative">
+                <input type="text"
+                    name="search"
+                    value="{{ request('search') }}"
+                    class="w-full bg-[#4a4a4a] text-white rounded-full py-3 px-12 focus:outline-none focus:ring-2 focus:ring-[#d9c2a3]"
+                    placeholder="Cari diskusi atau topik...">
+                <div class="absolute left-4 top-3.5">
+                    <img src="Logo/search.png" class="w-5 h-5 opacity-50 invert">
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- CONTENT -->
@@ -40,7 +43,6 @@
                 </div>
             </div>
 
-            <!-- BUTTON -->
             <div class="flex justify-between items-center mb-10">
 
                 @auth
@@ -59,16 +61,13 @@
                 @endguest
 
                 <div class="flex gap-2">
-                    <button class="bg-[#4a3232] text-white px-5 py-2 rounded-full text-sm">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'terbaru']) }}"
+                        class="px-5 py-2 rounded-full text-sm {{ request('sort', 'terbaru') == 'terbaru' ? 'bg-[#4a3232] text-white' : 'bg-gray-200 text-gray-600' }}">
                         Terbaru
-                    </button>
-                    <button class="bg-[#f9a01b] text-white px-5 py-2 rounded-full text-sm">
-                        Terpopuler
-                    </button>
+                    </a>
                 </div>
             </div>
 
-            <!-- DISCUSSIONS -->
             <div>
                 <h3 class="text-2xl font-bold mb-6 text-[#2c2c2c]">Diskusi Aktif</h3>
 
@@ -84,14 +83,18 @@
                         </span>
 
                         <div class="flex justify-between mt-4 text-sm text-gray-500">
-                            <p>{{ $discussion->user->name ?? 'Unknown' }}</p>
+                            <div class="flex flex-col gap-1">
+                                <p>{{ $discussion->user->name ?? 'Unknown' }}</p>
+                                <p class="text-xs text-gray-400">
+                                    {{ $discussion->created_at->translatedFormat('d F Y, H:i') }} WIB
+                                </p>
+                            </div>
 
                             <div class="flex gap-2">
                                 <a href="/diskusi/{{ $discussion->id }}"
                                     class="bg-gray-200 px-3 py-1 rounded">
                                     Lihat
                                 </a>
-
                             </div>
                         </div>
 
@@ -104,20 +107,64 @@
 
         </div>
 
-        <!-- RIGHT -->
-        <div class="flex-1">
-            <div class="bg-[#fcf7f4] p-6 rounded-3xl shadow-md sticky top-6">
-                <h3 class="text-2xl font-bold mb-4">Filter</h3>
+    <!-- RIGHT -->
+    <div class="flex-1">
+        <div class="bg-[#fcf7f4] p-6 rounded-3xl shadow-md sticky top-6">
+            <h3 class="text-2xl font-bold mb-4">Filter</h3>
 
-                <button class="w-full bg-[#5a3e3e] text-white p-3 rounded-xl flex justify-between">
-                    Genres
-                    <span>▼</span>
-                </button>
-            </div>
+            <form method="GET" action="/komunitas">
+                @if(request('search'))
+                    <input type="hidden" name="search" value="{{ request('search') }}">
+                @endif
+
+                <div x-data="{ open: false }" x-init="open = false">
+                    <button type="button" @click="open = true"
+                        class="w-full bg-[#5a3e3e] text-white p-3 rounded-xl flex justify-between items-center">
+                        {{ request('genre') ? request('genre') : 'Genres' }}
+                        <span>▼</span>
+                    </button>
+
+                    <div x-show="open"
+                        x-transition
+                        x-cloak
+                        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div class="bg-white p-6 rounded-xl w-80">
+                            <h3 class="font-bold mb-4">Filter Genre</h3>
+
+                            <select name="genre" class="w-full p-2 border rounded mb-4">
+                                <option value="">Semua</option>
+                                @foreach($genres as $g)
+                                    <option value="{{ $g }}" {{ request('genre') == $g ? 'selected' : '' }}>
+                                        {{ $g }}
+                                    </option>
+                                @endforeach
+                            </select>
+
+                            <div class="flex justify-between">
+                                <button type="button" @click="open = false"
+                                    class="text-sm text-gray-500 hover:text-gray-700">
+                                    Batal
+                                </button>
+                                <button type="submit"
+                                    class="bg-[#5a3e3e] text-white px-4 py-2 rounded text-sm">
+                                    Terapkan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if(request('genre'))
+                    <a href="/komunitas" class="block text-center text-xs text-[#7a5c3e] hover:underline mt-2">
+                        Reset Filter
+                    </a>
+                @endif
+            </form>
         </div>
-
     </div>
 
+<style>[x-cloak] { display: none !important; }</style>
+<script src="//unpkg.com/alpinejs" defer></script>
 </body>
 
 </html>

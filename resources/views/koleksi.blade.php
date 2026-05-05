@@ -33,9 +33,6 @@
                     Cari
                 </button>
 
-            <x-button class="bg-yellow-400 px-4 py-2 rounded-full text-sm">
-                + Popular
-            </x-button>
 
             <div x-data="{ open: false }" x-init="open = false">
 

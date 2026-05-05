@@ -8,15 +8,35 @@ use App\Models\Comment;
 
 class DiscussionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $discussions = Discussion::latest()->get();
-        return view('komunitas', compact('discussions'));
+        $genres = ['Drama', 'Fantasi', 'Romansa', 'Misteri', 'Komedi', 'Horor', 'Sejarah', 'Sains'];
+
+        $query = Discussion::withCount('comments');
+
+        if ($request->genre) {
+            $query->where('genre', $request->genre);
+        }
+
+        if ($request->search) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->sort == 'terpopuler') {
+            $query->orderBy('comments_count', 'desc');
+        } else {
+            $query->latest();
+        }
+
+        $discussions = $query->get();
+
+        return view('komunitas', compact('discussions', 'genres'));
     }
 
     public function create()
     {
-        return view('discussions.create');
+        $genres = ['Drama', 'Fantasi', 'Romansa', 'Misteri', 'Komedi', 'Horor', 'Sejarah', 'Sains'];
+        return view('discussions.create', compact('genres'));
     }
 
     public function store(Request $request)
