@@ -11,9 +11,10 @@
         {{ $author }}
     </p>
 
-    <span class="inline-block mt-2 text-xs bg-[#5a3e3e] text-white px-3 py-1 rounded-full self-start">
-        {{ $genre ?? 'Tanpa Genre' }}
-    </span>
+    <!-- FIXED: Changed span to div and added flex-wrap -->
+    <div class="flex flex-wrap gap-1 mt-2">
+        {!! $genre ?? '<span class="bg-[#5a3e3e] text-white text-[10px] px-3 py-1 rounded-full">Tanpa Genre</span>' !!}
+    </div>
 
     <div class="flex-1"></div>
 

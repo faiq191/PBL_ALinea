@@ -6,15 +6,42 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
-       protected $fillable = [
+    protected $fillable = [
+        'user_id',
+        'type_id',
+        'demographic_id',
+        'year_id',
         'title',
         'author',
-        'image',
-        'user_id',
-        'genre'
+        'description',
+        'image'
     ];
 
-        public function user()
+    // Relationship to the Year table
+    public function year()
+    {
+        return $this->belongsTo(Year::class);
+    }
+
+    // Relationship to the Type table
+    public function type()
+    {
+        return $this->belongsTo(Type::class);
+    }
+
+    // Relationship to the Demographic table
+    public function demographic()
+    {
+        return $this->belongsTo(Demographic::class);
+    }
+
+    // Relationship to the Genre table (Many-to-Many)
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class);
+    }
+
+    public function user()
     {
         return $this->belongsTo(User::class);
     }

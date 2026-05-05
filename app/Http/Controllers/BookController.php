@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Discussion;
+use App\Models\Genre;
+use App\Models\Type;
+use App\Models\Demographic;
+use App\Models\Year;
 
 class BookController extends Controller
 {
@@ -12,29 +16,35 @@ class BookController extends Controller
 
     public function index(Request $request)
     {
-        $query = Book::where('user_id', auth()->id());
+        // Filter books by the foreign IDs instead of strings
+        $query = Book::where('user_id', auth()->id())->with(['genres', 'type', 'year']);
 
-        if ($request->genre) {
-            $query->where('genre', $request->genre);
+        if ($request->genre_id) {
+            $query->whereHas('genres', fn($q) => $q->where('genres.id', $request->genre_id));
         }
 
-        if ($request->search) {
-            $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('author', 'like', '%' . $request->search . '%');
-            });
+        if ($request->type_id) {
+            $query->where('type_id', $request->type_id);
         }
 
-        $books = $query->get();
-        $genres = $this->genres;
-
-        return view('koleksi', compact('books', 'genres'));
+        // Pass all metadata to the view for the filter dropdowns
+        return view('koleksi', [
+            'books' => $query->get(),
+            'genres' => Genre::all(),
+            'types' => Type::all(),
+            'years' => Year::all(),
+            'demographics' => Demographic::all()
+        ]);
     }
 
     public function create()
     {
-        $genres = $this->genres;
-        return view('books.create', compact('genres'));
+        $genres = \App\Models\Genre::all();
+        $types = \App\Models\Type::all();
+        $demographics = \App\Models\Demographic::all();
+        $years = \App\Models\Year::all();
+
+        return view('books.create', compact('genres', 'types', 'demographics', 'years'));
     }
 
     public function store(Request $request)
@@ -52,8 +62,10 @@ class BookController extends Controller
             'author' => $request->author,
             'image' => $imagePath,
             'user_id' => auth()->id(),
-            'genre' => $request->genre
-        ]);
+            'type_id' => $request->type_id,
+            'year_id' => $request->year_id,
+            'demographic_id' => $request->demographic_id,
+        ])->genres()->attach($request->genre_ids); // For many-to-many genres
 
         return redirect('/koleksi');
     }
@@ -64,8 +76,8 @@ class BookController extends Controller
             ? Book::where('user_id', auth()->id())
             : Book::query();
 
-        if ($request && $request->genre) {
-            $query->where('genre', $request->genre);
+        if ($request && $request->genre_id) {
+            $query->whereHas('genres', fn($q) => $q->where('genres.id', $request->genre_id));
         }
 
         $books = $query->take(4)->get();
@@ -88,8 +100,12 @@ class BookController extends Controller
             abort(403);
         }
 
-        $genres = $this->genres;
-        return view('books.edit', compact('book', 'genres'));
+        $genres = Genre::all();
+        $types = Type::all();
+        $demographics = Demographic::all();
+        $years = Year::all();
+
+        return view('books.edit', compact('book', 'genres', 'types', 'demographics', 'years'));
     }
 
     public function update(Request $request, $id)
@@ -109,7 +125,9 @@ class BookController extends Controller
         $data = [
             'title' => $request->title,
             'author' => $request->author,
-            'genre' => $request->genre
+            'type_id' => $request->type_id,
+            'year_id' => $request->year_id,
+            'demographic_id' => $request->demographic_id,
         ];
 
         if ($request->hasFile('image')) {
@@ -120,6 +138,7 @@ class BookController extends Controller
         }
 
         $book->update($data);
+        $book->genres()->sync($request->genre_ids);
         return redirect('/koleksi');
     }
 
