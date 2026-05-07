@@ -31,9 +31,12 @@
             <!-- GENRE -->
             <div class="mb-4">
                 <label class="block text-sm mb-2">Genre</label>
-                <input type="text" name="genre"
-                    class="w-full p-3 rounded-xl border"
-                    placeholder="Contoh: Fantasi">
+                <select name="genre" class="w-full p-3 rounded-xl border bg-white">
+                    <option value="">-- Pilih Genre --</option>
+                    @foreach($genres as $g)
+                        <option value="{{ $g }}">{{ $g }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <!-- CATEGORY -->
@@ -44,10 +47,17 @@
                     placeholder="Contoh: Novel / Self-Help">
             </div>
 
-            <!-- BUTTON -->
+            <!-- TANGGAL -->
+                <div class="mb-6">
+                    <label class="block text-sm mb-2">Tanggal Dibuat</label>
+                    <input type="text"
+                        value="{{ now()->translatedFormat('d F Y, H:i') }} WIB"
+                        class="w-full p-3 rounded-xl border bg-gray-100 text-gray-500"
+                        readonly>
+                </div>
             <div class="flex justify-between">
 
-                <a href="/"
+                <a href="/komunitas"
                     class="px-5 py-2 bg-gray-300 rounded-xl">
                     Kembali
                 </a>
