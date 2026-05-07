@@ -37,7 +37,7 @@
                 <div class="bg-[#c9ae8e] rounded-xl p-3">
                     <p class="text-xs text-[#5a3e3e] font-medium">Buku Saya</p>
                     <p class="text-2xl font-bold text-[#2c2c2c]">4</p>
-                    <p class="text-xs text-[#7a5c3e]">sedang dipinjam</p>
+                    <p class="text-xs text-[#7a5c3e]">Sedang dipinjam</p>
                 </div>
                 <div class="bg-[#c9ae8e] rounded-xl p-3">
                     <p class="text-xs text-[#5a3e3e] font-medium">Poin Saya</p>
@@ -128,7 +128,7 @@
                         <p class="text-3xl font-semibold text-[#2c2c2c] leading-none">
                             {{ $discussions->count() }}
                         </p>
-                        <p class="text-xs text-gray-400 mt-1">topik berjalan</p>
+                        <p class="text-xs text-gray-400 mt-1">Topik berjalan</p>
                     </div>
                 </div>
             </div>
@@ -154,7 +154,7 @@
                         </div>
                         <div>
                             <p class="text-3xl font-semibold text-[#2c2c2c] leading-none">8</p>
-                            <p class="text-xs text-gray-400 mt-1">buku tersedia</p>
+                            <p class="text-xs text-gray-400 mt-1">Buku tersedia</p>
                         </div>
                     </div>
                 </div>
@@ -177,8 +177,10 @@
                             <canvas id="collectionChart"></canvas>
                         </div>
                         <div>
-                            <p class="text-3xl font-semibold text-[#2c2c2c] leading-none">1.036</p>
-                            <p class="text-xs text-gray-400 mt-1">judul terdaftar</p>
+                                <p class="text-3xl font-semibold text-[#2c2c2c] leading-none">
+                                    {{ number_format($totalBooks) }}
+                                </p>
+                            <p class="text-xs text-gray-400 mt-1">Judul terdaftar</p>
                         </div>
                     </div>
                 </div>
@@ -228,9 +230,8 @@
             lucide.createIcons();
         </script>
 
-        {{-- Script Chart.js (taruh sebelum </body> atau di @push('scripts')) --}}
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
             function makeDonut(id, color) {
                 new Chart(document.getElementById(id), {
                     type: 'doughnut',
