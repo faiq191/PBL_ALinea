@@ -62,9 +62,6 @@
                     <button class="bg-[#4a3232] text-white px-5 py-2 rounded-full text-sm">
                         Terbaru
                     </button>
-                    <button class="bg-[#f9a01b] text-white px-5 py-2 rounded-full text-sm">
-                        Terpopuler
-                    </button>
                 </div>
             </div>
 

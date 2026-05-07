@@ -21,7 +21,7 @@
             </div>
 
             {{-- SEARCH & FILTER --}}
-<form method="GET" action="/perpustakaan" class="mb-12" x-data="{ 
+<form method="GET" action="/perpustakaan" class="mb-12" x-data="{
     menuOpen: null,
     toggle(menu) { this.menuOpen = this.menuOpen === menu ? null : menu }
 }">
@@ -29,33 +29,32 @@
         <div class="relative flex-1">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search..."
                 class="w-full bg-[#d6c7be] rounded-full py-4 px-12 outline-none text-lg">
-            <div class="absolute left-5 top-4 opacity-50">🔍</div>
+            <div class="absolute left-5 top-4 opacity-50"></div>
         </div>
 
         <button type="button" @click="filterOpen = !filterOpen"
             class="bg-[#4b3b3b] text-white px-8 py-4 rounded-full flex items-center gap-2 font-bold hover:bg-[#3a2e2e] transition">
-            <span>📖</span> Filter
+            <span></span> Filter
         </button>
     </div>
 
-    {{-- FIGMA FLOATING FILTER CARD --}}
     <div x-show="filterOpen" x-transition x-cloak
         class="absolute z-20 mt-4 bg-[#e6ddd6] p-8 rounded-[2.5rem] shadow-2xl border-8 border-[#f2e9e4] w-full max-w-4xl">
-        
+
         <div class="flex flex-wrap gap-3 items-center">
             {{-- GENRES DROPDOWN --}}
             <div class="relative">
-                <button type="button" @click="toggle('genres')" 
+                <button type="button" @click="toggle('genres')"
                     class="bg-[#5a3e3e] text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2">
                     Genres <span :class="menuOpen === 'genres' ? 'rotate-180' : ''" class="transition-transform">▼</span>
                 </button>
-                <div x-show="menuOpen === 'genres'" @click.away="menuOpen = null" 
+                <div x-show="menuOpen === 'genres'" @click.away="menuOpen = null"
                     class="absolute z-30 mt-2 bg-[#5a3e3e] p-6 rounded-3xl shadow-xl w-[500px]">
                     <h4 class="text-white font-bold mb-4">Genre</h4>
                     <div class="grid grid-cols-3 gap-y-3 gap-x-4">
                         @foreach($genres as $g)
                         <label class="flex items-center gap-2 text-white text-sm cursor-pointer">
-                            <input type="checkbox" name="genre_ids[]" value="{{ $g->id }}" 
+                            <input type="checkbox" name="genre_ids[]" value="{{ $g->id }}"
                                 {{ is_array(request('genre_ids')) && in_array($g->id, request('genre_ids')) ? 'checked' : '' }}
                                 class="w-5 h-5 rounded border-none bg-white checked:bg-[#d9c2a3] focus:ring-0">
                             {{ $g->name }}
@@ -67,11 +66,11 @@
 
             {{-- TIPE DROPDOWN --}}
             <div class="relative">
-                <button type="button" @click="toggle('types')" 
+                <button type="button" @click="toggle('types')"
                     class="bg-[#5a3e3e] text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2">
                     Tipe <span :class="menuOpen === 'types' ? 'rotate-180' : ''" class="transition-transform">▼</span>
                 </button>
-                <div x-show="menuOpen === 'types'" @click.away="menuOpen = null" 
+                <div x-show="menuOpen === 'types'" @click.away="menuOpen = null"
                     class="absolute z-30 mt-2 bg-[#5a3e3e] p-6 rounded-3xl shadow-xl w-64">
                     <h4 class="text-white font-bold mb-4">Type</h4>
                     <div class="space-y-3">
@@ -89,11 +88,11 @@
 
             {{-- DEMOGRAFIS DROPDOWN --}}
             <div class="relative">
-                <button type="button" @click="toggle('demo')" 
+                <button type="button" @click="toggle('demo')"
                     class="bg-[#5a3e3e] text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2">
                     Demografis <span :class="menuOpen === 'demo' ? 'rotate-180' : ''" class="transition-transform">▼</span>
                 </button>
-                <div x-show="menuOpen === 'demo'" @click.away="menuOpen = null" 
+                <div x-show="menuOpen === 'demo'" @click.away="menuOpen = null"
                     class="absolute z-30 mt-2 bg-[#5a3e3e] p-6 rounded-3xl shadow-xl w-64">
                     <h4 class="text-white font-bold mb-4">Demografis</h4>
                     <div class="space-y-3">
@@ -110,25 +109,25 @@
 
             {{-- PENGARANG (Search) --}}
             <div class="relative">
-                <button type="button" @click="toggle('author')" 
+                <button type="button" @click="toggle('author')"
                     class="bg-[#5a3e3e] text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2">
                     Pengarang <span :class="menuOpen === 'author' ? 'rotate-180' : ''" class="transition-transform">▼</span>
                 </button>
-                <div x-show="menuOpen === 'author'" @click.away="menuOpen = null" 
+                <div x-show="menuOpen === 'author'" @click.away="menuOpen = null"
                     class="absolute z-30 mt-2 bg-[#5a3e3e] p-6 rounded-3xl shadow-xl w-80">
                     <h4 class="text-white font-bold mb-4">Pengarang</h4>
-                    <input type="text" name="author" placeholder="Cari..." 
+                    <input type="text" name="author" placeholder="Cari..."
                         class="w-full p-2 rounded-xl bg-[#f2e9e4] text-[#4b3b3b] outline-none">
                 </div>
             </div>
 
             {{-- TAHUN RILIS --}}
             <div class="relative">
-                <button type="button" @click="toggle('year')" 
+                <button type="button" @click="toggle('year')"
                     class="bg-[#5a3e3e] text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2">
                     Tahun Rilis <span :class="menuOpen === 'year' ? 'rotate-180' : ''" class="transition-transform">▼</span>
                 </button>
-                <div x-show="menuOpen === 'year'" @click.away="menuOpen = null" 
+                <div x-show="menuOpen === 'year'" @click.away="menuOpen = null"
                     class="absolute z-30 mt-2 bg-[#5a3e3e] p-6 rounded-3xl shadow-xl w-80">
                     <h4 class="text-white font-bold mb-4">Tahun Rilis</h4>
                     <div class="flex gap-2">
@@ -150,7 +149,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 </a>
                 <button type="submit" class="bg-[#4b3b3b] text-white px-8 py-4 rounded-2xl font-bold flex items-center gap-2 hover:bg-[#3a2e2e] transition">
-                    📖 Terapkan
+                    Terapkan
                 </button>
             </div>
         </div>

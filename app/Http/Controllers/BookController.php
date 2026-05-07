@@ -12,11 +12,8 @@ use App\Models\Year;
 
 class BookController extends Controller
 {
-    private $genres = ['Novel', 'Komik', 'Edukasi', 'Sejarah', 'Teknologi', 'Bisnis', 'Kesehatan', 'Sains', 'Biografi', 'Makanan'];
-
-    public function index(Request $request)
+        public function index(Request $request)
     {
-        // Filter books by the foreign IDs instead of strings
         $query = Book::where('user_id', auth()->id())->with(['genres', 'type', 'year']);
 
         if ($request->genre_id) {
@@ -27,13 +24,18 @@ class BookController extends Controller
             $query->where('type_id', $request->type_id);
         }
 
-        // Pass all metadata to the view for the filter dropdowns
+        $myLoans = \App\Models\Loan::where('borrower_id', auth()->id())
+            ->whereIn('status', ['pending', 'dipinjam'])
+            ->with('book')
+            ->get();
+
         return view('koleksi', [
-            'books' => $query->get(),
-            'genres' => Genre::all(),
-            'types' => Type::all(),
-            'years' => Year::all(),
-            'demographics' => Demographic::all()
+            'books'      => $query->get(),
+            'genres'     => Genre::all(),
+            'types'      => Type::all(),
+            'years'      => Year::all(),
+            'demographics' => Demographic::all(),
+            'myLoans'    => $myLoans,
         ]);
     }
 
@@ -70,7 +72,7 @@ class BookController extends Controller
         return redirect('/koleksi');
     }
 
-    public function home(Request $request = null)
+        public function home(Request $request = null)
     {
         $query = auth()->check()
             ? Book::where('user_id', auth()->id())
@@ -82,8 +84,9 @@ class BookController extends Controller
 
         $books = $query->take(4)->get();
         $discussions = Discussion::latest()->take(5)->get();
+        $totalBooks = Book::count();
 
-        return view('home', compact('books', 'discussions'));
+        return view('home', compact('books', 'discussions', 'totalBooks'));
     }
 
     public function show($id)

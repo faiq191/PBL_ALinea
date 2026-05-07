@@ -19,15 +19,20 @@
         {{ $book->author }}
     </p>
 
-    <form action="/books/{{ $book->id }}" method="POST" class="mt-4">
-    @csrf
-    @method('DELETE')
+    @auth
+        @if(auth()->id() === $book->user_id)
+            <form action="/books/{{ $book->id }}" method="POST" class="mt-4">
+                @csrf
+                @method('DELETE')
 
-    <button
-        onclick="return confirm('Yakin mau hapus buku ini?')"
-        class="bg-red-500 text-white px-4 py-2 rounded">
-        Hapus
-    </button>
+                <button
+                    onclick="return confirm('Yakin mau hapus buku ini?')"
+                    class="bg-red-500 text-white px-4 py-2 rounded">
+                    Hapus
+                </button>
+            </form>
+        @endif
+    @endauth
 </form>
     <a href="/"
         class="inline-block mt-6 bg-[#5a3e3e] text-white px-4 py-2 rounded">

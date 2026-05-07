@@ -7,6 +7,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\PerpustakaanController;
+use App\Http\Controllers\LoanController;
 
 
 //Keter
@@ -104,3 +105,11 @@ Route::delete('/books/{id}', [BookController::class, 'destroy'])->middleware('au
 //Route Perpustakaan
 
 Route::get('/perpustakaan', [PerpustakaanController::class, 'index']);
+
+// Pinjam
+Route::middleware('auth')->group(function () {
+    Route::post('/loans/{book}', [LoanController::class, 'store']);
+    Route::patch('/loans/{loan}/status', [LoanController::class, 'updateStatus']);
+    Route::get('/loans/my', [LoanController::class, 'myLoans']);
+    Route::get('/loans/incoming', [LoanController::class, 'incomingRequests']);
+});
