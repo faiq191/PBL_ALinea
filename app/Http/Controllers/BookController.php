@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
-use App\Models\Discussion;
 use App\Models\Genre;
 use App\Models\Type;
-use App\Models\Demographic;
 use App\Models\Year;
+use App\Models\Demographic;
+use App\Models\Discussion;
+use App\Models\Loan;
 
 class BookController extends Controller
 {
-        public function index(Request $request)
+    public function index(Request $request)
     {
         $query = Book::where('user_id', auth()->id())->with(['genres', 'type', 'year']);
 
@@ -24,74 +25,83 @@ class BookController extends Controller
             $query->where('type_id', $request->type_id);
         }
 
-        $myLoans = \App\Models\Loan::where('borrower_id', auth()->id())
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('author', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $myLoans = Loan::where('borrower_id', auth()->id())
             ->whereIn('status', ['pending', 'dipinjam'])
             ->with('book')
             ->get();
 
         return view('koleksi', [
-            'books'      => $query->get(),
-            'genres'     => Genre::all(),
-            'types'      => Type::all(),
-            'years'      => Year::all(),
+            'books'        => $query->get(),
+            'genres'       => Genre::all(),
+            'types'        => Type::all(),
+            'years'        => Year::all(),
             'demographics' => Demographic::all(),
-            'myLoans'    => $myLoans,
+            'myLoans'      => $myLoans,
         ]);
     }
 
     public function create()
     {
-        $genres = \App\Models\Genre::all();
-        $types = \App\Models\Type::all();
-        $demographics = \App\Models\Demographic::all();
-        $years = \App\Models\Year::all();
-
-        return view('books.create', compact('genres', 'types', 'demographics', 'years'));
+        return view('books.create', [
+            'genres'       => Genre::all(),
+            'types'        => Type::all(),
+            'years'        => Year::all(),
+            'demographics' => Demographic::all(),
+        ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'title'  => 'required',
             'author' => 'required',
-            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'image'  => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         $imagePath = $request->file('image')->store('books', 'public');
 
         Book::create([
-            'title' => $request->title,
-            'author' => $request->author,
-            'image' => $imagePath,
-            'user_id' => auth()->id(),
-            'type_id' => $request->type_id,
-            'year_id' => $request->year_id,
+            'title'          => $request->title,
+            'author'         => $request->author,
+            'image'          => $imagePath,
+            'user_id'        => auth()->id(),
+            'type_id'        => $request->type_id,
+            'year_id'        => $request->year_id,
             'demographic_id' => $request->demographic_id,
-        ])->genres()->attach($request->genre_ids); // For many-to-many genres
+            'description'    => $request->description,
+        ])->genres()->attach($request->genre_ids);
 
         return redirect('/koleksi');
     }
 
-        public function home(Request $request = null)
+    public function home(Request $request = null)
     {
         $query = auth()->check()
-            ? Book::where('user_id', auth()->id())
-            : Book::query();
+            ? Book::where('user_id', auth()->id())->with('genres')
+            : Book::with('genres');
 
         if ($request && $request->genre_id) {
             $query->whereHas('genres', fn($q) => $q->where('genres.id', $request->genre_id));
         }
 
-        $books = $query->take(4)->get();
+        $books       = $query->take(4)->get();
         $discussions = Discussion::latest()->take(5)->get();
-        $totalBooks = Book::count();
+        $totalBooks  = Book::count();
+        $myBooks     = auth()->check() ? Book::where('user_id', auth()->id())->count() : 0;
 
-        return view('home', compact('books', 'discussions', 'totalBooks'));
+        return view('home', compact('books', 'discussions', 'totalBooks', 'myBooks'));
     }
 
     public function show($id)
     {
-        $book = Book::findOrFail($id);
+        $book = Book::with(['genres', 'type', 'year', 'demographic', 'user'])->findOrFail($id);
         return view('books.show', compact('book'));
     }
 
@@ -103,20 +113,21 @@ class BookController extends Controller
             abort(403);
         }
 
-        $genres = Genre::all();
-        $types = Type::all();
-        $demographics = Demographic::all();
-        $years = Year::all();
-
-        return view('books.edit', compact('book', 'genres', 'types', 'demographics', 'years'));
+        return view('books.edit', [
+            'book'         => $book,
+            'genres'       => Genre::all(),
+            'types'        => Type::all(),
+            'years'        => Year::all(),
+            'demographics' => Demographic::all(),
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'title' => 'required',
+            'title'  => 'required',
             'author' => 'required',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         $book = Book::findOrFail($id);
@@ -126,11 +137,12 @@ class BookController extends Controller
         }
 
         $data = [
-            'title' => $request->title,
-            'author' => $request->author,
-            'type_id' => $request->type_id,
-            'year_id' => $request->year_id,
+            'title'          => $request->title,
+            'author'         => $request->author,
+            'type_id'        => $request->type_id,
+            'year_id'        => $request->year_id,
             'demographic_id' => $request->demographic_id,
+            'description'    => $request->description,
         ];
 
         if ($request->hasFile('image')) {
@@ -141,7 +153,8 @@ class BookController extends Controller
         }
 
         $book->update($data);
-        $book->genres()->sync($request->genre_ids);
+        $book->genres()->sync($request->genre_ids ?? []);
+
         return redirect('/koleksi');
     }
 
@@ -149,11 +162,17 @@ class BookController extends Controller
     {
         $book = Book::findOrFail($id);
 
+        if ($book->user_id !== auth()->id() && !auth()->user()->is_admin) {
+            abort(403);
+        }
+
         if ($book->image && file_exists(public_path('storage/' . $book->image))) {
             unlink(public_path('storage/' . $book->image));
         }
 
+        $book->genres()->detach();
         $book->delete();
+
         return back();
     }
 }
