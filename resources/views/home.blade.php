@@ -214,7 +214,7 @@
                     :image="$book->image"
                     :title="$book->title"
                     :author="$book->author"
-                    :genre="$book->genre"
+                    :genre="$book->genres->map(fn($g) => '<span class=\'bg-[#4b3b3b] text-white text-[10px] px-3 py-1 rounded-full mr-1\'>' . $g->name . '</span>')->join('')"
                     :show-atur="auth()->check() && $book->user_id === auth()->id()"
                 />
             @empty

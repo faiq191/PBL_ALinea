@@ -10,48 +10,44 @@ class DiscussionController extends Controller
 {
     public function index(Request $request)
     {
-        $genres = ['Drama', 'Fantasi', 'Romansa', 'Misteri', 'Komedi', 'Horor', 'Sejarah', 'Sains'];
-
-        $query = Discussion::withCount('comments');
-
-        if ($request->genre) {
-            $query->where('genre', $request->genre);
-        }
+        $query = Discussion::with('user')->latest();
 
         if ($request->search) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
 
-        if ($request->sort == 'terpopuler') {
-            $query->orderBy('comments_count', 'desc');
-        } else {
-            $query->latest();
+        if ($request->genre) {
+            $query->where('genre', $request->genre);
         }
 
         $discussions = $query->get();
+
+        // Ambil semua genre unik dari diskusi yang ada
+        $genres = Discussion::whereNotNull('genre')
+            ->distinct()
+            ->pluck('genre');
 
         return view('komunitas', compact('discussions', 'genres'));
     }
 
     public function create()
     {
-        $genres = ['Drama', 'Fantasi', 'Romansa', 'Misteri', 'Komedi', 'Horor', 'Sejarah', 'Sains'];
-        return view('discussions.create', compact('genres'));
+        return view('discussions.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
-            'genre' => 'nullable',
+            'title'    => 'required',
+            'genre'    => 'nullable',
             'category' => 'nullable',
         ]);
 
         Discussion::create([
-            'title' => $request->title,
-            'genre' => $request->genre,
+            'title'    => $request->title,
+            'genre'    => $request->genre,
             'category' => $request->category,
-            'user_id' => auth()->id(),
+            'user_id'  => auth()->id(),
         ]);
 
         return redirect('/komunitas');
@@ -71,15 +67,10 @@ class DiscussionController extends Controller
 
         Comment::create([
             'discussion_id' => $id,
-            'user_id' => auth()->id(),
-            'content' => $request->content
+            'user_id'       => auth()->id(),
+            'content'       => $request->content,
         ]);
 
         return back();
-    }
-
-        public function user()
-    {
-        return $this->belongsTo(User::class);
     }
 }
