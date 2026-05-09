@@ -8,22 +8,18 @@ use Illuminate\Http\Request;
 
 class LoanController extends Controller
 {
-    // User minta pinjam buku
     public function store($bookId)
     {
         $book = Book::findOrFail($bookId);
 
-        // Tidak bisa pinjam buku sendiri
         if ($book->user_id === auth()->id()) {
             return back()->with('error', 'Tidak bisa meminjam buku sendiri.');
         }
 
-        // Cek apakah buku sedang dipinjam
         if (!$book->isAvailable()) {
             return back()->with('error', 'Buku sedang tidak tersedia.');
         }
 
-        // Cek apakah user sudah pernah request buku ini
         $exists = Loan::where('book_id', $bookId)
             ->where('borrower_id', auth()->id())
             ->whereIn('status', ['pending', 'dipinjam'])
@@ -43,7 +39,6 @@ class LoanController extends Controller
         return back()->with('success', 'Permintaan peminjaman dikirim.');
     }
 
-    // Pemilik buku approve/tolak
     public function updateStatus(Request $request, $loanId)
     {
         $loan = Loan::findOrFail($loanId);
@@ -53,7 +48,7 @@ class LoanController extends Controller
         }
 
         $loan->update([
-            'status'      => $request->status, // 'dipinjam' atau 'dikembalikan'
+            'status'      => $request->status,
             'borrowed_at' => $request->status === 'dipinjam' ? now() : $loan->borrowed_at,
             'returned_at' => $request->status === 'dikembalikan' ? now() : null,
         ]);
@@ -61,7 +56,23 @@ class LoanController extends Controller
         return back()->with('success', 'Status diperbarui.');
     }
 
-    // Halaman daftar peminjaman milik user (sebagai peminjam)
+    // FUNGSI BARU: Untuk mengembalikan buku
+    public function returnBook($loanId)
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        if ($loan->borrower_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $loan->update([
+            'status'      => 'dikembalikan',
+            'returned_at' => now(),
+        ]);
+
+        return back()->with('success', 'Buku telah dikembalikan.');
+    }
+
     public function myLoans()
     {
         $loans = Loan::where('borrower_id', auth()->id())
@@ -72,7 +83,6 @@ class LoanController extends Controller
         return view('loans.my_loans', compact('loans'));
     }
 
-    // Halaman permintaan masuk (sebagai pemilik buku)
     public function incomingRequests()
     {
         $loans = Loan::where('owner_id', auth()->id())

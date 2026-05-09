@@ -28,17 +28,25 @@ class BookController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('author', 'like', '%' . $request->search . '%');
+                    ->orWhere('author', 'like', '%' . $request->search . '%');
             });
         }
 
+        // Buku yang sedang kita pinjam dari orang lain
         $myLoans = Loan::where('borrower_id', auth()->id())
             ->whereIn('status', ['pending', 'dipinjam'])
             ->with('book')
             ->get();
 
+        // Permintaan pinjam yang masuk ke kita
         $incomingRequests = Loan::where('owner_id', auth()->id())
             ->where('status', 'pending')
+            ->with(['book', 'borrower'])
+            ->get();
+
+        // Buku milik kita yang sedang dipinjam orang lain (status 'dipinjam')
+        $lentBooks = Loan::where('owner_id', auth()->id())
+            ->where('status', 'dipinjam')
             ->with(['book', 'borrower'])
             ->get();
 
@@ -50,6 +58,7 @@ class BookController extends Controller
             'demographics'     => Demographic::all(),
             'myLoans'          => $myLoans,
             'incomingRequests' => $incomingRequests,
+            'lentBooks'        => $lentBooks,
         ]);
     }
 
@@ -72,13 +81,13 @@ class BookController extends Controller
     {
         if ($request->source_mode === 'existing') {
             $existingBook = Book::with('genres')->findOrFail($request->existing_book_id);
-            
+
             $newBook = $existingBook->replicate();
             $newBook->user_id = auth()->id();
             $newBook->save();
-            
+
             $newBook->genres()->sync($existingBook->genres->pluck('id'));
-            
+
             return redirect('/koleksi');
         }
 
