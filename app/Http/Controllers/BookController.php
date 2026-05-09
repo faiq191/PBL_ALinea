@@ -37,13 +37,19 @@ class BookController extends Controller
             ->with('book')
             ->get();
 
+        $incomingRequests = Loan::where('owner_id', auth()->id())
+            ->where('status', 'pending')
+            ->with(['book', 'borrower'])
+            ->get();
+
         return view('koleksi', [
-            'books'        => $query->get(),
-            'genres'       => Genre::all(),
-            'types'        => Type::all(),
-            'years'        => Year::all(),
-            'demographics' => Demographic::all(),
-            'myLoans'      => $myLoans,
+            'books'            => $query->get(),
+            'genres'           => Genre::all(),
+            'types'            => Type::all(),
+            'years'            => Year::all(),
+            'demographics'     => Demographic::all(),
+            'myLoans'          => $myLoans,
+            'incomingRequests' => $incomingRequests,
         ]);
     }
 
@@ -119,7 +125,14 @@ class BookController extends Controller
     public function show($id)
     {
         $book = Book::with(['genres', 'type', 'year', 'demographic', 'user'])->findOrFail($id);
-        return view('books.show', compact('book'));
+
+        $otherOwners = Book::where('title', $book->title)
+            ->where('author', $book->author)
+            ->where('user_id', '!=', auth()->id())
+            ->with('user')
+            ->get();
+
+        return view('books.show', compact('book', 'otherOwners'));
     }
 
     public function edit($id)

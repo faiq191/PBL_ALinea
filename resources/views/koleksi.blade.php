@@ -6,7 +6,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -28,7 +30,6 @@
                 </div>
                 <p class="text-sm text-gray-500 mb-6">Koleksi buku anda</p>
 
-                {{-- Search & Filter --}}
                 <form method="GET" action="/koleksi">
                     <div class="flex items-center gap-3 mb-6">
                         <input type="text" name="search" value="{{ request('search') }}"
@@ -40,7 +41,6 @@
                             Cari
                         </button>
 
-                        {{-- Filter Modal --}}
                         <div x-data="{ open: false }">
                             <button type="button" @click="open = true"
                                 class="bg-[#5a3e3e] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#4a3333] transition flex items-center gap-2">
@@ -60,8 +60,10 @@
 
                                     <div class="space-y-4">
                                         <div>
-                                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Genre</label>
-                                            <select name="genre_id" class="w-full p-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#5a3e3e]">
+                                            <label
+                                                class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Genre</label>
+                                            <select name="genre_id"
+                                                class="w-full p-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#5a3e3e]">
                                                 <option value="">Semua Genre</option>
                                                 @foreach ($genres as $genre)
                                                     <option value="{{ $genre->id }}" {{ request('genre_id') == $genre->id ? 'selected' : '' }}>
@@ -72,8 +74,10 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Tipe</label>
-                                            <select name="type_id" class="w-full p-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#5a3e3e]">
+                                            <label
+                                                class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Tipe</label>
+                                            <select name="type_id"
+                                                class="w-full p-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#5a3e3e]">
                                                 <option value="">Semua Tipe</option>
                                                 @foreach ($types as $type)
                                                     <option value="{{ $type->id }}" {{ request('type_id') == $type->id ? 'selected' : '' }}>
@@ -84,8 +88,10 @@
                                         </div>
 
                                         <div>
-                                            <label class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Tahun</label>
-                                            <select name="year_id" class="w-full p-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#5a3e3e]">
+                                            <label
+                                                class="block text-xs font-semibold text-gray-500 mb-1 uppercase tracking-wide">Tahun</label>
+                                            <select name="year_id"
+                                                class="w-full p-2 border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#5a3e3e]">
                                                 <option value="">Semua Tahun</option>
                                                 @foreach ($years as $year)
                                                     <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
@@ -115,16 +121,10 @@
                 <div class="grid grid-cols-4 gap-6">
                     @isset($books)
                         @forelse ($books as $book)
-                            <x-book-card
-                                :id="$book->id"
-                                :image="$book->image"
-                                :title="$book->title"
-                                :author="$book->author"
+                            <x-book-card :id="$book->id" :image="$book->image" :title="$book->title" :author="$book->author"
                                 :genre="$book->genres->map(fn($g) => '<span class=\'bg-[#4b3b3b] text-white text-[10px] px-3 py-1 rounded-full mr-1\'>' . $g->name . '</span>')->join('')"
-                                :show-atur="auth()->check() && $book->user_id === auth()->id()"
-                                :owner-id="$book->user_id"
-                                :is-available="$book->isAvailable()"
-                            />
+                                :show-atur="auth()->check() && $book->user_id === auth()->id()" :owner-id="$book->user_id"
+                                :is-available="$book->isAvailable()" />
                         @empty
                             <div class="col-span-4 flex flex-col items-center justify-center py-16 text-center">
                                 <i data-lucide="book-open" class="w-12 h-12 text-[#c9ae8e] mb-3"></i>
@@ -140,15 +140,63 @@
             </div>
 
             <div class="bg-[#e6ddd6] rounded-2xl p-8">
+                <h1 class="text-xl font-semibold text-[#4b3b3b] mb-1">Permintaan Pinjaman Masuk</h1>
+                <p class="text-sm text-gray-500 mb-6">Orang yang ingin meminjam buku koleksimu</p>
 
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @forelse($incomingRequests ?? [] as $request)
+                        <div class="bg-white p-4 rounded-xl shadow-sm flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <img src="{{ asset('storage/' . $request->book->image) }}"
+                                    class="w-12 h-16 object-cover rounded-lg">
+                                <div>
+                                    <p class="font-bold text-[#2c2c2c] text-sm">{{ $request->book->title }}</p>
+                                    <p class="text-xs text-[#5a3e3e]">Peminjam: <span
+                                            class="font-bold">{{ $request->borrower->name }}</span></p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                {{-- Tombol Setujui --}}
+                                <form action="/loans/{{ $request->id }}/status" method="POST">
+                                    @csrf
+                                    @method('PATCH') {{-- Tambahkan baris ini --}}
+                                    <input type="hidden" name="status" value="dipinjam">
+                                    <button
+                                        class="bg-green-600 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-green-700">
+                                        Setujui
+                                    </button>
+                                </form>
+
+                                {{-- Tombol Tolak --}}
+                                <form action="/loans/{{ $request->id }}/status" method="POST">
+                                    @csrf
+                                    @method('PATCH') {{-- Tambahkan baris ini --}}
+                                    <input type="hidden" name="status" value="ditolak">
+                                    <button
+                                        class="bg-red-500 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-red-600">
+                                        Tolak
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-2 text-center py-10">
+                            <p class="text-gray-500 text-sm">Tidak ada permintaan pinjaman saat ini.</p>
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="bg-[#e6ddd6] rounded-2xl p-8">
                 <h1 class="text-xl font-semibold text-[#4b3b3b] mb-1">Buku Dipinjam</h1>
                 <p class="text-sm text-gray-500 mb-6">Buku yang sedang kamu pinjam</p>
 
                 <div class="grid grid-cols-4 gap-6">
                     @forelse($myLoans ?? [] as $loan)
-                        <div class="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition duration-300 flex flex-col">
-                            <img src="{{ asset('storage/' . $loan->book->image) }}"
-                                class="w-full h-48 object-cover">
+                        <div
+                            class="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition duration-300 flex flex-col">
+                            <img src="{{ asset('storage/' . $loan->book->image) }}" class="w-full h-48 object-cover">
                             <div class="p-4 flex flex-col flex-1">
                                 <p class="font-semibold text-sm text-[#2c2c2c] leading-snug">
                                     {{ $loan->book->title }}
@@ -159,10 +207,10 @@
 
                                 <div class="mt-3 flex items-center justify-between">
                                     <span class="text-xs px-3 py-1 rounded-full font-medium
-                                        @if($loan->status === 'pending') bg-yellow-100 text-yellow-700
-                                        @elseif($loan->status === 'dipinjam') bg-green-100 text-green-700
-                                        @else bg-gray-100 text-gray-500
-                                        @endif">
+                                            @if($loan->status === 'pending') bg-yellow-100 text-yellow-700
+                                            @elseif($loan->status === 'dipinjam') bg-green-100 text-green-700
+                                            @else bg-gray-100 text-gray-500
+                                            @endif">
                                         {{ ucfirst($loan->status) }}
                                     </span>
 
@@ -182,7 +230,6 @@
                         </div>
                     @endforelse
                 </div>
-
             </div>
 
         </div>
