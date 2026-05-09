@@ -8,7 +8,7 @@
 
 <div class="max-w-2xl mx-auto bg-[#e6ddd6] rounded-3xl p-8 shadow-xl">
     <h1 class="text-2xl font-bold text-[#4b3b3b] mb-2">Tambah Buku Baru</h1>
-    <p class="text-sm text-gray-500 mb-8">Lengkapi detail buku untuk koleksi Ali.nea</p>
+    <p class="text-sm text-gray-500 mb-8">Lengkapi detail buku untuk koleksi Alinea</p>
 
     <form action="/books" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
