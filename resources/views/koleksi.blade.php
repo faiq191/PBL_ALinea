@@ -176,7 +176,7 @@
             </div>
 
             <div class="bg-[#e6ddd6] rounded-2xl p-8 shadow-xl">
-                <h1 class="text-xl font-semibold text-[#4b3b3b] mb-1">Buku Koleksiku yang Dipinjam</h1>
+                <h1 class="text-xl font-semibold text-[#4b3b3b] mb-1">Buku Koleksi yang Dipinjam</h1>
                 <p class="text-sm text-gray-500 mb-6">Daftar buku kamu yang sedang dibawa orang lain</p>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -204,7 +204,7 @@
             </div>
 
             <div class="bg-[#e6ddd6] rounded-2xl p-8 shadow-xl">
-                <h1 class="text-xl font-semibold text-[#4b3b3b] mb-1">Buku yang Sedang Aku Pinjam</h1>
+                <h1 class="text-xl font-semibold text-[#4b3b3b] mb-1">Buku yang Sedang Kamu Pinjam</h1>
                 <p class="text-sm text-gray-500 mb-6">Buku yang kamu pinjam dari koleksi teman</p>
 
                 <div class="grid grid-cols-4 gap-6">
