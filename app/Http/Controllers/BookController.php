@@ -49,16 +49,33 @@ class BookController extends Controller
 
     public function create()
     {
+        $allLibraryBooks = Book::all()->unique(function ($book) {
+            return $book->title . $book->author;
+        });
+
         return view('books.create', [
-            'genres'       => Genre::all(),
-            'types'        => Type::all(),
-            'years'        => Year::all(),
-            'demographics' => Demographic::all(),
+            'genres'           => Genre::all(),
+            'types'            => Type::all(),
+            'years'            => Year::all(),
+            'demographics'     => Demographic::all(),
+            'allLibraryBooks'  => $allLibraryBooks,
         ]);
     }
 
     public function store(Request $request)
     {
+        if ($request->source_mode === 'existing') {
+            $existingBook = Book::with('genres')->findOrFail($request->existing_book_id);
+            
+            $newBook = $existingBook->replicate();
+            $newBook->user_id = auth()->id();
+            $newBook->save();
+            
+            $newBook->genres()->sync($existingBook->genres->pluck('id'));
+            
+            return redirect('/koleksi');
+        }
+
         $request->validate([
             'title'  => 'required',
             'author' => 'required',
