@@ -37,9 +37,14 @@
         </a>
 
         @if($isGoogleApi)
-            <a href="/books/create" class="flex-1 bg-[#5a3e3e] text-white py-2 rounded-lg text-sm text-center hover:bg-[#4a3333] transition">
-                Simpan
-            </a>
+            <form action="/books" method="POST" class="flex-1 flex">
+                @csrf
+                <input type="hidden" name="source_mode" value="google">
+                <input type="hidden" name="google_volume_id" value="{{ $id }}">
+                <button type="submit" class="w-full bg-[#5a3e3e] text-white py-2 rounded-lg text-sm text-center hover:bg-[#4a3333] transition cursor-pointer">
+                    Simpan
+                </button>
+            </form>
         @else
             @if($showAtur)
                 <a href="/books/{{ $id }}/edit"

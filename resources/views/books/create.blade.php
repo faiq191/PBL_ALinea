@@ -122,7 +122,7 @@
                     </div>
                 </div>
 
-                <div x-show="mode === 'manual' || mode === 'google'" x-transition class="space-y-6">
+                <div x-show="mode === 'manual'" x-transition class="space-y-6">
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-bold text-[#4b3b3b] mb-2">Tipe</label>
