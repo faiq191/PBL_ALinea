@@ -29,7 +29,7 @@
     <div class="flex-1"></div>
 
     <div class="flex gap-2 mt-3">
-        <a href="/books/{{ $id }}"
+        <a href="/books/{{ $id }}?from={{ request()->is('perpustakaan') ? 'perpustakaan' : 'koleksi' }}"
             class="flex-1 bg-gray-200 py-2 rounded-lg text-sm text-center hover:bg-gray-300 transition">
             Lihat
         </a>

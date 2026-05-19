@@ -79,11 +79,11 @@
                 </div>
 
                 <div class="flex flex-wrap gap-4 mt-8 pt-6 border-t border-[#4b3b3b]/20">
-                    <a href="/koleksi" class="inline-flex items-center bg-gray-400 hover:bg-gray-500 text-white font-bold px-6 py-2.5 rounded-xl shadow">
+                    <a href="{{ request('from') === 'perpustakaan' ? '/perpustakaan' : '/koleksi' }}" class="inline-flex items-center bg-gray-400 hover:bg-gray-500 text-white font-bold px-6 py-2.5 rounded-xl shadow">
                         ← Kembali
                     </a>
                     @auth
-                        @if(auth()->id() === $book->user_id || auth()->user()->is_admin)
+                        @if((auth()->id() === $book->user_id || auth()->user()->is_admin) && request('from') !== 'perpustakaan')
                             <a href="/books/{{ $book->id }}/edit" class="bg-[#5a3e3e] text-white font-bold px-6 py-2.5 rounded-xl shadow">
                                 Edit Buku
                             </a>
