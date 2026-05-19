@@ -34,6 +34,7 @@ Route::post('/logout', function () {
 Route::middleware('auth')->group(function () {
 
     // Koleksi (Books)
+    Route::get('/google-books/search', [BookController::class, 'searchGoogleBooks']);
     Route::get('/koleksi', [BookController::class, 'index']);
     Route::get('/books/create', [BookController::class, 'create']);
     Route::post('/books', [BookController::class, 'store']);
