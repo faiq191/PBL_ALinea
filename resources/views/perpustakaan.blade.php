@@ -134,11 +134,27 @@
                     </div>
                 </form>
 
+<<<<<<< HEAD
                 @if(request()->hasAny(['search', 'genre_ids', 'type_ids', 'demo_ids', 'year_ids']))
                     <div class="grid grid-cols-4 gap-6">
                         @forelse($books as $book)
                             <x-book-card :id="$book->id" :image="$book->image" :title="$book->title" :author="$book->author"
                                 :genre="$book->genres->map(fn($g) => '<span class=\'bg-[#4b3b3b] text-white text-[10px] px-3 py-1 rounded-full mr-1\'>' . $g->name . '</span>')->join('')" />
+=======
+                @if($hasFilters)
+                    <div class="grid grid-cols-4 gap-6">
+                        @forelse($books as $book)
+                            <x-book-card 
+                                :id="$book->id" 
+                                :image="$book->image" 
+                                :title="$book->title" 
+                                :author="$book->author"
+                                :genre="$book->genres->map(fn($g) => '<span class=\'bg-[#4b3b3b] text-white text-[10px] px-3 py-1 rounded-full mr-1\'>' . $g->name . '</span>')->join('')"
+                                :owner-id="$book->user_id"
+                                :is-google-api="$book->is_google_api"
+                                :google-url="$book->google_url ?? '#'"
+                            />
+>>>>>>> google-books-api
                         @empty
                             <div class="col-span-4 flex flex-col items-center justify-center py-16 text-center">
                                 <i data-lucide="search-x" class="w-12 h-12 text-[#c9ae8e] mb-3"></i>
@@ -151,6 +167,7 @@
                         <div class="mb-10 last:mb-0">
                             <div class="flex justify-between items-end mb-4">
                                 <h3 class="text-xl font-bold text-[#4b3b3b]">{{ $genre }}</h3>
+<<<<<<< HEAD
                                 <span class="text-sm text-gray-400">{{ $genreBooks->count() }} buku</span>
                             </div>
                             <hr class="border-[#d6c7be] mb-6">
@@ -158,6 +175,21 @@
                                 @foreach($genreBooks as $book)
                                     <x-book-card :id="$book->id" :image="$book->image" :title="$book->title" :author="$book->author"
                                         :genre="$book->genres->map(fn($g) => '<span class=\'bg-[#4b3b3b] text-white text-[10px] px-3 py-1 rounded-full mr-1\'>' . $g->name . '</span>')->join('')" />
+=======
+                            </div>
+                            <div class="grid grid-cols-4 gap-6">
+                                @foreach($genreBooks as $book)
+                                    <x-book-card 
+                                        :id="$book->id" 
+                                        :image="$book->image" 
+                                        :title="$book->title" 
+                                        :author="$book->author"
+                                        :genre="$book->genres->map(fn($g) => '<span class=\'bg-[#4b3b3b] text-white text-[10px] px-3 py-1 rounded-full mr-1\'>' . $g->name . '</span>')->join('')"
+                                        :owner-id="$book->user_id"
+                                        :is-google-api="$book->is_google_api"
+                                        :google-url="$book->google_url ?? '#'"
+                                    />
+>>>>>>> google-books-api
                                 @endforeach
                             </div>
                         </div>

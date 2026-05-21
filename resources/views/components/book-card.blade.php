@@ -7,11 +7,13 @@
     'showAtur' => false,
     'ownerId' => null,
     'isAvailable' => true,
+    'isGoogleApi' => false,
+    'googleUrl' => '#'
 ])
 
 <div class="bg-white rounded-xl p-4 shadow hover:shadow-xl hover:-translate-y-2 transition duration-300 flex flex-col">
 
-    <img src="{{ asset('storage/' . $image) }}"
+    <img src="{{ \Illuminate\Support\Str::startsWith($image, 'http') ? $image : asset('storage/' . $image) }}"
         class="w-full h-72 object-cover rounded-lg mb-3">
 
     <h4 class="font-semibold text-sm text-[#2c2c2c]">
@@ -34,25 +36,36 @@
             Lihat
         </a>
 
-        @if($showAtur)
-            <a href="/books/{{ $id }}/edit"
-                class="flex-1 bg-[#5a3e3e] text-white py-2 rounded-lg text-sm text-center hover:bg-[#4a3333] transition">
-                Atur
-            </a>
-        @elseif(auth()->check() && $ownerId && auth()->id() !== $ownerId)
-            @if($isAvailable)
-                <form action="/loans/{{ $id }}" method="POST" class="flex-1">
-                    @csrf
-                    <button type="submit"
-                        class="w-full bg-[#5a3e3e] text-white py-2 rounded-lg text-sm hover:bg-[#4a3333] transition">
-                        Pinjam
-                    </button>
-                </form>
-            @else
-                <button disabled
-                    class="flex-1 bg-gray-200 text-gray-400 py-2 rounded-lg text-sm cursor-not-allowed">
-                    Tidak Tersedia
+        @if($isGoogleApi)
+            <form action="/books" method="POST" class="flex-1 flex">
+                @csrf
+                <input type="hidden" name="source_mode" value="google">
+                <input type="hidden" name="google_volume_id" value="{{ $id }}">
+                <button type="submit" class="w-full bg-[#5a3e3e] text-white py-2 rounded-lg text-sm text-center hover:bg-[#4a3333] transition cursor-pointer">
+                    Simpan
                 </button>
+            </form>
+        @else
+            @if($showAtur)
+                <a href="/books/{{ $id }}/edit"
+                    class="flex-1 bg-[#5a3e3e] text-white py-2 rounded-lg text-sm text-center hover:bg-[#4a3333] transition">
+                    Atur
+                </a>
+            @elseif(auth()->check() && $ownerId && auth()->id() !== $ownerId)
+                @if($isAvailable)
+                    <form action="/loans/{{ $id }}" method="POST" class="flex-1">
+                        @csrf
+                        <button type="submit"
+                            class="w-full bg-[#5a3e3e] text-white py-2 rounded-lg text-sm hover:bg-[#4a3333] transition">
+                            Pinjam
+                        </button>
+                    </form>
+                @else
+                    <button disabled
+                        class="flex-1 bg-gray-200 text-gray-400 py-2 rounded-lg text-sm cursor-not-allowed">
+                        Tidak Available
+                    </button>
+                @endif
             @endif
         @endif
     </div>
