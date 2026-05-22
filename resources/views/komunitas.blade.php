@@ -6,18 +6,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-[#2c2c2c]">
+<body class="bg-[#f5f5f5]">
 
     <x-header />
 
     <!-- SEARCH -->
-    <div class="max-w-7xl mx-auto px-6 mb-6">
+    <div class="max-w-9xl mx-auto px-6 mb-6">
         <form method="GET" action="/komunitas">
             <div class="relative">
                 <input type="text"
                     name="search"
                     value="{{ request('search') }}"
-                    class="w-full bg-[#4a4a4a] text-white rounded-full py-3 px-12 focus:outline-none focus:ring-2 focus:ring-[#d9c2a3]"
+                    class="w-full bg-[#4a4a4a] text-white rounded-full py-3 px-12 focus:outline-none focus:ring-2 focus:ring-[#d0e4f5]"
                     placeholder="Cari diskusi atau topik...">
                 <div class="absolute left-4 top-3.5">
                     <img src="Logo/search.png" class="w-5 h-5 opacity-50 invert">
@@ -27,18 +27,18 @@
     </div>
 
     <!-- CONTENT -->
-    <div class="max-w-7xl mx-auto px-6 flex gap-6">
+    <div class="max-w-9xl mx-auto px-6 flex gap-6">
 
         <!-- LEFT -->
-        <div class="flex-[3] bg-[#f2e9e4] p-8 rounded-3xl shadow-lg">
+        <div class="flex-[3] bg-[#ffffff] p-8 rounded-3xl shadow-lg">
 
             <!-- HEADER -->
             <div class="flex items-center gap-4 mb-8">
-                <div class="p-3 bg-[#d9c2a3] rounded-2xl">
+                <div class="p-3 bg-[#d0e4f5] rounded-2xl">
                     <img src="Logo/group.png" class="w-10 h-10">
                 </div>
                 <div>
-                    <h2 class="text-4xl font-bold text-[#2c2c2c]">Komunitas</h2>
+                    <h2 class="text-4xl font-bold text-[#f5f5f5]">Komunitas</h2>
                     <p class="text-[#5c4a36] text-sm">Tempat berbagi pikiran dan inspirasi</p>
                 </div>
             </div>
@@ -47,7 +47,7 @@
 
                 @auth
                     <a href="/diskusi/create"
-                        class="bg-[#5a3e3e] text-white px-6 py-3 rounded-full flex items-center gap-3">
+                        class="bg-[#1a3a5c] text-white px-6 py-3 rounded-full flex items-center gap-3">
                         <img src="Logo/message-square-plus.png" class="w-5 h-5 invert">
                         Buat Diskusi Baru
                     </a>
@@ -70,12 +70,12 @@
             </div>
 
             <div>
-                <h3 class="text-2xl font-bold mb-6 text-[#2c2c2c]">Diskusi Aktif</h3>
+                <h3 class="text-2xl font-bold mb-6 text-[#f5f5f5]">Diskusi Aktif</h3>
 
                 @forelse ($discussions ?? [] as $discussion)
                     <div class="bg-white rounded-2xl p-6 shadow mb-4">
 
-                        <h4 class="text-lg font-bold text-[#2c2c2c]">
+                        <h4 class="text-lg font-bold text-[#f5f5f5]">
                             {{ $discussion->title }}
                         </h4>
 
@@ -120,7 +120,7 @@
 
                 <div x-data="{ open: false }" x-init="open = false">
                     <button type="button" @click="open = true"
-                        class="w-full bg-[#5a3e3e] text-white p-3 rounded-xl flex justify-between items-center">
+                        class="w-full bg-[#1a3a5c] text-white p-3 rounded-xl flex justify-between items-center">
                         {{ request('genre') ? request('genre') : 'Genres' }}
                         <span>▼</span>
                     </button>
@@ -147,7 +147,7 @@
                                     Batal
                                 </button>
                                 <button type="submit"
-                                    class="bg-[#5a3e3e] text-white px-4 py-2 rounded text-sm">
+                                    class="bg-[#1a3a5c] text-white px-4 py-2 rounded text-sm">
                                     Terapkan
                                 </button>
                             </div>
@@ -156,7 +156,7 @@
                 </div>
 
                 @if(request('genre'))
-                    <a href="/komunitas" class="block text-center text-xs text-[#7a5c3e] hover:underline mt-2">
+                    <a href="/komunitas" class="block text-center text-xs text-[#5a7a9c] hover:underline mt-2">
                         Reset Filter
                     </a>
                 @endif

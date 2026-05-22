@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-[#2c2c2c] text-white">
+<body class="bg-[#f5f5f5] text-white">
 
     <x-header />
 
@@ -38,7 +38,7 @@
                     class="w-full border rounded-lg p-3"
                     placeholder="Tulis komentar..."></textarea>
 
-                <button class="mt-2 bg-[#5a3e3e] text-white px-4 py-2 rounded">
+                <button class="mt-2 bg-[#1a3a5c] text-white px-4 py-2 rounded">
                     Kirim Komentar
                 </button>
             </form>
@@ -71,7 +71,7 @@
         </div>
 
         <a href="/komunitas"
-            class="inline-block mt-6 bg-[#5a3e3e] text-white px-4 py-2 rounded">
+            class="inline-block mt-6 bg-[#1a3a5c] text-white px-4 py-2 rounded">
             ← Kembali
         </a>
 

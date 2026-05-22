@@ -97,13 +97,13 @@ class BookController extends Controller
     {
         if ($request->source_mode === 'existing') {
             $existingBook = Book::with('genres')->findOrFail($request->existing_book_id);
-            
+
             $newBook = $existingBook->replicate();
             $newBook->user_id = auth()->id();
             $newBook->save();
-            
+
             $newBook->genres()->sync($existingBook->genres->pluck('id'));
-            
+
             return redirect('/koleksi');
         }
 
@@ -146,7 +146,7 @@ class BookController extends Controller
                     $parts = explode('/', $categoryStr);
                     foreach ($parts as $part) {
                         $cleanStr = trim($part);
-                        
+
                         if (stripos($cleanStr, 'manga') !== false) {
                             $typeName = 'Manga';
                         } elseif (stripos($cleanStr, 'comic') !== false || stripos($cleanStr, 'graphic novel') !== false) {
@@ -219,8 +219,9 @@ class BookController extends Controller
         $discussions = Discussion::latest()->take(5)->get();
         $totalBooks  = Book::count();
         $myBooks     = auth()->check() ? Book::where('user_id', auth()->id())->count() : 0;
+        $genres = \App\Models\Genre::all();
 
-        return view('home', compact('books', 'discussions', 'totalBooks', 'myBooks'));
+        return view('home', compact('books', 'discussions', 'totalBooks', 'myBooks', 'genres'));
     }
 
     public function show($id)
@@ -235,14 +236,14 @@ class BookController extends Controller
             }
 
             $volume = $response->json()['volumeInfo'];
-            
+
             $book = new Book([
                 'id'          => $id,
                 'title'       => $volume['title'] ?? 'Unknown Title',
                 'author'      => isset($volume['authors']) ? implode(', ', $volume['authors']) : 'Unknown Author',
                 'description' => $volume['description'] ?? 'Deskripsi belum tersedia.',
             ]);
-            
+
             $thumbnail = $volume['imageLinks']['thumbnail'] ?? 'books/default.png';
             $book->image = str_replace('http://', 'https://', $thumbnail);
 
@@ -254,7 +255,7 @@ class BookController extends Controller
                     $parts = explode('/', $categoryStr);
                     foreach ($parts as $part) {
                         $cleanStr = trim($part);
-                        
+
                         if (stripos($cleanStr, 'manga') !== false) {
                             $typeName = 'Manga';
                         } elseif (stripos($cleanStr, 'comic') !== false || stripos($cleanStr, 'graphic novel') !== false) {
@@ -285,6 +286,7 @@ class BookController extends Controller
         }
 
         $book = Book::with(['genres', 'type', 'year', 'demographic', 'user'])->findOrFail($id);
+        $books = Book::with(['genres'])->latest()->take(4)->get();
 
         $otherOwners = Book::where('title', $book->title)
             ->where('author', $book->author)

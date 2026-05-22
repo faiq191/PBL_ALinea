@@ -1,163 +1,97 @@
-<nav
-    class="relative w-full h-20 bg-gradient-to-b from-[#6b4a4a] via-[#5a3e3e] to-[#4a3333] backdrop-blur-md text-white px-6 flex items-center justify-center sticky top-0 z-50 shadow-[0_4px_20px_rgba(0,0,0,0.4)] border-b border-[#d9c2a3]/20 overflow-visible">
+<nav class="relative w-full bg-white border-b border-gray-200 text-[#1a3a5c] px-12 flex items-center justify-between sticky top-0 z-50 h-16">
 
-    <div class="absolute inset-0 w-full h-full pointer-events-none">
-        <div
-            class="absolute top-0 -left-[100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-[-30deg] animate-[shimmer_8s_infinite]">
-        </div>
-    </div>
+    {{-- LEFT: Logo --}}
+    <a href="/" class="font-serif font-bold text-xl tracking-tight text-[#1a3a5c] hover:text-[#5a7a9c] transition">
+        ALinea
+    </a>
 
-    <div
-        class="flex items-center gap-4 bg-gradient-to-tr from-black/20 to-white/5 p-2 rounded-2xl border border-white/10 shadow-inner relative z-10">
+    {{-- CENTER: Nav Links --}}
+    <div class="flex items-center gap-8">
 
         <a href="/"
-            class="group flex items-center gap-0 hover:gap-3 px-4 py-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gradient-to-r hover:from-[#fdfcfb] hover:to-[#e2d1c3] hover:text-[#5a3e3e] hover:shadow-[0_0_25px_rgba(217,194,163,0.5)] active:scale-95">
-            <img src="{{ asset('Logo/open-book.png') }}"
-                class="w-6 h-6 invert group-hover:invert-0 transition-all duration-500 group-hover:rotate-[360deg] group-hover:scale-125"
-                alt="Logo">
-            <span
-                class="max-w-0 overflow-hidden font-bold text-lg group-hover:max-w-xs transition-all duration-500 whitespace-nowrap tracking-tight font-serif">
-                ALinea
-            </span>
+            class="text-xs font-bold uppercase tracking-widest transition
+                {{ request()->is('/') ? 'text-[#e84b7a]' : 'text-[#1a3a5c] hover:text-[#5a7a9c]' }}">
+            Beranda
         </a>
 
         <a href="/koleksi"
-            class="group flex items-center gap-0 hover:gap-3 px-4 py-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gradient-to-r hover:from-[#fdfcfb] hover:to-[#e2d1c3] hover:text-[#5a3e3e] hover:shadow-[0_0_20px_rgba(217,194,163,0.4)] active:scale-95">
-            <img src="{{ asset('Logo/bookshelf.png') }}"
-                class="w-6 h-6 invert group-hover:invert-0 transition-all duration-500 group-hover:-translate-y-1"
-                alt="Koleksi">
-            <span
-                class="max-w-0 overflow-hidden font-medium group-hover:max-w-xs transition-all duration-500 whitespace-nowrap font-serif">
-                Koleksi
-            </span>
+            class="text-xs font-bold uppercase tracking-widest transition
+                {{ request()->is('koleksi') ? 'text-[#e84b7a]' : 'text-[#1a3a5c] hover:text-[#5a7a9c]' }}">
+            Koleksi
         </a>
 
         <a href="/komunitas"
-            class="group flex items-center gap-0 hover:gap-3 px-4 py-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gradient-to-r hover:from-[#fdfcfb] hover:to-[#e2d1c3] hover:text-[#5a3e3e] hover:shadow-[0_0_20px_rgba(217,194,163,0.4)] active:scale-95">
-            <img src="{{ asset('Logo/group.png') }}"
-                class="w-6 h-6 invert group-hover:invert-0 transition-all duration-500 group-hover:animate-bounce"
-                alt="Komunitas">
-            <span
-                class="max-w-0 overflow-hidden font-medium group-hover:max-w-xs transition-all duration-500 whitespace-nowrap font-serif">
-                Komunitas
-            </span>
+            class="text-xs font-bold uppercase tracking-widest transition
+                {{ request()->is('komunitas') ? 'text-[#e84b7a]' : 'text-[#1a3a5c] hover:text-[#5a7a9c]' }}">
+            Komunitas
         </a>
 
         <a href="/perpustakaan"
-            class="group flex items-center gap-0 hover:gap-3 px-4 py-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gradient-to-r hover:from-[#fdfcfb] hover:to-[#e2d1c3] hover:text-[#5a3e3e] hover:shadow-[0_0_20px_rgba(217,194,163,0.4)] active:scale-95">
-            <img src="{{ asset('Logo/two-books.png') }}"
-                class="w-6 h-6 invert group-hover:invert-0 transition-all duration-500 group-hover:scale-110 group-hover:-rotate-12"
-                alt="Perpustakaan">
-            <span
-                class="max-w-0 overflow-hidden font-medium group-hover:max-w-xs transition-all duration-500 whitespace-nowrap font-serif">
-                Perpustakaan
-            </span>
+            class="text-xs font-bold uppercase tracking-widest transition
+                {{ request()->is('perpustakaan') ? 'text-[#e84b7a]' : 'text-[#1a3a5c] hover:text-[#5a7a9c]' }}">
+            Perpustakaan
         </a>
 
         <a href="/informasi"
-            class="group flex items-center gap-0 hover:gap-3 px-4 py-2 rounded-xl transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:bg-gradient-to-r hover:from-[#fdfcfb] hover:to-[#e2d1c3] hover:text-[#5a3e3e] hover:shadow-[0_0_20px_rgba(217,194,163,0.4)] active:scale-95">
-            <img src="{{ asset('Logo/info.png') }}"
-                class="w-6 h-6 invert group-hover:invert-0 transition-all duration-500 group-hover:animate-pulse"
-                alt="Informasi">
-            <span
-                class="max-w-0 overflow-hidden font-medium group-hover:max-w-xs transition-all duration-500 whitespace-nowrap font-serif">
-                Informasi
-            </span>
+            class="text-xs font-bold uppercase tracking-widest transition
+                {{ request()->is('informasi') ? 'text-[#e84b7a]' : 'text-[#1a3a5c] hover:text-[#5a7a9c]' }}">
+            Informasi
         </a>
 
     </div>
 
-    {{-- // Profile Avatar with Dropdown Button // --}}
-<div class="absolute right-8 flex items-center">
+    {{-- RIGHT: Auth --}}
+    <div class="flex items-center gap-4">
 
-    @auth
-    <div class="relative group animate-[float_4s_infinite_ease-in-out]">
-
-        <button type="button" onclick="toggleDropdown(event)"
-            class="p-[3px] rounded-full bg-gradient-to-tr from-[#d9c2a3] via-[#f5e6d3] to-[#a68b6d]">
-
-            <div class="p-[2px] rounded-full bg-[#5a3e3e]">
+        @auth
+        <div class="relative">
+            <button type="button" onclick="toggleDropdown(event)" class="flex items-center gap-2">
                 <img
                     src="{{ auth()->user()->profile_photo
                         ? asset('storage/' . auth()->user()->profile_photo)
-                        : 'https://ui-avatars.com/api/?name=' . auth()->user()->name }}"
-                    class="w-12 h-12 rounded-full object-cover">
+                        : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}"
+                    class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#1a3a5c]">
+                    {{ Str::before(auth()->user()->name, ' ') }}
+                </span>
+            </button>
+
+            <div id="profileMenu"
+                class="hidden absolute right-0 mt-3 w-52 bg-white text-[#1a3a5c] rounded-xl shadow-xl border border-gray-100 z-50">
+                <div class="px-4 py-3 border-b border-gray-100">
+                    <p class="font-semibold text-sm">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-400">{{ auth()->user()->email }}</p>
+                </div>
+                <a href="/profile" class="block px-4 py-3 text-sm hover:bg-gray-50 transition">Akun Saya</a>
+                <form method="POST" action="/logout">
+                    @csrf
+                    <button class="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition">
+                        Logout
+                    </button>
+                </form>
             </div>
-        </button>
-
-        <div id="profileMenu"
-            class="hidden absolute right-0 mt-4 w-52 bg-white text-[#5a3e3e] rounded-2xl shadow-xl">
-
-            <div class="px-4 py-3 border-b">
-                <p class="font-semibold">{{ auth()->user()->name }}</p>
-                <p class="text-sm text-gray-500">{{ auth()->user()->email }}</p>
-            </div>
-
-            <a href="/profile" class="block px-4 py-3 hover:bg-[#f5ede4]">
-                Akun Saya
-            </a>
-
-            <form method="POST" action="/logout">
-                @csrf
-                <button class="w-full text-left px-4 py-3 text-red-500 hover:bg-red-50">
-                    Logout
-                </button>
-            </form>
-
         </div>
-    </div>
-    @endauth
+        @endauth
 
-
-    @guest
-    <div class="flex gap-3">
-
-        <a href="/login"
-            class="px-4 py-2 rounded-lg bg-white text-[#5a3e3e] font-medium hover:scale-105 transition">
+        @guest
+        <a href="/login" class="text-xs font-bold uppercase tracking-widest text-[#1a3a5c] hover:text-[#5a7a9c] transition">
             Login
         </a>
-
-        <a href="/register"
-            class="px-4 py-2 rounded-lg border border-white text-white hover:bg-white hover:text-[#5a3e3e] transition">
+        <a href="/register" class="text-xs font-bold uppercase tracking-widest bg-[#1a3a5c] text-white px-4 py-2 rounded hover:bg-[#122b45] transition">
             Register
         </a>
+        @endguest
 
     </div>
-    @endguest
 
-</div>
 </nav>
 
-<style>
-    @keyframes shimmer {
-        0% {
-            transform: translateX(-100%) skewX(-30deg);
-        }
-
-        100% {
-            transform: translateX(300%) skewX(-30deg);
-        }
-    }
-
-    @keyframes float {
-
-        0%,
-        100% {
-            transform: translateY(0);
-        }
-
-        50% {
-            transform: translateY(-5px);
-        }
-    }
-</style>
 <script>
     function toggleDropdown(event) {
         event.stopPropagation();
         document.getElementById("profileMenu").classList.toggle("hidden");
     }
-
-    window.addEventListener("click", function() {
+    window.addEventListener("click", function () {
         document.getElementById("profileMenu").classList.add("hidden");
     });
 </script>

@@ -3,7 +3,7 @@
 <div x-data="{ open: false }">
 
     <button @click="open = true"
-        class="bg-[#5a3e3e] text-white px-4 py-2 rounded-lg">
+        class="bg-[#1a3a5c] text-white px-4 py-2 rounded-lg">
         Filter
     </button>
 
@@ -30,7 +30,7 @@
                 <div class="flex justify-between">
                     <button type="button" @click="open=false">Batal</button>
 
-                    <button class="bg-[#5a3e3e] text-white px-4 py-2 rounded">
+                    <button class="bg-[#1a3a5c] text-white px-4 py-2 rounded">
                         Terapkan
                     </button>
                 </div>

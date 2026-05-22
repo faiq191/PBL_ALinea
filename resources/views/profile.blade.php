@@ -5,7 +5,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-[#2c2c2c] flex items-center justify-center h-screen">
+<body class="bg-[#f5f5f5] flex items-center justify-center h-screen">
 
 <div class="bg-white p-8 rounded-2xl w-96 shadow-xl">
 
@@ -48,7 +48,7 @@
             name="profile_photo"
             class="w-full mb-4">
 
-        <button class="bg-[#5a3e3e] text-white px-4 py-2 rounded-lg w-full">
+        <button class="bg-[#1a3a5c] text-white px-4 py-2 rounded-lg w-full">
             Simpan Perubahan
         </button>
 

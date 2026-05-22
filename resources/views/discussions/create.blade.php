@@ -6,13 +6,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-[#2c2c2c]">
+<body class="bg-[#f5f5f5]">
 
     <x-header />
 
-    <div class="max-w-3xl mx-auto mt-10 bg-[#f2e9e4] p-8 rounded-3xl shadow-lg">
+    <div class="max-w-3xl mx-auto mt-10 bg-[#ffffff] p-8 rounded-3xl shadow-lg">
 
-        <h2 class="text-2xl font-bold mb-6 text-[#2c2c2c]">
+        <h2 class="text-2xl font-bold mb-6 text-[#f5f5f5]">
             Buat Diskusi Baru
         </h2>
 
@@ -53,7 +53,7 @@
                 </a>
 
                 <button type="submit"
-                    class="px-6 py-2 bg-[#5a3e3e] text-white rounded-xl">
+                    class="px-6 py-2 bg-[#1a3a5c] text-white rounded-xl">
                     Buat Diskusi
                 </button>
 
