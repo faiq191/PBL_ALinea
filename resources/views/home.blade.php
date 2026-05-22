@@ -48,10 +48,12 @@
 
     </div>
 
-    {{-- STATISTIK SIMPEL --}}
-    <div class="bg-[#ffffff] px-16 py-10 mb-6">
+{{-- STATISTIK --}}
+<div class="bg-[#ffffff] px-16 py-10 mb-6">
+    <div class="flex items-center justify-between">
 
-        <div class="flex items-center gap-16 flex-wrap">
+        {{-- STATS --}}
+        <div class="flex items-center gap-20">
             <div>
                 <p class="text-4xl font-bold text-[#1a3a5c]">2</p>
                 <p class="text-sm text-gray-500 mt-1">Buku Dipinjam</p>
@@ -68,26 +70,35 @@
                 <p class="text-4xl font-bold text-[#1a3a5c]">{{ number_format($totalBooks) }}</p>
                 <p class="text-sm text-gray-500 mt-1">Total Koleksi</p>
             </div>
-            <div class="ml-auto">
+        </div>
+
+        {{-- DIVIDER --}}
+        <div class="h-16 w-px bg-gray-200 mx-8"></div>
+
+        {{-- WELCOME --}}
+        <div class="flex items-center justify-between flex-1">
+            <div>
                 <p class="text-xs text-[#5a7a9c] font-medium uppercase tracking-widest mb-1">Perpustakaan Komunitas</p>
                 <h2 class="text-2xl font-bold text-[#1a3a5c]">
-                    Selamat datang,
-                    <span class="italic">
-                        @auth {{ auth()->user()->name }} @else Pengunjung @endauth
+                    Selamat datang, <span class="font-serif italic font-normal">
+                        @auth{{ auth()->user()->name }}@else Pengunjung @endauth
                     </span>
                 </h2>
-                <div class="flex gap-3 mt-3">
-                    <a href="/perpustakaan" class="bg-[#1a3a5c] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#122b45] transition">
-                        Cari Buku
-                    </a>
-                    <a href="/komunitas" class="border border-[#1a3a5c] text-[#1a3a5c] px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#f0f4f8] transition">
-                        Ikuti Diskusi
-                    </a>
-                </div>
+            </div>
+            <div class="flex gap-3">
+                <a href="/perpustakaan"
+                    class="bg-[#1a3a5c] text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-[#122b45] transition">
+                    Cari Buku
+                </a>
+                <a href="/komunitas"
+                    class="border border-[#1a3a5c] text-[#1a3a5c] px-5 py-2 rounded-lg text-sm font-medium hover:bg-[#f0f4f8] transition">
+                    Ikuti Diskusi
+                </a>
             </div>
         </div>
 
     </div>
+</div>
 
 {{-- GENRE MARQUEE --}}
 <style>

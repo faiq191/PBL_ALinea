@@ -17,7 +17,7 @@
     <div class="p-8 flex justify-center">
         <div class="w-full max-w-9xl space-y-10">
 
-            <div class="bg-[#e6ddd6] rounded-2xl p-8 shadow-xl">
+            <div class="bg-[#ffffff] rounded-2xl p-8 shadow-xl">
                 <div class="flex items-center justify-between mb-1">
                     <h1 class="text-xl font-semibold text-[#1a3a5c]">Katalog Buku</h1>
                     <a href="/books/create"
@@ -135,7 +135,7 @@
                 </div>
             </div>
 
-            <div class="bg-[#e6ddd6] rounded-2xl p-8 shadow-xl">
+            <div class="bg-[#ffffff] rounded-2xl p-8 shadow-xl">
                 <h1 class="text-xl font-semibold text-[#1a3a5c] mb-1">Permintaan Pinjaman Masuk</h1>
                 <p class="text-sm text-gray-500 mb-6">Orang yang ingin meminjam buku koleksimu</p>
 
@@ -175,7 +175,7 @@
                 </div>
             </div>
 
-            <div class="bg-[#e6ddd6] rounded-2xl p-8 shadow-xl">
+            <div class="bg-[#ffffff] rounded-2xl p-8 shadow-xl">
                 <h1 class="text-xl font-semibold text-[#1a3a5c] mb-1">Buku Koleksi yang Dipinjam</h1>
                 <p class="text-sm text-gray-500 mb-6">Daftar buku kamu yang sedang dibawa orang lain</p>
 
@@ -203,7 +203,7 @@
                 </div>
             </div>
 
-            <div class="bg-[#e6ddd6] rounded-2xl p-8 shadow-xl">
+            <div class="bg-[#ffffff] rounded-2xl p-8 shadow-xl">
                 <h1 class="text-xl font-semibold text-[#1a3a5c] mb-1">Buku yang Sedang Kamu Pinjam</h1>
                 <p class="text-sm text-gray-500 mb-6">Buku yang kamu pinjam dari koleksi teman</p>
 
