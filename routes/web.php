@@ -90,7 +90,6 @@ Route::post('/diskusi/{id}/comment', [DiscussionController::class, 'storeComment
 Route::get('/diskusi/{id}', [DiscussionController::class, 'show']);
 Route::get('/perpustakaan', fn() => view('perpustakaan'));
 Route::get('/informasi', fn() => view('informasi'));
-Route::get('/admin', fn() => view('admin'));
 
 //Routes for books
 
