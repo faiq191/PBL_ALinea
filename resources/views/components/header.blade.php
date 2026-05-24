@@ -75,10 +75,10 @@
 
         @guest
         <a href="/login" class="text-xs font-bold uppercase tracking-widest text-[#1a3a5c] hover:text-[#5a7a9c] transition">
-            Login
+            Masuk
         </a>
         <a href="/register" class="text-xs font-bold uppercase tracking-widest bg-[#1a3a5c] text-white px-4 py-2 rounded hover:bg-[#122b45] transition">
-            Register
+            Daftar
         </a>
         @endguest
 
