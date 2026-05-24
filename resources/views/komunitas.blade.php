@@ -11,7 +11,7 @@
     <x-header />
 
     <!-- SEARCH -->
-    <div class="max-w-9xl mx-auto px-6 mb-6">
+    <div class="max-w-9xl mx-auto pt-24 px-6 mb-6">
         <form method="GET" action="/komunitas">
             <div class="relative">
                 <input type="text"

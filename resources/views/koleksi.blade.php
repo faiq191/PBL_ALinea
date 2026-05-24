@@ -14,7 +14,7 @@
 
     <x-header />
 
-    <div class="p-8 flex justify-center">
+    <div class="pt-24 px-8 pb-8 flex justify-center">
         <div class="w-full max-w-9xl space-y-10">
 
             <div class="bg-[#ffffff] rounded-2xl p-8 shadow-xl">

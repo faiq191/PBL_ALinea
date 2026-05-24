@@ -12,7 +12,7 @@
 
     <x-header />
 
-    <div class="p-6">
+    <div class="pt-24 px-6 pb-6">
         <div class="bg-[#ffffff] rounded-2xl p-6">
 
             {{-- HEADER --}}
