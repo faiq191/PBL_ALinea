@@ -212,6 +212,56 @@
         </div>
     @endif
 </div>
+ 
+{{-- CTA GUEST SECTION --}}
+@guest
+<div class="max-w-4xl mx-auto px-6 mb-12">
+    <div class="bg-white rounded-3xl p-12 text-center shadow-[0_10px_30px_rgba(0,0,0,0.03)] border border-gray-100/80 relative overflow-hidden">
+        <!-- Background subtle glow elements -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-60"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-sky-50 rounded-full blur-3xl opacity-60"></div>
+
+        <!-- Book Icons Stack -->
+        <div class="flex justify-center mb-6 relative z-10 pl-3">
+            <!-- Green Book -->
+            <div class="w-10 h-14 bg-emerald-500 rounded-l-md rounded-r shadow-md transform -rotate-12 translate-x-2 relative z-10 flex items-center justify-end pr-1 border-r-4 border-emerald-600">
+                <div class="w-1 h-full bg-white opacity-20 mr-1"></div>
+            </div>
+            <!-- Pink Book -->
+            <div class="w-10 h-14 bg-pink-500 rounded-l-md rounded-r shadow-md transform rotate-3 -translate-x-1 relative z-20 flex items-center justify-end pr-1 border-r-4 border-pink-600">
+                <div class="w-1 h-full bg-white opacity-20 mr-1"></div>
+            </div>
+            <!-- Blue Book -->
+            <div class="w-10 h-14 bg-sky-500 rounded-l-md rounded-r shadow-md transform rotate-12 -translate-x-4 translate-y-1 relative z-30 flex items-center justify-end pr-1 border-r-4 border-sky-600">
+                <div class="w-1 h-full bg-white opacity-20 mr-1"></div>
+            </div>
+        </div>
+
+        <div class="relative z-10">
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-[#1a3a5c] tracking-tight mb-4">
+                Siap Mulai Membaca?
+            </h3>
+            <p class="text-base text-gray-500 max-w-xl mx-auto leading-relaxed mb-4">
+                Bergabunglah dengan lebih dari 1.200 pembaca di Malang. Pinjam buku gratis dari koleksi anggota terdekatmu.
+            </p>
+            <p class="text-xs text-gray-400 font-semibold tracking-wide mb-8">
+                Tidak perlu kartu kredit <span class="mx-1.5 text-gray-300">•</span> 100% gratis <span class="mx-1.5 text-gray-300">•</span> Komunitas terbuka
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                <a href="/register" 
+                   class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl bg-[#1a3a5c] text-white font-bold text-sm hover:bg-[#11263d] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 shadow-md">
+                    Daftar Gratis Sekarang
+                </a>
+                <a href="/perpustakaan" 
+                   class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-xl border-2 border-gray-100 bg-white text-[#1a3a5c] font-bold text-sm hover:border-[#1a3a5c] hover:bg-gray-50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+                    Jelajahi Perpustakaan
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+@endguest
 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
