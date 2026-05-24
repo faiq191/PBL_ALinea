@@ -167,6 +167,8 @@
 
     <div class="pb-16"></div>
 
+<x-footer />
+
 <style>[x-cloak] { display: none !important; }</style>
 <script src="//unpkg.com/alpinejs" defer></script>
 </body>

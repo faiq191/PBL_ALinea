@@ -256,6 +256,8 @@
         </div>
     </div>
 
+    <x-footer />
+
     <script>lucide.createIcons();</script>
     <script src="//unpkg.com/alpinejs" defer></script>
     <script>
