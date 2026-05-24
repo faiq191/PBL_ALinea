@@ -6,11 +6,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-[#f5f5f5] min-h-screen font-sans">
+<body class="bg-[#f5f5f5] min-h-screen font-sans pt-10">
 
     <x-header />
 
-    <div class="p-8 flex justify-center">
+    <div class="p-8 flex justify-center pt-10">
         <div
             class="max-w-6xl w-full bg-[#e6ddd6] p-8 md:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row gap-10 text-[#1a3a5c]">
 
