@@ -61,7 +61,7 @@
                             <div @click="selected = book.volumeInfo; $refs.googleVolId.value = book.id; results = []" class="p-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3">
                                 <img :src="book.volumeInfo.imageLinks?.thumbnail" class="w-9 h-12 object-cover rounded shadow-sm" x-show="book.volumeInfo.imageLinks?.thumbnail">
                                 <div>
-                                    <p class="font-bold text-sm text-[#f5f5f5]" x-text="book.volumeInfo.title"></p>
+                                    <p class="font-bold text-sm text-[#1a3a5c]" x-text="book.volumeInfo.title"></p>
                                     <p class="text-xs text-gray-500" x-text="book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author'"></p>
                                 </div>
                             </div>

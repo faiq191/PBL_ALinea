@@ -46,6 +46,14 @@
             </p>
         </div>
 
+        {{-- WATERMARK ALINEA (RIGHT SIDE) --}}
+        <div class="absolute right-12 top-0 bottom-0 flex items-center justify-center z-10 pointer-events-none">
+            <p class="text-white text-5xl font-light uppercase opacity-30 tracking-[0.2em]" 
+               style="writing-mode: vertical-rl; text-orientation: upright;">
+                ALINEA
+            </p>
+        </div>
+
     </div>
 
 {{-- STATISTIK --}}
@@ -178,25 +186,10 @@
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>lucide.createIcons();</script>
+<script>
+    lucide.createIcons();
 
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>lucide.createIcons();</script>
-    <script>
-        // Intersection Observer — fade in saat scroll ke elemen
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.remove('opacity-0', 'translate-y-8');
-                    entry.target.classList.add('opacity-100', 'translate-y-0');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.book-animate').forEach(el => observer.observe(el));
-    </script>
-    <script>
+    // Intersection Observer — fade in saat scroll ke elemen
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {

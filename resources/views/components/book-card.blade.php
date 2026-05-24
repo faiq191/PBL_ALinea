@@ -16,7 +16,7 @@
     <img src="{{ \Illuminate\Support\Str::startsWith($image, 'http') ? $image : asset('storage/' . $image) }}"
         class="w-full h-72 object-cover rounded-lg mb-3">
 
-    <h4 class="font-semibold text-sm text-[#f5f5f5]">
+    <h4 class="font-semibold text-sm text-[#1a3a5c]">
         {{ $title }}
     </h4>
 
