@@ -6,11 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Discussion extends Model
 {
-        protected $fillable = [
+    protected $fillable = [
         'title',
         'genre',
         'category',
-        'user_id'
+        'user_id',
+        'content',
+        'image'
     ];
 
     public function user()
@@ -18,7 +20,7 @@ class Discussion extends Model
         return $this->belongsTo(User::class);
     }
 
-        public function comments()
+    public function comments()
     {
         return $this->hasMany(Comment::class);
     }

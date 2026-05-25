@@ -9,7 +9,6 @@ use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\PerpustakaanController;
 use App\Http\Controllers\LoanController;
 
-
 //Keter
 Route::get('/', function () {
     return app(BookController::class)->home();
@@ -81,10 +80,18 @@ Route::middleware('auth')->group(function () {
 // Komunitas page
 Route::get('/komunitas', [DiscussionController::class, 'index']);
 
-// Create
-Route::get('/diskusi/create', [DiscussionController::class, 'create'])->middleware('auth');
-Route::post('/diskusi', [DiscussionController::class, 'store'])->middleware('auth');
-Route::post('/diskusi/{id}/comment', [DiscussionController::class, 'storeComment'])->middleware('auth');
+// Create, Edit, Delete (Discussions & Comments)
+Route::middleware('auth')->group(function () {
+    Route::get('/diskusi/create', [DiscussionController::class, 'create']);
+    Route::post('/diskusi', [DiscussionController::class, 'store']);
+    Route::get('/diskusi/{id}/edit', [DiscussionController::class, 'edit']);
+    Route::put('/diskusi/{id}', [DiscussionController::class, 'update']);
+    Route::delete('/diskusi/{id}', [DiscussionController::class, 'destroy']);
+    
+    Route::post('/diskusi/{id}/comment', [DiscussionController::class, 'storeComment']);
+    Route::put('/comments/{id}', [DiscussionController::class, 'updateComment']);
+    Route::delete('/comments/{id}', [DiscussionController::class, 'destroyComment']);
+});
 
 // Detail
 Route::get('/diskusi/{id}', [DiscussionController::class, 'show']);

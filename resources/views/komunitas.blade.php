@@ -1,176 +1,117 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Komunitas</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>[x-cloak] { display: none !important; }</style>
 </head>
-
 <body class="bg-[#f5f5f5]">
-
     <x-header />
 
-    <!-- SEARCH -->
-    <div class="max-w-9xl mx-auto pt-24 px-6 mb-6">
+    <div class="max-w-7xl mx-auto pt-24 px-6 mb-6">
         <form method="GET" action="/komunitas">
             <div class="relative">
-                <input type="text"
-                    name="search"
-                    value="{{ request('search') }}"
-                    class="w-full bg-[#e8edf2] text-[#1a3a5c] rounded-full py-3 px-12 focus:outline-none focus:ring-2 focus:ring-[#d0e4f5] placeholder-[#5a7a9c]"
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="w-full bg-[#e8edf2] text-[#1a3a5c] rounded-full py-4 px-14 focus:outline-none focus:ring-2 focus:ring-[#1a3a5c] placeholder-[#5a7a9c] text-lg"
                     placeholder="Cari diskusi atau topik...">
-                <div class="absolute left-4 top-3.5">
-                    <img src="Logo/search.png" class="w-5 h-5 opacity-40">
+                <div class="absolute left-5 top-4">
+                    <i data-lucide="search" class="w-6 h-6 text-[#5a7a9c]"></i>
                 </div>
             </div>
         </form>
     </div>
 
-    <!-- CONTENT -->
-    <div class="max-w-9xl mx-auto px-6 flex gap-6">
-
-        <!-- LEFT -->
-        <div class="flex-[3] bg-[#ffffff] p-8 rounded-3xl shadow-lg">
-
-            <!-- HEADER -->
-            <div class="flex items-center gap-4 mb-8">
-                <div class="p-3 bg-[#d0e4f5] rounded-2xl">
-                    <img src="Logo/group.png" class="w-10 h-10">
-                </div>
+    <div class="max-w-7xl mx-auto px-6 flex gap-6">
+        <div class="flex-[3] bg-[#ffffff] p-8 rounded-3xl shadow-xl border border-gray-100">
+            
+            <div class="flex justify-between items-center mb-8 pb-6 border-b border-gray-100">
                 <div>
-                    <h2 class="text-4xl font-bold text-[#1a3a5c]">Komunitas</h2>
-                    <p class="text-gray-400 text-sm">Tempat berbagi pikiran dan inspirasi</p>
+                    <h2 class="text-3xl font-bold text-[#1a3a5c]">Komunitas</h2>
+                    <p class="text-gray-400 mt-1">Tempat berbagi pikiran dan inspirasi</p>
                 </div>
-            </div>
-
-            <div class="flex justify-between items-center mb-10">
-
+                
                 @auth
-                    <a href="/diskusi/create"
-                        class="bg-[#1a3a5c] text-white px-6 py-3 rounded-full flex items-center gap-3">
-                        <img src="Logo/message-square-plus.png" class="w-5 h-5 invert">
+                    <a href="/diskusi/create" class="bg-[#1a3a5c] text-white px-6 py-3 rounded-xl flex items-center gap-2 font-bold hover:bg-[#122b45] transition shadow-md">
+                        <i data-lucide="message-square-plus" class="w-5 h-5"></i>
                         Buat Diskusi Baru
                     </a>
+                @else
+                    <a href="/login" class="bg-gray-200 text-gray-600 px-6 py-3 rounded-xl font-bold hover:bg-gray-300 transition">
+                        Login untuk diskusi
+                    </a>
                 @endauth
-
-                @guest
-                    <a href="/login"
-                        class="bg-gray-300 text-gray-600 px-6 py-3 rounded-full">
-                        Login untuk buat diskusi
-                    </a>
-                @endguest
-
-                <div class="flex gap-2">
-                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'terbaru']) }}"
-                        class="px-5 py-2 rounded-full text-sm {{ request('sort', 'terbaru') == 'terbaru' ? 'bg-[#1a3a5c] text-white' : 'bg-gray-200 text-gray-600' }}">
-                        Terbaru
-                    </a>
-                </div>
             </div>
 
-            <div>
-                <h3 class="text-2xl font-bold mb-6 text-[#1a3a5c]">Diskusi Aktif</h3>
-
+            <div class="space-y-4">
                 @forelse ($discussions ?? [] as $discussion)
-                    <div class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-4">
-
-                        <h4 class="text-lg font-bold text-[#1a3a5c]">
-                            {{ $discussion->title }}
-                        </h4>
-
-                        <span class="inline-block bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full mt-2">
-                            {{ $discussion->genre ?? 'Umum' }}
-                        </span>
-
-                        <div class="flex justify-between mt-4 text-sm text-gray-500">
-                            <div class="flex flex-col gap-1">
-                                <p class="font-medium text-[#1a3a5c]">{{ $discussion->user->name ?? 'Unknown' }}</p>
-                                <p class="text-xs text-gray-400">
-                                    {{ $discussion->created_at->translatedFormat('d F Y, H:i') }} WIB
-                                </p>
-                            </div>
-
-                            <div class="flex gap-2 items-center">
-                                <a href="/diskusi/{{ $discussion->id }}"
-                                    class="bg-gray-100 hover:bg-[#1a3a5c] hover:text-white text-gray-600 px-4 py-1.5 rounded-lg text-sm transition">
-                                    Lihat
+                    <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                        <div class="flex gap-5">
+                            <img src="{{ \Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-20 h-28 object-cover rounded-xl shadow-sm">
+                            <div class="flex-1 flex flex-col justify-center">
+                                <span class="text-[10px] font-bold text-[#1a3a5c] uppercase tracking-wider mb-1">{{ $discussion->genre ?? 'Umum' }}</span>
+                                <h4 class="text-xl font-bold text-[#1a3a5c] leading-tight mb-2">
+                                    {{ $discussion->title }}
+                                </h4>
+                                <div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                                    <span class="font-bold text-[#1a3a5c]">{{ $discussion->user->name ?? 'Unknown' }}</span>
+                                    <span>•</span>
+                                    <span>{{ $discussion->created_at->diffForHumans() }}</span>
+                                </div>
+                                <a href="/diskusi/{{ $discussion->id }}" class="inline-flex items-center gap-1 text-[#1a3a5c] text-sm font-bold hover:underline w-max">
+                                    Lihat Diskusi <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                 </a>
                             </div>
                         </div>
-
                     </div>
                 @empty
-                    <p class="text-gray-400 text-sm">Belum ada diskusi</p>
+                    <div class="text-center py-12">
+                        <i data-lucide="message-circle" class="w-12 h-12 text-[#d0e4f5] mx-auto mb-3"></i>
+                        <p class="text-gray-400 font-medium">Belum ada diskusi.</p>
+                    </div>
                 @endforelse
-
             </div>
-
         </div>
 
-        <!-- RIGHT -->
         <div class="flex-1">
-            <div class="bg-[#ffffff] p-6 rounded-3xl shadow-md sticky top-6">
-                <h3 class="text-xl font-bold mb-4 text-[#1a3a5c]">Filter</h3>
-
+            <div class="bg-[#ffffff] p-6 rounded-3xl shadow-xl border border-gray-100 sticky top-6">
+                <h3 class="text-lg font-bold mb-4 text-[#1a3a5c]">Filter Genre</h3>
                 <form method="GET" action="/komunitas">
+                    
                     @if(request('search'))
                         <input type="hidden" name="search" value="{{ request('search') }}">
                     @endif
-
-                    <div x-data="{ open: false }">
-                        <button type="button" @click="open = true"
-                            class="w-full bg-[#1a3a5c] text-white p-3 rounded-xl flex justify-between items-center text-sm font-medium">
-                            {{ request('genre') ? request('genre') : 'Genres' }}
-                            <span>▼</span>
-                        </button>
-
-                        <div x-show="open"
-                            x-transition
-                            x-cloak
-                            class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                            <div class="bg-white p-6 rounded-xl w-80 shadow-xl">
-                                <h3 class="font-bold mb-4 text-[#1a3a5c]">Filter Genre</h3>
-
-                                <select name="genre" class="w-full p-2 border border-gray-200 rounded-lg mb-4 text-[#1a3a5c] text-sm outline-none">
-                                    <option value="">Semua</option>
-                                    @foreach($genres as $g)
-                                        <option value="{{ $g }}" {{ request('genre') == $g ? 'selected' : '' }}>
-                                            {{ $g }}
-                                        </option>
-                                    @endforeach
-                                </select>
-
-                                <div class="flex justify-between">
-                                    <button type="button" @click="open = false"
-                                        class="text-sm text-gray-500 hover:text-gray-700">
-                                        Batal
-                                    </button>
-                                    <button type="submit"
-                                        class="bg-[#1a3a5c] text-white px-4 py-2 rounded-lg text-sm">
-                                        Terapkan
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    
+                    <div class="space-y-2 max-h-[60vh] overflow-y-auto pr-2 mb-6">
+                        @foreach($genres as $g)
+                            <label class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 cursor-pointer transition">
+                                <input type="checkbox" name="genres[]" value="{{ $g }}" 
+                                    {{ is_array(request('genres')) && in_array($g, request('genres')) ? 'checked' : '' }}
+                                    class="w-4 h-4 rounded text-[#1a3a5c] focus:ring-[#1a3a5c] accent-[#1a3a5c]">
+                                <span class="text-sm font-medium text-gray-700">{{ $g }}</span>
+                            </label>
+                        @endforeach
                     </div>
 
-                    @if(request('genre'))
-                        <a href="/komunitas" class="block text-center text-xs text-[#5a7a9c] hover:underline mt-3">
-                            Reset Filter
-                        </a>
-                    @endif
+                    <div class="flex flex-col gap-2">
+                        <button type="submit" class="w-full bg-[#1a3a5c] text-white py-2.5 rounded-xl font-bold text-sm hover:bg-[#122b45] shadow-md transition">
+                            Terapkan Filter
+                        </button>
+                        
+                        @if(request()->hasAny(['genres', 'search']))
+                            <a href="/komunitas" class="w-full bg-gray-100 text-gray-600 text-center py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition">
+                                Reset Pencarian
+                            </a>
+                        @endif
+                    </div>
                 </form>
             </div>
         </div>
-
     </div>
 
     <div class="pb-16"></div>
-
-<x-footer />
-
-<style>[x-cloak] { display: none !important; }</style>
-<script src="//unpkg.com/alpinejs" defer></script>
+    <x-footer />
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script>lucide.createIcons();</script>
 </body>
-
 </html>

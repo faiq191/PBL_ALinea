@@ -1,68 +1,111 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Buat Diskusi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-
-<body class="bg-[#f5f5f5]">
-
+<body class="bg-[#f5f5f5] min-h-screen" x-data="{ mode: '{{ old('source_mode', 'manual') }}' }">
     <x-header />
 
-    <div class="max-w-3xl mx-auto mt-10 bg-[#ffffff] p-8 rounded-3xl shadow-lg">
+    <div class="p-8 pt-24 flex justify-center">
+        <div class="max-w-2xl w-full bg-[#ffffff] rounded-3xl p-8 shadow-xl border border-gray-100">
+            <h1 class="text-2xl font-bold text-[#1a3a5c] mb-2">Mulai Diskusi Baru</h1>
+            <p class="text-sm text-gray-500 mb-6">Pilih buku yang ingin didiskusikan dan sampaikan pikiranmu.</p>
 
-        <h2 class="text-2xl font-bold mb-6 text-[#f5f5f5]">
-            Buat Diskusi Baru
-        </h2>
-
-        <form method="POST" action="/diskusi">
-            @csrf
-
-            <!-- TITLE -->
-            <div class="mb-4">
-                <label class="block text-sm mb-2">Judul Diskusi</label>
-                <input type="text" name="title"
-                    class="w-full p-3 rounded-xl border"
-                    placeholder="Masukkan judul..."
-                    required>
-            </div>
-
-            <!-- GENRE -->
-            <div class="mb-4">
-                <label class="block text-sm mb-2">Genre</label>
-                <input type="text" name="genre"
-                    class="w-full p-3 rounded-xl border"
-                    placeholder="Contoh: Fantasi">
-            </div>
-
-            <!-- CATEGORY -->
-            <div class="mb-6">
-                <label class="block text-sm mb-2">Kategori</label>
-                <input type="text" name="category"
-                    class="w-full p-3 rounded-xl border"
-                    placeholder="Contoh: Novel / Self-Help">
-            </div>
-
-            <!-- BUTTON -->
-            <div class="flex justify-between">
-
-                <a href="/"
-                    class="px-5 py-2 bg-gray-300 rounded-xl">
-                    Kembali
-                </a>
-
-                <button type="submit"
-                    class="px-6 py-2 bg-[#1a3a5c] text-white rounded-xl">
-                    Buat Diskusi
+            <div class="flex gap-2 mb-8 bg-[#e8edf2] p-2 rounded-2xl">
+                <button type="button" @click="mode = 'manual'" :class="mode === 'manual' ? 'bg-[#1a3a5c] text-white shadow-md' : 'text-[#1a3a5c] hover:bg-white/50'" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition">
+                    Input Manual
                 </button>
-
+                <button type="button" @click="mode = 'existing'" :class="mode === 'existing' ? 'bg-[#1a3a5c] text-white shadow-md' : 'text-[#1a3a5c] hover:bg-white/50'" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition">
+                    Dari Perpustakaan
+                </button>
+                <button type="button" @click="mode = 'google'" :class="mode === 'google' ? 'bg-[#1a3a5c] text-white shadow-md' : 'text-[#1a3a5c] hover:bg-white/50'" class="flex-1 py-2.5 rounded-xl text-xs font-bold transition">
+                    Cari di Google
+                </button>
             </div>
 
-        </form>
+            <form action="/diskusi" method="POST" enctype="multipart/form-data" class="space-y-6">
+                @csrf
+                <input type="hidden" name="source_mode" :value="mode">
 
+                <div x-show="mode === 'existing'" x-transition x-cloak>
+                    <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Pilih Buku Referensi</label>
+                    <select name="existing_book_id" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] outline-none text-sm text-[#1a3a5c]">
+                        <option value="">-- Cari Judul Buku --</option>
+                        @foreach($allLibraryBooks as $libBook)
+                            <option value="{{ $libBook->id }}" {{ old('existing_book_id') == $libBook->id ? 'selected' : '' }}>{{ $libBook->title }} - {{ $libBook->author }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div x-show="mode === 'google'" x-data="{ query: '', results: [], selected: null }" x-transition x-cloak class="space-y-4">
+                    <label class="block text-sm font-bold text-[#1a3a5c]">Cari Buku Referensi</label>
+                    <div class="flex gap-2">
+                        <input type="text" x-model="query" placeholder="Ketik judul buku..." class="flex-1 px-4 py-3 rounded-xl bg-[#e8edf2] outline-none text-sm text-[#1a3a5c]">
+                        <button type="button" @click="if(query) fetch(`/google-books/search?q=${query}`).then(r => r.json()).then(d => results = d)" class="bg-[#1a3a5c] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-[#122b45] transition">Cari</button>
+                    </div>
+
+                    <div class="bg-[#e8edf2] rounded-xl divide-y divide-white/50 max-h-60 overflow-y-auto" x-show="results.length > 0">
+                        <template x-for="book in results" :key="book.id">
+                            <div @click="selected = book.volumeInfo; $refs.googleVolId.value = book.id; results = []" class="p-3 hover:bg-white cursor-pointer flex items-center gap-3 transition">
+                                <img :src="book.volumeInfo.imageLinks?.thumbnail" class="w-9 h-12 object-cover rounded shadow-sm" x-show="book.volumeInfo.imageLinks?.thumbnail">
+                                <div>
+                                    <p class="font-bold text-sm text-[#1a3a5c]" x-text="book.volumeInfo.title"></p>
+                                    <p class="text-xs text-gray-500" x-text="book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author'"></p>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+
+                    <input type="hidden" name="google_volume_id" x-ref="googleVolId">
+
+                    <div class="bg-[#e8edf2] p-4 rounded-xl flex items-center gap-4" x-show="selected">
+                        <img :src="selected?.imageLinks?.thumbnail" class="w-12 h-16 object-cover rounded shadow-sm" x-show="selected?.imageLinks?.thumbnail">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Referensi Terpilih</p>
+                            <p class="text-sm font-bold text-[#1a3a5c]" x-text="selected?.title"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="mode === 'manual'" x-transition x-cloak class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Gambar Referensi (Opsional)</label>
+                        <input type="file" name="image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-[#e8edf2] file:text-[#1a3a5c] hover:file:bg-gray-200 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Genre Manual</label>
+                        <select name="genre" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] outline-none text-sm text-[#1a3a5c]">
+                            @foreach($genres as $genre)
+                                <option value="{{ $genre->name }}">{{ $genre->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100">
+
+                <div>
+                    <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Judul Diskusi</label>
+                    <input type="text" name="title" required value="{{ old('title') }}" placeholder="Apa yang ingin kamu diskusikan?" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c]">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Isi Diskusi</label>
+                    <textarea name="content" rows="6" required placeholder="Tulis pendapat atau pertanyaanmu di sini..." class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] resize-none">{{ old('content') }}</textarea>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#1a3a5c] text-white py-3 rounded-xl font-bold hover:bg-[#122b45] shadow-md transition">
+                        Buat Diskusi
+                    </button>
+                    <a href="/komunitas" class="px-8 py-3 bg-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-300 transition text-center">
+                        Batal
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-
 </body>
-
 </html>
