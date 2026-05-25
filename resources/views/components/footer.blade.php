@@ -8,8 +8,7 @@
             <!-- Brand Column (4 Cols) -->
             <div class="md:col-span-4 flex flex-col justify-between">
                 <div>
-                    <a href="/" class="font-serif font-bold text-2xl tracking-tight hover:opacity-90 transition-opacity mb-4 inline-block">
-                        ALinea
+                    <img src ="Gambar\logo_alinea3.png">
                     </a>
                     <p class="text-sm text-gray-300 leading-relaxed max-w-sm mb-6">
                         Menghubungkan pikiran, melintasi rasa. Komunitas berbagi, meminjam, dan mendiskusikan buku terpercaya untuk pembaca di Malang.

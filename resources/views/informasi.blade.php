@@ -16,7 +16,7 @@
         {{-- ABOUT --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-[#1a3a5c] rounded-2xl aspect-square flex items-center justify-center">
-                <span class="text-white font-bold text-4xl font-serif tracking-widest">A</span>
+                <img src ="Gambar\logo_alinea_tanpa_tulisan2.png">
             </div>
             <div class="md:col-span-2 bg-[#ffffff] rounded-2xl p-8 flex flex-col justify-center shadow-sm">
                 <p class="text-lg leading-relaxed text-[#1a3a5c]">
