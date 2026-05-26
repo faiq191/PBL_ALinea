@@ -9,7 +9,7 @@
 
     <x-header />
 
-    <div class="p-8 flex justify-center">
+    <div class="p-8 pt-28 flex justify-center">
         <div class="max-w-2xl w-full bg-[#e6ddd6] rounded-3xl p-8 shadow-xl">
             <h1 class="text-2xl font-bold text-[#1a3a5c] mb-2">Tambah Buku Baru</h1>
             <p class="text-sm text-gray-500 mb-6">Lengkapi detail buku untuk koleksi Ali.nea</p>
@@ -52,8 +52,13 @@
                 <div x-show="mode === 'google'" x-data="{ query: '', results: [], selected: null }" x-transition class="space-y-4">
                     <label class="block text-sm font-bold text-[#1a3a5c]">Cari di Google Books</label>
                     <div class="flex gap-2">
-                        <input type="text" x-model="query" placeholder="Ketik judul buku atau pengarang..." class="flex-1 px-4 py-2 rounded-xl bg-white outline-none">
-                        <button type="button" @click="if(query) fetch(`/google-books/search?q=${query}`).then(r => r.json()).then(d => results = d)" class="bg-[#1a3a5c] text-white px-5 py-2 rounded-xl font-bold text-sm">Cari</button>
+                        <input type="text" x-model="query" 
+                            @keydown.enter.prevent="if(query) fetch(`/google-books/search?q=${query}`).then(r => r.json()).then(d => results = d)"
+                            placeholder="Ketik judul buku atau pengarang..." 
+                            class="flex-1 px-4 py-2 rounded-xl bg-white outline-none focus:ring-2 focus:ring-[#1a3a5c]">
+                        <button type="button" 
+                            @click="if(query) fetch(`/google-books/search?q=${query}`).then(r => r.json()).then(d => results = d)" 
+                            class="bg-[#1a3a5c] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#122b45] transition">Cari</button>
                     </div>
 
                     <div class="bg-white rounded-xl divide-y divide-gray-100 max-h-60 overflow-y-auto" x-show="results.length > 0">
@@ -169,7 +174,7 @@
                 </div>
 
                 <div class="flex gap-4 pt-4">
-                    <button type="submit" class="flex-1 bg-[#1a3a5c] text-white py-3 rounded-xl font-bold hover:bg-[122b45] transition">
+                    <button type="submit" class="flex-1 bg-[#1a3a5c] text-white py-3 rounded-xl font-bold hover:bg-[#122b45] transition">
                         Simpan ke Koleksi
                     </button>
                     <a href="/koleksi" class="px-8 py-3 bg-gray-400 text-white rounded-xl font-bold hover:bg-gray-500 transition text-center">

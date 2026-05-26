@@ -31,7 +31,7 @@ class BookController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('author', 'like', '%' . $request->search . '%');
+                    ->orWhere('author', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -238,7 +238,6 @@ class BookController extends Controller
             $volume = $response->json()['volumeInfo'];
 
             $book = new Book([
-                'id'          => $id,
                 'title'       => $volume['title'] ?? 'Unknown Title',
                 'author'      => isset($volume['authors']) ? implode(', ', $volume['authors']) : 'Unknown Author',
                 'description' => $volume['description'] ?? 'Deskripsi belum tersedia.',
@@ -246,6 +245,9 @@ class BookController extends Controller
 
             $thumbnail = $volume['imageLinks']['thumbnail'] ?? 'books/default.png';
             $book->image = str_replace('http://', 'https://', $thumbnail);
+
+            $book->is_google_api = true;
+            $book->google_id = $id;
 
             $typeName = 'Novel';
             $genreNames = [];
@@ -286,6 +288,9 @@ class BookController extends Controller
         }
 
         $book = Book::with(['genres', 'type', 'year', 'demographic', 'user'])->findOrFail($id);
+        
+        $book->is_google_api = false;
+        
         $books = Book::with(['genres'])->latest()->take(4)->get();
 
         $otherOwners = Book::where('title', $book->title)

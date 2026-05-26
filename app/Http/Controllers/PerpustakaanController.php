@@ -20,23 +20,27 @@ class PerpustakaanController extends Controller
         $booksByGenre = [];
 
         if ($hasFilters) {
-            $googleQuery = $request->search;
-            if (!$googleQuery) {
-                if ($request->genre_ids) {
-                    $firstGenre = Genre::find($request->genre_ids[0]);
-                    $googleQuery = $firstGenre ? $firstGenre->name : 'best seller';
-                } else {
-                    $googleQuery = 'best seller';
+            $items = [];
+            
+            if ($request->get('local_only') !== 'true') {
+                $googleQuery = $request->search;
+                if (!$googleQuery) {
+                    if ($request->genre_ids) {
+                        $firstGenre = Genre::find($request->genre_ids[0]);
+                        $googleQuery = $firstGenre ? $firstGenre->name : 'best seller';
+                    } else {
+                        $googleQuery = 'best seller';
+                    }
                 }
+
+                $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
+                    'q'          => $googleQuery,
+                    'key'        => env('GOOGLE_BOOKS_API_KEY'),
+                    'maxResults' => 10
+                ]);
+
+                $items = $response->json()['items'] ?? [];
             }
-
-            $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
-                'q'          => $googleQuery,
-                'key'        => env('GOOGLE_BOOKS_API_KEY'),
-                'maxResults' => 10
-            ]);
-
-            $items = $response->json()['items'] ?? [];
 
             $localQuery = Book::with(['user', 'genres', 'type', 'year', 'demographic']);
 
@@ -126,7 +130,7 @@ class PerpustakaanController extends Controller
                 });
 
                 if ($uniqueBooks->isNotEmpty()) {
-                    $booksByGenre[$genre->name] = $uniqueBooks->take(4)->map(function ($localBook) {
+                    $booksByGenre[$genre->name] = $uniqueBooks->map(function ($localBook) {
                         return (object)[
                             'id'            => $localBook->id,
                             'title'         => $localBook->title,

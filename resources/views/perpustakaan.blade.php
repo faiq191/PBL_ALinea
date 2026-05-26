@@ -15,7 +15,6 @@
     <div class="pt-24 px-6 pb-6">
         <div class="bg-[#ffffff] rounded-2xl p-6">
 
-            {{-- HEADER --}}
             <div class="flex justify-between items-center mb-8">
                 <div>
                     <h1 class="text-4xl font-bold text-[#1a3a5c]">Cari Buku</h1>
@@ -31,14 +30,16 @@
                 @endauth
             </div>
 
-            {{-- SEARCH & FILTER FORM --}}
             <form method="GET" action="/perpustakaan" class="mb-10" x-data="{
                 filterOpen: false,
                 menuOpen: null,
                 toggle(menu) { this.menuOpen = this.menuOpen === menu ? null : menu }
             }">
+                
+                @if(request('local_only'))
+                    <input type="hidden" name="local_only" value="true">
+                @endif
 
-                {{-- Search Bar + Filter Button --}}
                 <div class="flex items-center gap-4 mb-4">
                     <div class="relative flex-1">
                         <input type="text" name="search" value="{{ request('search') }}"
@@ -57,12 +58,10 @@
                     @endif
                 </div>
 
-                {{-- Filter Panel --}}
                 <div x-show="filterOpen" x-transition x-cloak
                     class="bg-[#1a3a5c] p-8 rounded-3xl shadow-2xl mb-6">
                     <div class="flex flex-wrap gap-3 items-start">
 
-                        {{-- GENRES --}}
                         <div class="relative">
                             <button type="button" @click="toggle('genres')"
                                 class="bg-white/20 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition">
@@ -85,7 +84,6 @@
                             </div>
                         </div>
 
-                        {{-- TIPE --}}
                         <div class="relative">
                             <button type="button" @click="toggle('types')"
                                 class="bg-white/20 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition">
@@ -108,7 +106,6 @@
                             </div>
                         </div>
 
-                        {{-- DEMOGRAFIS --}}
                         <div class="relative">
                             <button type="button" @click="toggle('demo')"
                                 class="bg-white/20 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition">
@@ -131,7 +128,6 @@
                             </div>
                         </div>
 
-                        {{-- PENGARANG --}}
                         <div class="relative">
                             <button type="button" @click="toggle('author')"
                                 class="bg-white/20 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition">
@@ -147,7 +143,6 @@
                             </div>
                         </div>
 
-                        {{-- TAHUN RILIS --}}
                         <div class="relative">
                             <button type="button" @click="toggle('year')"
                                 class="bg-white/20 text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-white/30 transition">
@@ -174,7 +169,6 @@
                             </div>
                         </div>
 
-                        {{-- SUBMIT --}}
                         <div class="ml-auto">
                             <button type="submit"
                                 class="bg-white text-[#1a3a5c] px-8 py-3 rounded-2xl font-bold hover:bg-[#d0e4f5] transition">
@@ -187,7 +181,6 @@
 
             </form>
 
-            {{-- RESULTS --}}
             @if($hasFilters)
                 <h3 class="text-lg font-semibold text-[#1a3a5c] mb-4">
                     Hasil Pencarian
@@ -220,16 +213,30 @@
                 @endif
 
             @else
-                {{-- Grouped by Genre --}}
                 @forelse($booksByGenre as $genre => $genreBooks)
                     <div class="mb-12">
+                        
                         <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-2xl font-bold text-[#1a3a5c]">{{ $genre }}</h3>
-                            <span class="text-sm text-gray-400">{{ $genreBooks->count() }} buku</span>
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-2xl font-bold text-[#1a3a5c]">{{ $genre }}</h3>
+                                <span class="text-sm font-bold bg-[#e8edf2] text-[#1a3a5c] px-3 py-1 rounded-full">{{ $genreBooks->count() }} Buku</span>
+                            </div>
+
+                            @if($genreBooks->count() > 4)
+                                @php
+                                    $genreId = $genreBooks->first()->genres->where('name', $genre)->first()->id ?? '';
+                                @endphp
+                                <a href="/perpustakaan?genre_ids[]={{ $genreId }}&local_only=true" class="text-sm font-bold text-[#1a3a5c] hover:text-[#e84b7a] transition flex items-center gap-1 group">
+                                    Lihat Semua 
+                                    <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                                </a>
+                            @endif
                         </div>
+                        
                         <hr class="border-[#b0c8e0] mb-5">
+                        
                         <div class="grid grid-cols-4 gap-4">
-                            @foreach($genreBooks as $index => $book)
+                            @foreach($genreBooks->take(4) as $index => $book)
                                 <div class="book-animate opacity-0 translate-y-6 transition-all duration-500"
                                     style="transition-delay: {{ $index * 60 }}ms">
                                     <x-book-card-magazine
