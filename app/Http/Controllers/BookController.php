@@ -31,7 +31,7 @@ class BookController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('author', 'like', '%' . $request->search . '%');
+                  ->orWhere('author', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -226,6 +226,9 @@ class BookController extends Controller
 
     public function show($id)
     {
+        // ---------------------------------------------------------
+        // BLOK 1: Jika ID bukan angka (Data dari Google Books API)
+        // ---------------------------------------------------------
         if (!is_numeric($id)) {
             $response = Http::get("https://www.googleapis.com/books/v1/volumes/{$id}", [
                 'key' => env('GOOGLE_BOOKS_API_KEY')
@@ -246,6 +249,7 @@ class BookController extends Controller
             $thumbnail = $volume['imageLinks']['thumbnail'] ?? 'books/default.png';
             $book->image = str_replace('http://', 'https://', $thumbnail);
 
+            // Tandai properti khusus untuk Blade agar tombol berfungsi
             $book->is_google_api = true;
             $book->google_id = $id;
 
@@ -278,6 +282,7 @@ class BookController extends Controller
             $book->setRelation('demographic', (object)['name' => '-']);
             $book->setRelation('genres', collect(array_map(fn($name) => (object)['name' => $name], $genreNames)));
 
+            // Cari pengguna lain yang punya buku dengan judul & penulis yang sama
             $otherOwners = Book::where('title', $book->title)
                 ->where('author', $book->author)
                 ->where('user_id', '!=', auth()->id())
@@ -287,8 +292,12 @@ class BookController extends Controller
             return view('books.show', compact('book', 'otherOwners'));
         }
 
+        // ---------------------------------------------------------
+        // BLOK 2: Jika ID adalah angka (Data dari Database Lokal)
+        // ---------------------------------------------------------
         $book = Book::with(['genres', 'type', 'year', 'demographic', 'user'])->findOrFail($id);
         
+        // Tandai bahwa ini bukan buku API
         $book->is_google_api = false;
         
         $books = Book::with(['genres'])->latest()->take(4)->get();

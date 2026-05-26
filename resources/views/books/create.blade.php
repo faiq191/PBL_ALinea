@@ -7,13 +7,16 @@
 </head>
 <body class="bg-[#f5f5f5] min-h-screen" x-data="{ mode: '{{ old('source_mode', 'manual') }}' }">
 
+    {{-- Header Navigation --}}
     <x-header />
 
+    {{-- Main Content Wrapper with top padding applied (pt-28) --}}
     <div class="p-8 pt-28 flex justify-center">
         <div class="max-w-2xl w-full bg-[#e6ddd6] rounded-3xl p-8 shadow-xl">
             <h1 class="text-2xl font-bold text-[#1a3a5c] mb-2">Tambah Buku Baru</h1>
             <p class="text-sm text-gray-500 mb-6">Lengkapi detail buku untuk koleksi Ali.nea</p>
 
+            {{-- Mode Selection Buttons --}}
             <div class="flex gap-2 mb-8 bg-white/50 p-2 rounded-2xl">
                 <button @click="mode = 'manual'"
                     :class="mode === 'manual' ? 'bg-[#1a3a5c] text-white' : 'text-[#1a3a5c]'"
@@ -32,10 +35,12 @@
                 </button>
             </div>
 
+            {{-- Form Start --}}
             <form action="/books" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 <input type="hidden" name="source_mode" :value="mode">
 
+                {{-- Existing Book Mode --}}
                 <div x-show="mode === 'existing'" x-transition>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Pilih Buku dari Perpustakaan</label>
                     <select name="existing_book_id" class="w-full px-4 py-3 rounded-xl bg-white outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('existing_book_id') ring-2 ring-red-500 @enderror">
@@ -49,9 +54,11 @@
                     @enderror
                 </div>
 
+                {{-- Google Books Mode --}}
                 <div x-show="mode === 'google'" x-data="{ query: '', results: [], selected: null }" x-transition class="space-y-4">
                     <label class="block text-sm font-bold text-[#1a3a5c]">Cari di Google Books</label>
                     <div class="flex gap-2">
+                        {{-- Input with Enter key prevention (@keydown.enter.prevent) --}}
                         <input type="text" x-model="query" 
                             @keydown.enter.prevent="if(query) fetch(`/google-books/search?q=${query}`).then(r => r.json()).then(d => results = d)"
                             placeholder="Ketik judul buku atau pengarang..." 
@@ -61,6 +68,7 @@
                             class="bg-[#1a3a5c] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#122b45] transition">Cari</button>
                     </div>
 
+                    {{-- Search Results Dropdown --}}
                     <div class="bg-white rounded-xl divide-y divide-gray-100 max-h-60 overflow-y-auto" x-show="results.length > 0">
                         <template x-for="book in results" :key="book.id">
                             <div @click="selected = book.volumeInfo; $refs.googleVolId.value = book.id; results = []" class="p-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3">
@@ -75,6 +83,7 @@
 
                     <input type="hidden" name="google_volume_id" x-ref="googleVolId">
 
+                    {{-- Selected Book Preview --}}
                     <div class="bg-white/60 p-4 rounded-xl flex items-center gap-4" x-show="selected">
                         <img :src="selected?.imageLinks?.thumbnail" class="w-12 h-16 object-cover rounded shadow-sm" x-show="selected?.imageLinks?.thumbnail">
                         <div>
@@ -88,6 +97,7 @@
                     @enderror
                 </div>
 
+                {{-- Manual Input Mode --}}
                 <div x-show="mode === 'manual'" x-transition class="space-y-6">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
@@ -127,6 +137,7 @@
                     </div>
                 </div>
 
+                {{-- Manual Input Mode (Dropdowns & Checkboxes) --}}
                 <div x-show="mode === 'manual'" x-transition class="space-y-6">
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -173,6 +184,7 @@
                     </div>
                 </div>
 
+                {{-- Form Actions --}}
                 <div class="flex gap-4 pt-4">
                     <button type="submit" class="flex-1 bg-[#1a3a5c] text-white py-3 rounded-xl font-bold hover:bg-[#122b45] transition">
                         Simpan ke Koleksi
