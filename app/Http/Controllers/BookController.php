@@ -123,11 +123,31 @@ class BookController extends Controller
             }
 
             $imagePath = 'books/default.png';
-            $thumbnailUrl = $bookData['imageLinks']['thumbnail'] ?? null;
+            $imageLinks = $bookData['imageLinks'] ?? [];
 
-            if ($thumbnailUrl) {
+            if (!empty($imageLinks)) {
+                $volumeId = $request->google_volume_id;
+                // High-resolution fife URL (dynamic image scaling, flat edges, forced HTTPS)
+                $thumbnailUrl = "https://books.google.com/books/publisher/content/images/frontcover/{$volumeId}?fife=w400-h600&source=gbs_api";
+
                 try {
-                    $imageContent = Http::withoutVerifying()->get($thumbnailUrl)->body();
+                    $response = Http::withoutVerifying()->get($thumbnailUrl);
+                    
+                    // If high-resolution retrieval succeeds and looks valid, use it
+                    if ($response->successful() && strlen($response->body()) > 1000) {
+                        $imageContent = $response->body();
+                    } else {
+                        // Otherwise, fall back to the standard thumbnail from API response
+                        $fallbackUrl = $imageLinks['medium'] ?? $imageLinks['small'] ?? $imageLinks['thumbnail'] ?? $imageLinks['smallThumbnail'] ?? null;
+                        if ($fallbackUrl) {
+                            $fallbackUrl = str_replace('edge=curl', '', $fallbackUrl);
+                            $fallbackUrl = str_replace('http://', 'https://', $fallbackUrl);
+                            $imageContent = Http::withoutVerifying()->get($fallbackUrl)->body();
+                        } else {
+                            throw new \Exception("No fallback image available");
+                        }
+                    }
+
                     $imageName = 'books/' . Str::random(40) . '.jpg';
                     Storage::disk('public')->put($imageName, $imageContent);
                     $imagePath = $imageName;
@@ -261,8 +281,14 @@ class BookController extends Controller
                 'description' => $volume['description'] ?? 'Deskripsi belum tersedia.',
             ]);
 
-            $thumbnail = $volume['imageLinks']['thumbnail'] ?? 'books/default.png';
-            $book->image = str_replace('http://', 'https://', $thumbnail);
+            $imageLinks = $volume['imageLinks'] ?? [];
+            if (!empty($imageLinks)) {
+                // High-resolution fife URL for preview/show (dynamic scaling, flat edges)
+                $thumbnail = "https://books.google.com/books/publisher/content/images/frontcover/{$id}?fife=w400-h600&source=gbs_api";
+            } else {
+                $thumbnail = 'books/default.png';
+            }
+            $book->image = $thumbnail;
 
             // Tandai properti khusus untuk Blade agar tombol berfungsi
             $book->is_google_api = true;
