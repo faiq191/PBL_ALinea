@@ -71,10 +71,10 @@ class DiscussionController extends Controller
 
             if ($bookData) {
                 if (!empty($bookData['imageLinks']['thumbnail'])) {
-                    $imageContent = Http::get($bookData['imageLinks']['thumbnail'])->body();
-                    $imageName = 'discussions/' . Str::random(40) . '.jpg';
-                    Storage::disk('public')->put($imageName, $imageContent);
-                    $imagePath = $imageName;
+                    $thumbnailUrl = $bookData['imageLinks']['thumbnail'];
+                    // Ubah http:// menjadi https:// agar aman dari mixed content
+                    $thumbnailUrl = Str::replaceFirst('http://', 'https://', $thumbnailUrl);
+                    $imagePath = $thumbnailUrl;
                 }
                 
                 if (!empty($bookData['categories'])) {

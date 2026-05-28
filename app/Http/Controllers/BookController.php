@@ -127,33 +127,8 @@ class BookController extends Controller
 
             if (!empty($imageLinks)) {
                 $volumeId = $request->google_volume_id;
-                // High-resolution fife URL (dynamic image scaling, flat edges, forced HTTPS)
-                $thumbnailUrl = "https://books.google.com/books/publisher/content/images/frontcover/{$volumeId}?fife=w400-h600&source=gbs_api";
-
-                try {
-                    $response = Http::withoutVerifying()->get($thumbnailUrl);
-                    
-                    // If high-resolution retrieval succeeds and looks valid, use it
-                    if ($response->successful() && strlen($response->body()) > 1000) {
-                        $imageContent = $response->body();
-                    } else {
-                        // Otherwise, fall back to the standard thumbnail from API response
-                        $fallbackUrl = $imageLinks['medium'] ?? $imageLinks['small'] ?? $imageLinks['thumbnail'] ?? $imageLinks['smallThumbnail'] ?? null;
-                        if ($fallbackUrl) {
-                            $fallbackUrl = str_replace('edge=curl', '', $fallbackUrl);
-                            $fallbackUrl = str_replace('http://', 'https://', $fallbackUrl);
-                            $imageContent = Http::withoutVerifying()->get($fallbackUrl)->body();
-                        } else {
-                            throw new \Exception("No fallback image available");
-                        }
-                    }
-
-                    $imageName = 'books/' . Str::random(40) . '.jpg';
-                    Storage::disk('public')->put($imageName, $imageContent);
-                    $imagePath = $imageName;
-                } catch (\Exception $e) {
-                    $imagePath = 'books/default.png';
-                }
+                // Simpan langsung URL High-resolution fife agar permanen di CDN dan anti-hilang!
+                $imagePath = "https://books.google.com/books/publisher/content/images/frontcover/{$volumeId}?fife=w400-h600&source=gbs_api";
             }
 
             $publishedYear = '2026';
