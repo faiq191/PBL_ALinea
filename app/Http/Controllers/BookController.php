@@ -186,10 +186,21 @@ class BookController extends Controller
         $request->validate([
             'title'  => 'required',
             'author' => 'required',
-            'image'  => 'required|image|mimes:jpg,jpeg,png|max:2048'
+            'image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image_url' => 'nullable|url'
         ]);
 
-        $imagePath = $request->file('image')->store('books', 'public');
+        if (!$request->hasFile('image') && !$request->image_url) {
+            return back()->withInput()->withErrors(['image' => 'Anda harus mengunggah file gambar atau memasukkan URL gambar.']);
+        }
+
+        $imagePath = 'books/default.png';
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('books', 'public');
+        } elseif ($request->image_url) {
+            $imagePath = $request->image_url;
+        }
 
         Book::create([
             'title'          => $request->title,
@@ -333,7 +344,8 @@ class BookController extends Controller
         $request->validate([
             'title'  => 'required',
             'author' => 'required',
-            'image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'image'  => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'image_url' => 'nullable|url'
         ]);
 
         $book = Book::findOrFail($id);
@@ -352,10 +364,15 @@ class BookController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            if ($book->image && file_exists(public_path('storage/' . $book->image))) {
+            if ($book->image && !\Illuminate\Support\Str::startsWith($book->image, 'http') && file_exists(public_path('storage/' . $book->image))) {
                 unlink(public_path('storage/' . $book->image));
             }
             $data['image'] = $request->file('image')->store('books', 'public');
+        } elseif ($request->image_url) {
+            if ($book->image && !\Illuminate\Support\Str::startsWith($book->image, 'http') && file_exists(public_path('storage/' . $book->image))) {
+                unlink(public_path('storage/' . $book->image));
+            }
+            $data['image'] = $request->image_url;
         }
 
         $book->update($data);
@@ -372,7 +389,7 @@ class BookController extends Controller
             abort(403);
         }
 
-        if ($book->image && file_exists(public_path('storage/' . $book->image))) {
+        if ($book->image && !\Illuminate\Support\Str::startsWith($book->image, 'http') && file_exists(public_path('storage/' . $book->image))) {
             unlink(public_path('storage/' . $book->image));
         }
 

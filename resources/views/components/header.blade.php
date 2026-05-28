@@ -49,7 +49,7 @@
                     class="flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300 outline-none
                     {{ $isHome ? 'bg-white/10 border border-white/20 hover:bg-white/20' : 'bg-slate-100 border border-slate-200 hover:bg-slate-200/80' }}">
                     <img src="{{ auth()->user()->profile_photo
-                        ? asset('storage/' . auth()->user()->profile_photo)
+                        ? (\Illuminate\Support\Str::startsWith(auth()->user()->profile_photo, 'http') ? auth()->user()->profile_photo : asset('storage/' . auth()->user()->profile_photo))
                         : 'https://ui-avatars.com/api/?name=' . urlencode(auth()->user()->name) }}"
                         class="w-7 h-7 rounded-full object-cover border-2 border-[#e84b7a]">
                     <span id="nav-user-name"

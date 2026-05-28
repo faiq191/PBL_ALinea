@@ -89,8 +89,22 @@ class DiscussionController extends Controller
                 }
             }
         } elseif ($request->source_mode === 'manual') {
-            $request->validate(['image' => 'required|image|max:2048', 'genre' => 'required']);
-            $imagePath = $request->file('image')->store('discussions', 'public');
+            $request->validate([
+                'image' => 'nullable|image|max:2048',
+                'image_url' => 'nullable|url',
+                'genre' => 'required'
+            ]);
+
+            if (!$request->hasFile('image') && !$request->image_url) {
+                return back()->withInput()->withErrors(['image' => 'Anda harus mengunggah file gambar atau memasukkan URL gambar.']);
+            }
+
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('discussions', 'public');
+            } elseif ($request->image_url) {
+                $imagePath = $request->image_url;
+            }
+
             $genreName = $request->genre;
         }
 
@@ -152,7 +166,8 @@ class DiscussionController extends Controller
         $request->validate([
             'title'   => 'required',
             'content' => 'required',
-            'image'   => 'nullable|image|max:2048'
+            'image'   => 'nullable|image|max:2048',
+            'image_url' => 'nullable|url'
         ]);
 
         $data = [
@@ -165,10 +180,15 @@ class DiscussionController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            if ($discussion->image && !Str::startsWith($discussion->image, 'books/default.png')) {
+            if ($discussion->image && !Str::startsWith($discussion->image, 'books/default.png') && !Str::startsWith($discussion->image, 'http')) {
                 Storage::disk('public')->delete($discussion->image);
             }
             $data['image'] = $request->file('image')->store('discussions', 'public');
+        } elseif ($request->image_url) {
+            if ($discussion->image && !Str::startsWith($discussion->image, 'books/default.png') && !Str::startsWith($discussion->image, 'http')) {
+                Storage::disk('public')->delete($discussion->image);
+            }
+            $data['image'] = $request->image_url;
         }
 
         $discussion->update($data);
@@ -182,7 +202,7 @@ class DiscussionController extends Controller
             abort(403);
         }
         
-        if ($discussion->image && !Str::startsWith($discussion->image, 'books/default.png') && !Str::startsWith($discussion->image, 'books/')) {
+        if ($discussion->image && !Str::startsWith($discussion->image, 'books/default.png') && !Str::startsWith($discussion->image, 'books/') && !Str::startsWith($discussion->image, 'http')) {
             Storage::disk('public')->delete($discussion->image);
         }
 

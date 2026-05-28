@@ -5,7 +5,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-[#f5f5f5] min-h-screen" x-data="{ mode: '{{ old('source_mode', 'manual') }}' }">
+<body class="bg-[#f5f5f5] min-h-screen" 
+      x-data="{ 
+          mode: '{{ old('source_mode', 'manual') }}', 
+          cover_source: '{{ old('cover_source', 'file') }}',
+          filePreview: '',
+          imageUrl: '{{ old('image_url') }}',
+          handleFileChange(event) {
+              const file = event.target.files[0];
+              if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (e) => {
+                      this.filePreview = e.target.result;
+                  };
+                  reader.readAsDataURL(file);
+              } else {
+                  this.filePreview = '';
+              }
+          }
+      }">
 
     {{-- Header Navigation --}}
     <x-header />
@@ -118,13 +136,82 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Sampul Buku</label>
-                        <input type="file" name="image" :required="mode === 'manual'"
-                            class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#1a3a5c] file:text-white hover:file:bg-[122b45]">
-                        @error('image')
-                            <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
-                        @enderror
+                    <div class="space-y-3">
+                        <label class="block text-sm font-bold text-[#1a3a5c]">Sampul Buku</label>
+                        
+                        <div class="bg-white/40 p-5 rounded-2xl border border-white/50 shadow-inner flex flex-col md:flex-row gap-5 items-center">
+                            <!-- Live Image Preview -->
+                            <div class="flex-shrink-0 relative group">
+                                <!-- File Preview -->
+                                <template x-if="cover_source === 'file' && filePreview">
+                                    <img :src="filePreview" class="w-24 h-32 object-cover rounded-xl shadow-lg border-2 border-white transition group-hover:scale-105 duration-300">
+                                </template>
+                                
+                                <!-- URL Preview -->
+                                <template x-if="cover_source === 'url' && imageUrl">
+                                    <img :src="imageUrl" x-on:error="$el.src = 'https://placehold.co/100x140?text=Error'" class="w-24 h-32 object-cover rounded-xl shadow-lg border-2 border-white transition group-hover:scale-105 duration-300">
+                                </template>
+
+                                <!-- Default Placeholder -->
+                                <template x-if="(cover_source === 'file' && !filePreview) || (cover_source === 'url' && !imageUrl)">
+                                    <div class="w-24 h-32 bg-white/60 rounded-xl flex flex-col items-center justify-center border border-dashed border-[#1a3a5c]/35 text-[#1a3a5c]/60 shadow">
+                                        <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider">Sampul</span>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- Upload / Link Controls -->
+                            <div class="flex-1 w-full space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-[#1a3a5c] uppercase tracking-wide mb-1.5">Pilih Sumber Gambar</label>
+                                    <!-- Tab Switcher (Pill Style) -->
+                                    <div class="inline-flex p-1 bg-gray-200/60 rounded-xl w-full max-w-[260px]">
+                                        <button type="button" @click="cover_source = 'file'"
+                                            :class="cover_source === 'file' ? 'bg-[#1a3a5c] text-white shadow-sm' : 'text-gray-500 hover:text-[#1a3a5c]'"
+                                            class="flex-1 py-1 text-xs font-bold rounded-lg transition-all duration-200">
+                                            Upload File
+                                        </button>
+                                        <button type="button" @click="cover_source = 'url'"
+                                            :class="cover_source === 'url' ? 'bg-[#1a3a5c] text-white shadow-sm' : 'text-gray-500 hover:text-[#1a3a5c]'"
+                                            class="flex-1 py-1 text-xs font-bold rounded-lg transition-all duration-200">
+                                            Link Gambar
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="cover_source" :value="cover_source">
+                                </div>
+
+                                <!-- File Upload Area -->
+                                <div x-show="cover_source === 'file'" x-transition class="space-y-1">
+                                    <div class="relative flex items-center justify-center border border-dashed border-gray-300 hover:border-[#1a3a5c] bg-white/50 rounded-xl p-3 transition cursor-pointer group">
+                                        <input type="file" name="image" :required="mode === 'manual' && cover_source === 'file'" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="image-upload-input-create" @change="handleFileChange($event); document.getElementById('file-chosen-text-create').textContent = $event.target.files[0]?.name || 'Pilih file sampul...'">
+                                        <div class="text-center space-y-1 pointer-events-none">
+                                            <svg class="w-5 h-5 mx-auto text-gray-400 group-hover:text-[#1a3a5c] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                            <p id="file-chosen-text-create" class="text-[11px] text-gray-500 font-medium group-hover:text-[#1a3a5c] transition">Pilih file sampul atau seret ke sini...</p>
+                                        </div>
+                                    </div>
+                                    @error('image')
+                                        <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <!-- URL Input -->
+                                <div x-show="cover_source === 'url'" x-transition class="space-y-2">
+                                    <div class="relative rounded-xl shadow-sm">
+                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                        </div>
+                                        <input type="url" name="image_url" :required="mode === 'manual' && cover_source === 'url'"
+                                            x-model="imageUrl"
+                                            placeholder="https://example.com/sampul-buku.jpg"
+                                            class="block w-full pl-9 pr-4 py-2 text-xs rounded-xl bg-white border border-gray-200 outline-none focus:ring-2 focus:ring-[#1a3a5c] transition">
+                                    </div>
+                                    @error('image_url')
+                                        <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div>

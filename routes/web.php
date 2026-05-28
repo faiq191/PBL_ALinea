@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -48,7 +49,8 @@ Route::middleware('auth')->group(function () {
         $request->validate([
             'name' => 'required',
             'email' => 'required|email',
-            'profile_photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048'
+            'profile_photo' => 'nullable|image|mimes:jpg,png,jpeg|max:2048',
+            'profile_photo_url' => 'nullable|url'
         ]);
 
         $user = auth()->user();
@@ -60,12 +62,19 @@ Route::middleware('auth')->group(function () {
 
         if ($request->hasFile('profile_photo')) {
 
-            if ($user->profile_photo && file_exists(public_path('storage/' . $user->profile_photo))) {
+            if ($user->profile_photo && !Str::startsWith($user->profile_photo, 'http') && file_exists(public_path('storage/' . $user->profile_photo))) {
                 unlink(public_path('storage/' . $user->profile_photo));
             }
 
             $path = $request->file('profile_photo')->store('profiles', 'public');
             $data['profile_photo'] = $path;
+        } elseif ($request->profile_photo_url) {
+
+            if ($user->profile_photo && !Str::startsWith($user->profile_photo, 'http') && file_exists(public_path('storage/' . $user->profile_photo))) {
+                unlink(public_path('storage/' . $user->profile_photo));
+            }
+
+            $data['profile_photo'] = $request->profile_photo_url;
         }
 
         $user->update($data);

@@ -119,7 +119,7 @@
                 <div class="grid grid-cols-3 gap-3 overflow-y-auto max-h-96">
                     @forelse($myLoans ?? [] as $loan)
                         <div class="bg-[#f5f5f5] rounded-xl overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
-                            <img src="{{ asset('storage/' . $loan->book->image) }}" class="w-full h-32 object-cover">
+                            <img src="{{ \Illuminate\Support\Str::startsWith($loan->book->image, 'http') ? $loan->book->image : asset('storage/' . $loan->book->image) }}" class="w-full h-32 object-cover">
                             <div class="p-3 flex flex-col flex-1">
                                 <p class="font-semibold text-xs text-[#1a3a5c] leading-snug">{{ $loan->book->title }}</p>
                                 <p class="text-[10px] text-gray-400 mt-1">{{ $loan->book->author }}</p>
@@ -161,7 +161,7 @@
                     @forelse($incomingRequests ?? [] as $request)
                         <div class="bg-[#f5f5f5] p-3 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <img src="{{ asset('storage/' . $request->book->image) }}" class="w-10 h-14 object-cover rounded-lg">
+                                <img src="{{ \Illuminate\Support\Str::startsWith($request->book->image, 'http') ? $request->book->image : asset('storage/' . $request->book->image) }}" class="w-10 h-14 object-cover rounded-lg">
                                 <div>
                                     <p class="font-bold text-[#1a3a5c] text-xs">{{ $request->book->title }}</p>
                                     <p class="text-[10px] text-gray-500">Peminjam: <span class="font-bold">{{ $request->borrower->name }}</span></p>
@@ -198,7 +198,7 @@
                     @forelse($lentBooks ?? [] as $loan)
                         <div class="bg-[#f5f5f5] p-3 rounded-xl flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <img src="{{ asset('storage/' . $loan->book->image) }}" class="w-10 h-14 object-cover rounded-lg">
+                                <img src="{{ \Illuminate\Support\Str::startsWith($loan->book->image, 'http') ? $loan->book->image : asset('storage/' . $loan->book->image) }}" class="w-10 h-14 object-cover rounded-lg">
                                 <div>
                                     <p class="font-bold text-[#1a3a5c] text-xs">{{ $loan->book->title }}</p>
                                     <p class="text-[10px] text-gray-500">Dipinjam: <span class="font-bold">{{ $loan->borrower->name }}</span></p>
