@@ -38,6 +38,10 @@ php artisan view:cache
 echo "Running migrations..."
 php artisan migrate --force
 
+# Create public storage symbolic link
+echo "Creating storage symlink..."
+php artisan storage:link --force || true
+
 # Execute the main container command
 echo "Starting Apache..."
 exec "$@"

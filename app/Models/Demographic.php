@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Demographic extends Model
 {
-    protected $fillable = ['demographic'];
+    protected $fillable = ['name'];
     public $timestamps = false;
 }

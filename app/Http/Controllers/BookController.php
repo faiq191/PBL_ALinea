@@ -84,7 +84,7 @@ class BookController extends Controller
             return response()->json([]);
         }
 
-        $response = Http::get('https://www.googleapis.com/books/v1/volumes', [
+        $response = Http::withoutVerifying()->get('https://www.googleapis.com/books/v1/volumes', [
             'q'          => $query,
             'key'        => env('GOOGLE_BOOKS_API_KEY'),
             'maxResults' => 5
@@ -112,7 +112,7 @@ class BookController extends Controller
                 'google_volume_id' => 'required'
             ]);
 
-            $response = Http::get("https://www.googleapis.com/books/v1/volumes/{$request->google_volume_id}", [
+            $response = Http::withoutVerifying()->get("https://www.googleapis.com/books/v1/volumes/{$request->google_volume_id}", [
                 'key' => env('GOOGLE_BOOKS_API_KEY')
             ]);
 
@@ -126,10 +126,14 @@ class BookController extends Controller
             $thumbnailUrl = $bookData['imageLinks']['thumbnail'] ?? null;
 
             if ($thumbnailUrl) {
-                $imageContent = Http::get($thumbnailUrl)->body();
-                $imageName = 'books/' . Str::random(40) . '.jpg';
-                Storage::disk('public')->put($imageName, $imageContent);
-                $imagePath = $imageName;
+                try {
+                    $imageContent = Http::withoutVerifying()->get($thumbnailUrl)->body();
+                    $imageName = 'books/' . Str::random(40) . '.jpg';
+                    Storage::disk('public')->put($imageName, $imageContent);
+                    $imagePath = $imageName;
+                } catch (\Exception $e) {
+                    $imagePath = 'books/default.png';
+                }
             }
 
             $publishedYear = '2026';
@@ -241,7 +245,7 @@ class BookController extends Controller
         // BLOK 1: Jika ID bukan angka (Data dari Google Books API)
         // ---------------------------------------------------------
         if (!is_numeric($id)) {
-            $response = Http::get("https://www.googleapis.com/books/v1/volumes/{$id}", [
+            $response = Http::withoutVerifying()->get("https://www.googleapis.com/books/v1/volumes/{$id}", [
                 'key' => env('GOOGLE_BOOKS_API_KEY')
             ]);
 
