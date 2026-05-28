@@ -54,6 +54,13 @@
                                     {{ $discussion->title }}
                                 </h4>
                                 <div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                                    @if($discussion->user->profile_photo)
+                                        <img src="{{ \Illuminate\Support\Str::startsWith($discussion->user->profile_photo, 'http') ? $discussion->user->profile_photo : asset('storage/' . $discussion->user->profile_photo) }}" class="w-5 h-5 rounded-full object-cover shadow-sm">
+                                    @else
+                                        <div class="w-5 h-5 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] text-[8px]">
+                                            {{ substr($discussion->user->name ?? 'U', 0, 1) }}
+                                        </div>
+                                    @endif
                                     <span class="font-bold text-[#1a3a5c]">{{ $discussion->user->name ?? 'Unknown' }}</span>
                                     <span>•</span>
                                     <span>{{ $discussion->created_at->diffForHumans() }}</span>

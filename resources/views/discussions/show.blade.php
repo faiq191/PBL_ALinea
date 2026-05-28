@@ -43,9 +43,13 @@
                     </h1>
                     
                     <div class="flex items-center gap-3 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-100">
-                        <div class="w-8 h-8 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c]">
-                            {{ substr($discussion->user->name ?? 'U', 0, 1) }}
-                        </div>
+                        @if($discussion->user->profile_photo)
+                            <img src="{{ \Illuminate\Support\Str::startsWith($discussion->user->profile_photo, 'http') ? $discussion->user->profile_photo : asset('storage/' . $discussion->user->profile_photo) }}" class="w-8 h-8 rounded-full object-cover shadow-sm">
+                        @else
+                            <div class="w-8 h-8 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c]">
+                                {{ substr($discussion->user->name ?? 'U', 0, 1) }}
+                            </div>
+                        @endif
                         <span class="font-bold text-[#1a3a5c]">{{ $discussion->user->name ?? 'Unknown' }}</span>
                         <span>•</span>
                         <span>{{ $discussion->created_at->translatedFormat('d M Y, H:i') }}</span>
@@ -80,9 +84,13 @@
                 @forelse ($discussion->comments as $comment)
                     <div x-data="{ replying: false, editing: false }" class="flex gap-4 group">
                         
-                        <div class="w-10 h-10 shrink-0 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] z-10">
-                            {{ substr($comment->user->name, 0, 1) }}
-                        </div>
+                        @if($comment->user->profile_photo)
+                            <img src="{{ \Illuminate\Support\Str::startsWith($comment->user->profile_photo, 'http') ? $comment->user->profile_photo : asset('storage/' . $comment->user->profile_photo) }}" class="w-10 h-10 shrink-0 rounded-full object-cover shadow-sm z-10">
+                        @else
+                            <div class="w-10 h-10 shrink-0 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] z-10">
+                                {{ substr($comment->user->name, 0, 1) }}
+                            </div>
+                        @endif
                         
                         <div class="flex-1 relative">
                             <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4 mb-2">
@@ -138,9 +146,13 @@
                                             <div class="absolute -left-6 top-5 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
                                             
                                             <div class="flex gap-3 relative">
-                                                <div class="w-8 h-8 shrink-0 rounded-full bg-[#d0e4f5] flex items-center justify-center font-bold text-[#1a3a5c] text-xs">
-                                                    {{ substr($reply->user->name, 0, 1) }}
-                                                </div>
+                                                @if($reply->user->profile_photo)
+                                                    <img src="{{ \Illuminate\Support\Str::startsWith($reply->user->profile_photo, 'http') ? $reply->user->profile_photo : asset('storage/' . $reply->user->profile_photo) }}" class="w-8 h-8 shrink-0 rounded-full object-cover shadow-sm">
+                                                @else
+                                                    <div class="w-8 h-8 shrink-0 rounded-full bg-[#d0e4f5] flex items-center justify-center font-bold text-[#1a3a5c] text-xs">
+                                                        {{ substr($reply->user->name, 0, 1) }}
+                                                    </div>
+                                                @endif
                                                 <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
                                                     <div class="flex justify-between items-start mb-1">
                                                         <div class="flex items-center gap-2">
