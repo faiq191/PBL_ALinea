@@ -5,10 +5,10 @@ window.Pusher = Pusher;
 
 window.Echo = new Echo({
     broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
+    key: window.laravelReverb?.key || import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: window.laravelReverb?.host || import.meta.env.VITE_REVERB_HOST,
+    wsPort: window.laravelReverb?.port || import.meta.env.VITE_REVERB_PORT || 80,
+    wssPort: window.laravelReverb?.port || import.meta.env.VITE_REVERB_PORT || 443,
+    forceTLS: (window.laravelReverb?.scheme || import.meta.env.VITE_REVERB_SCHEME || 'https') === 'https',
     enabledTransports: ['ws', 'wss'],
 });

@@ -145,7 +145,11 @@ class DiscussionController extends Controller
         ]);
         
         // 2. BROADCAST SECARA REAL-TIME (.toOthers() biar pengirim sendiri tidak duplikat chat di layarnya)
-        broadcast(new \App\Events\CommentSent($comment))->toOthers();
+        try {
+            broadcast(new \App\Events\CommentSent($comment))->toOthers();
+        } catch (\Exception $e) {
+            \Log::warning('Reverb broadcast failed: ' . $e->getMessage());
+        }
         
         return back();
     }
@@ -224,6 +228,14 @@ class DiscussionController extends Controller
         
         $request->validate(['content' => 'required']);
         $comment->update(['content' => $request->content]);
+        
+        // Broadcast pembaruan komentar secara real-time
+        try {
+            broadcast(new \App\Events\CommentUpdated($comment))->toOthers();
+        } catch (\Exception $e) {
+            \Log::warning('Reverb broadcast failed: ' . $e->getMessage());
+        }
+        
         return back();
     }
 
@@ -233,7 +245,20 @@ class DiscussionController extends Controller
         if ($comment->user_id !== auth()->id() && !auth()->user()->is_admin) {
             abort(403);
         }
-        $comment->delete();
+        
+        // Tentukan penanda (dihapus oleh pengguna sendiri atau admin/moderator)
+        $deleteMarker = (auth()->id() === $comment->user_id) ? '_deleted_by_user_' : '_deleted_by_admin_';
+        
+        // Update isi komentar menjadi penanda terhapus (record database, nama, & foto profil TETAP UTUH!)
+        $comment->update(['content' => $deleteMarker]);
+        
+        // Broadcast pembaruan komentar secara real-time (menggunakan CommentUpdated karena record tetap ada)
+        try {
+            broadcast(new \App\Events\CommentUpdated($comment))->toOthers();
+        } catch (\Exception $e) {
+            \Log::warning('Reverb broadcast failed: ' . $e->getMessage());
+        }
+        
         return back();
     }
 }

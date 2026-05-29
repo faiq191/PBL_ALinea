@@ -97,10 +97,16 @@
                                 <div class="flex justify-between items-start mb-2">
                                     <div class="flex items-center gap-2">
                                         <span class="font-bold text-sm text-[#1a3a5c]">{{ $comment->user->name }}</span>
-                                        <span class="text-[10px] text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                                        <span class="text-[10px] text-gray-400 flex items-center gap-1">
+                                            <span>{{ $comment->created_at == $comment->updated_at ? $comment->created_at->diffForHumans() : $comment->updated_at->diffForHumans() }}</span>
+                                            @if($comment->created_at != $comment->updated_at && !str_starts_with($comment->content, '_deleted_'))
+                                                <span class="text-gray-300">•</span>
+                                                <span class="italic text-[9px] text-gray-400">(diedit)</span>
+                                            @endif
+                                        </span>
                                     </div>
                                     
-                                    @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->is_admin))
+                                    @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->is_admin) && !str_starts_with($comment->content, '_deleted_'))
                                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                             <button @click="editing = !editing; replying = false" class="text-gray-400 hover:text-[#1a3a5c] p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
                                             <form action="/comments/{{ $comment->id }}" method="POST" onsubmit="return confirm('Hapus komentar?');">
@@ -111,7 +117,17 @@
                                     @endif
                                 </div>
 
-                                <p x-show="!editing" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(e($comment->content)) !!}</p>
+                                @if($comment->content === '_deleted_by_user_')
+                                    <p class="text-xs text-gray-400 italic flex items-center gap-1.5 py-1">
+                                        <i data-lucide="ban" class="w-3.5 h-3.5"></i> Pesan ini telah dihapus oleh pengguna
+                                    </p>
+                                @elseif($comment->content === '_deleted_by_admin_')
+                                    <p class="text-xs text-red-400 italic flex items-center gap-1.5 py-1 bg-red-50/50 px-3 py-1 rounded-lg border border-red-100/50 w-fit">
+                                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-red-500"></i> Pesan ini telah dihapus oleh moderator/admin
+                                    </p>
+                                @else
+                                    <p x-show="!editing" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(e($comment->content)) !!}</p>
+                                @endif
                                 
                                 <form x-show="editing" x-cloak action="/comments/{{ $comment->id }}" method="POST" class="mt-2">
                                     @csrf @method('PUT')
@@ -124,24 +140,28 @@
                             </div>
 
                             @auth
-                                <button @click="replying = !replying; editing = false" class="text-xs font-bold text-gray-500 hover:text-[#1a3a5c] mb-4 flex items-center gap-1 transition">
-                                    <i data-lucide="reply" class="w-3 h-3"></i> Balas
-                                </button>
-                                
-                                <form x-show="replying" x-cloak action="/diskusi/{{ $discussion->id }}/comment" method="POST" class="mb-4 relative">
-                                    @csrf
-                                    <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                    <textarea name="content" required rows="2" class="w-full bg-[#e8edf2] border-none rounded-xl p-3 text-sm text-[#1a3a5c] outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none" placeholder="Balas ke {{ $comment->user->name }}..."></textarea>
-                                    <div class="flex justify-end gap-2 mt-2">
-                                        <button type="button" @click="replying = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
-                                        <button type="submit" class="bg-[#1a3a5c] text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-[#122b45] transition">Kirim Balasan</button>
-                                    </div>
-                                </form>
+                                @if(!str_starts_with($comment->content, '_deleted_'))
+                                    <button @click="
+                                        replying = !replying;
+                                        editing = false;
+                                        if (replying) {
+                                            setTimeout(() => {
+                                                const textarea = document.getElementById('reply-textarea-{{ $comment->id }}');
+                                                if (textarea && !textarea.value) {
+                                                    textarea.value = '{{ "@" . $comment->user->name }} ';
+                                                    textarea.focus();
+                                                }
+                                            }, 50);
+                                        }
+                                    " class="text-xs font-bold text-gray-500 hover:text-[#1a3a5c] mb-4 flex items-center gap-1 transition">
+                                        <i data-lucide="reply" class="w-3 h-3"></i> Balas
+                                    </button>
+                                @endif
                             @endauth
 
-                            <div id="replies-{{ $comment->id }}" class="relative ml-2 pl-6 border-l-2 border-gray-100 space-y-4 pt-2 {{ $comment->replies->count() === 0 ? 'hidden' : '' }}">
+                            <div id="replies-{{ $comment->id }}" :class="(replying || {{ $comment->replies->count() }} > 0) ? 'relative ml-2 pl-6 border-l-2 border-gray-100 space-y-4 pt-2' : 'hidden'">
                                 @foreach($comment->replies as $reply)
-                                    <div x-data="{ editingReply: false }" class="relative group">
+                                    <div x-data="{ editingReply: false }" id="comment-{{ $reply->id }}" class="relative group">
                                         <div class="absolute -left-6 top-5 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
                                         
                                         <div class="flex gap-3 relative">
@@ -156,9 +176,15 @@
                                                 <div class="flex justify-between items-start mb-1">
                                                     <div class="flex items-center gap-2">
                                                         <span class="font-bold text-sm text-[#1a3a5c]">{{ $reply->user->name }}</span>
-                                                        <span class="text-[10px] text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
+                                                        <span class="text-[10px] text-gray-400 flex items-center gap-1">
+                                                            <span>{{ $reply->created_at == $reply->updated_at ? $reply->created_at->diffForHumans() : $reply->updated_at->diffForHumans() }}</span>
+                                                            @if($reply->created_at != $reply->updated_at && !str_starts_with($reply->content, '_deleted_'))
+                                                                <span class="text-gray-300">•</span>
+                                                                <span class="italic text-[9px] text-gray-400">(diedit)</span>
+                                                            @endif
+                                                        </span>
                                                     </div>
-                                                    @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->is_admin))
+                                                    @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->is_admin) && !str_starts_with($reply->content, '_deleted_'))
                                                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button @click="editingReply = !editingReply" class="text-gray-400 hover:text-[#1a3a5c] p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
                                                             <form action="/comments/{{ $reply->id }}" method="POST" onsubmit="return confirm('Hapus balasan?');">
@@ -169,7 +195,64 @@
                                                     @endif
                                                 </div>
 
-                                                <p x-show="!editingReply" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"><span class="text-blue-500 font-semibold text-xs mr-1">{{ '@'.$comment->user->name }}</span>{!! nl2br(e($reply->content)) !!}</p>
+                                                @if($reply->content === '_deleted_by_user_')
+                                                    <p class="text-xs text-gray-400 italic flex items-center gap-1.5 py-1">
+                                                        <i data-lucide="ban" class="w-3.5 h-3.5"></i> Balasan ini telah dihapus oleh pengguna
+                                                    </p>
+                                                @elseif($reply->content === '_deleted_by_admin_')
+                                                    <p class="text-xs text-red-400 italic flex items-center gap-1.5 py-1 bg-red-50/50 px-3 py-1 rounded-lg border border-red-100/50 w-fit">
+                                                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-red-500"></i> Balasan ini telah dihapus oleh moderator/admin
+                                                    </p>
+                                                @else
+                                                    @php
+                                                        // Ambil semua username unik di thread ini
+                                                        $threadUsernames = collect([$comment->user->name]);
+                                                        foreach($comment->replies as $r) {
+                                                            $threadUsernames->push($r->user->name);
+                                                        }
+                                                        $sortedUsernames = $threadUsernames->unique()->sortByDesc(function($name) {
+                                                            return strlen($name);
+                                                        })->values()->all();
+
+                                                        $renderedContent = e($reply->content);
+                                                        $matched = false;
+                                                        foreach($sortedUsernames as $username) {
+                                                            $escapedUsername = e($username);
+                                                            $pattern = '/^@' . preg_quote($escapedUsername, '/') . '(\s|$)/';
+                                                            if (preg_match($pattern, $renderedContent)) {
+                                                                $renderedContent = preg_replace($pattern, '<span class="text-blue-500 font-semibold text-xs mr-1">@' . $escapedUsername . '</span>', $renderedContent);
+                                                                $matched = true;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if (!$matched) {
+                                                            $renderedContent = preg_replace('/^@([a-zA-Z0-9_]+)/', '<span class="text-blue-500 font-semibold text-xs mr-1">@$1</span>', $renderedContent);
+                                                        }
+                                                    @endphp
+                                                    <p x-show="!editingReply" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br($renderedContent) !!}</p>
+                                                @endif
+                                                
+                                                @auth
+                                                    @if(!str_starts_with($reply->content, '_deleted_'))
+                                                        <button @click="
+                                                            const rootCommentEl = document.getElementById('comment-{{ $comment->id }}');
+                                                            if (rootCommentEl) {
+                                                                const alpineData = Alpine.$data(rootCommentEl);
+                                                                alpineData.replying = true;
+                                                                alpineData.editing = false;
+                                                                setTimeout(() => {
+                                                                    const textarea = document.getElementById('reply-textarea-{{ $comment->id }}');
+                                                                    if (textarea) {
+                                                                        textarea.value = '{{ "@" . $reply->user->name }} ';
+                                                                        textarea.focus();
+                                                                    }
+                                                                }, 50);
+                                                            }
+                                                        " class="text-[10px] font-bold text-gray-400 hover:text-[#1a3a5c] mt-1.5 flex items-center gap-1 transition">
+                                                            <i data-lucide="reply" class="w-3 h-3"></i> Balas
+                                                        </button>
+                                                    @endif
+                                                @endauth
                                                 
                                                 <form x-show="editingReply" x-cloak action="/comments/{{ $reply->id }}" method="POST" class="mt-2">
                                                     @csrf @method('PUT')
@@ -183,6 +266,30 @@
                                         </div>
                                     </div>
                                 @endforeach
+                                
+                                @auth
+                                    <form x-show="replying" x-cloak action="/diskusi/{{ $discussion->id }}/comment" method="POST" class="relative group animate-fade-in pt-2">
+                                        <div class="absolute -left-6 top-7 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
+                                        <div class="flex gap-3 relative">
+                                            @if(auth()->user()->profile_photo)
+                                                <img src="{{ \Illuminate\Support\Str::startsWith(auth()->user()->profile_photo, 'http') ? auth()->user()->profile_photo : asset('storage/' . auth()->user()->profile_photo) }}" class="w-8 h-8 shrink-0 rounded-full object-cover shadow-sm">
+                                            @else
+                                                <div class="w-8 h-8 shrink-0 rounded-full bg-[#d0e4f5] flex items-center justify-center font-bold text-[#1a3a5c] text-xs">
+                                                    {{ substr(auth()->user()->name, 0, 1) }}
+                                                </div>
+                                            @endif
+                                            <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                                                @csrf
+                                                <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+                                                <textarea id="reply-textarea-{{ $comment->id }}" name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none" placeholder="Tulis balasan..."></textarea>
+                                                <div class="flex justify-end gap-2 mt-2">
+                                                    <button type="button" @click="replying = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
+                                                    <button type="submit" class="bg-[#1a3a5c] text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-[#122b45] transition">Kirim Balasan</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                @endauth
                             </div>
                         </div>
                     </div>
@@ -198,10 +305,40 @@
     <x-footer />
     <script>lucide.createIcons();</script>
         <!-- Include compiled JS assets yang berisi Laravel Echo -->
+    <script>
+        window.laravelReverb = {
+            key: "{{ env('VITE_REVERB_APP_KEY', 'z2qmiwap8byabk4uu6vt') }}",
+            host: "{{ env('VITE_REVERB_HOST', 'reverb-production-b867.up.railway.app') }}",
+            port: "{{ env('VITE_REVERB_PORT', '443') }}",
+            scheme: "{{ env('VITE_REVERB_SCHEME', 'https') }}"
+        };
+    </script>
     @vite(['resources/js/app.js'])
 
     <script>
+        function formatCommentContent(content) {
+            // Dapatkan semua nama pengguna unik dari halaman, diurutkan dari yang terpanjang
+            const usernames = Array.from(document.querySelectorAll('.comment-username'))
+                .map(el => el.textContent.trim())
+                .filter((v, i, a) => a.indexOf(v) === i)
+                .sort((a, b) => b.length - a.length);
+            
+            for (const username of usernames) {
+                // Gunakan regex escape untuk mengantisipasi karakter khusus di nama
+                const escapedName = username.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                const pattern = new RegExp('^@' + escapedName + '(\\s|$)');
+                if (pattern.test(content)) {
+                    return content.replace(pattern, (match, p1) => {
+                        return `<span class="text-blue-500 font-semibold text-xs mr-1">@${username}</span>` + p1;
+                    });
+                }
+            }
+            // Fallback ke regex standar jika tidak ada nama yang terdaftar di DOM
+            return content.replace(/^@([a-zA-Z0-9_]+)/, '<span class="text-blue-500 font-semibold text-xs mr-1">@$1</span>');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
             const discussionId = "{{ $discussion->id }}";
             
             // Dengar channel public discussion.[id]
@@ -242,18 +379,38 @@
                             }
                             
                             const newReplyHtml = `
-                                <div class="relative group animate-fade-in">
+                                <div id="comment-${comment.id}" class="relative group animate-fade-in">
                                     <div class="absolute -left-6 top-5 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
                                     <div class="flex gap-3 relative">
                                         ${replyAvatarHtml}
                                         <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
                                             <div class="flex justify-between items-start mb-1">
                                                 <div class="flex items-center gap-2">
-                                                    <span class="font-bold text-sm text-[#1a3a5c]">${commentUser.name}</span>
+                                                    <span class="font-bold text-sm text-[#1a3a5c] comment-username">${commentUser.name}</span>
                                                     <span class="text-[10px] text-gray-400">Baru saja</span>
                                                 </div>
                                             </div>
-                                            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">${comment.content}</p>
+                                            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">${formatCommentContent(comment.content)}</p>
+                                            
+                                            ${isAuthenticated ? `
+                                                <button onclick="
+                                                    const rootCommentEl = document.getElementById('comment-${comment.parent_id}');
+                                                    if (rootCommentEl) {
+                                                        const alpineData = Alpine.$data(rootCommentEl);
+                                                        alpineData.replying = true;
+                                                        alpineData.editing = false;
+                                                        setTimeout(() => {
+                                                            const textarea = document.getElementById('reply-textarea-${comment.parent_id}');
+                                                            if (textarea) {
+                                                                textarea.value = '@${commentUser.name} ';
+                                                                textarea.focus();
+                                                            }
+                                                        }, 50);
+                                                    }
+                                                " class="text-[10px] font-bold text-gray-400 hover:text-[#1a3a5c] mt-1.5 flex items-center gap-1 transition">
+                                                    <i data-lucide="reply" class="w-3 h-3"></i> Balas
+                                                </button>
+                                            ` : ''}
                                         </div>
                                     </div>
                                 </div>
@@ -269,7 +426,7 @@
                                     <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4 mb-2">
                                         <div class="flex justify-between items-start mb-2">
                                             <div class="flex items-center gap-2">
-                                                <span class="font-bold text-sm text-[#1a3a5c]">${commentUser.name}</span>
+                                                <span class="font-bold text-sm text-[#1a3a5c] comment-username">${commentUser.name}</span>
                                                 <span class="text-[10px] text-gray-400">Baru saja</span>
                                             </div>
                                         </div>
@@ -289,6 +446,80 @@
                             }
                             commentContainer.insertAdjacentHTML('beforeend', newCommentHtml);
                         }
+                    }
+                })
+                .listen('.CommentUpdated', (e) => {
+                    console.log("Komentar di-update:", e.comment);
+                    const comment = e.comment;
+                    
+                    // Cari element pembungkus komentar/reply berdasarkan ID
+                    const commentEl = document.getElementById('comment-' + comment.id);
+                    if (commentEl) {
+                        if (comment.content.startsWith('_deleted_')) {
+                            // 1. Tampilkan teks "Pesan ini telah dihapus..."
+                            const contentEl = commentEl.querySelector('p[x-show="!editing"]') || commentEl.querySelector('p[x-show="!editingReply"]') || commentEl.querySelector('.italic');
+                            if (contentEl) {
+                                if (comment.content === '_deleted_by_admin_') {
+                                    contentEl.outerHTML = `
+                                        <p class="text-xs text-red-400 italic flex items-center gap-1.5 py-1 bg-red-50/50 px-3 py-1 rounded-lg border border-red-100/50 w-fit">
+                                            <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-red-500"></i> ${comment.parent_id ? 'Balasan' : 'Pesan'} ini telah dihapus oleh moderator/admin
+                                        </p>
+                                    `;
+                                } else {
+                                    contentEl.outerHTML = `
+                                        <p class="text-xs text-gray-400 italic flex items-center gap-1.5 py-1">
+                                            <i data-lucide="ban" class="w-3.5 h-3.5"></i> ${comment.parent_id ? 'Balasan' : 'Pesan'} ini telah dihapus oleh pengguna
+                                        </p>
+                                    `;
+                                }
+                                lucide.createIcons();
+                            }
+                            
+                            // 2. Sembunyikan tombol edit/hapus
+                            const actionsEl = commentEl.querySelector('.opacity-0');
+                            if (actionsEl) {
+                                actionsEl.remove();
+                            }
+                            
+                            // 3. Sembunyikan tombol balas (Reply button)
+                            const replyBtn = commentEl.querySelector('button[class*="hover:text-[#1a3a5c]"]');
+                            if (replyBtn) {
+                                replyBtn.remove();
+                            }
+                        } else {
+                            // Proses edit komentar normal
+                            const contentEl = commentEl.querySelector('p[x-show="!editing"]') || commentEl.querySelector('p[x-show="!editingReply"]');
+                            if (contentEl) {
+                                if (comment.parent_id) {
+                                    contentEl.innerHTML = formatCommentContent(comment.content).replace(/\n/g, '<br>');
+                                } else {
+                                    contentEl.innerHTML = comment.content.replace(/\n/g, '<br>');
+                                }
+                            }
+                            
+                            // Update waktu menjadi "Baru saja" dan tambahkan penanda "(diedit)" agar sinkron instan di semua user!
+                            const metaEl = commentEl.querySelector('.text-\\[10px\\]') || commentEl.querySelector('.text-gray-400');
+                            if (metaEl) {
+                                metaEl.innerHTML = `
+                                    <span>Baru saja</span>
+                                    <span class="text-gray-300">•</span>
+                                    <span class="italic text-[9px] text-gray-400">(diedit)</span>
+                                `;
+                            }
+                            
+                            // Juga, update isi textarea di form edit agar sinkron jika di-edit lagi!
+                            const textareaEl = commentEl.querySelector('textarea[name="content"]');
+                            if (textareaEl) {
+                                textareaEl.value = comment.content;
+                            }
+                        }
+                    }
+                })
+                .listen('.CommentDeleted', (e) => {
+                    console.log("Komentar dihapus:", e.commentId);
+                    const commentEl = document.getElementById('comment-' + e.commentId);
+                    if (commentEl) {
+                        commentEl.remove();
                     }
                 });
         });

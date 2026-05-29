@@ -1,3 +1,4 @@
+// Trigger fresh Railway build with new environment variables
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import tailwindcss from '@tailwindcss/vite';
