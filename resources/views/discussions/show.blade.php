@@ -82,7 +82,7 @@
 
             <div class="space-y-6">
                 @forelse ($discussion->comments as $comment)
-                    <div x-data="{ replying: false, editing: false }" class="flex gap-4 group">
+                    <div x-data="{ replying: false, editing: false }" id="comment-{{ $comment->id }}" class="flex gap-4 group">
                         
                         @if($comment->user->profile_photo)
                             <img src="{{ \Illuminate\Support\Str::startsWith($comment->user->profile_photo, 'http') ? $comment->user->profile_photo : asset('storage/' . $comment->user->profile_photo) }}" class="w-10 h-10 shrink-0 rounded-full object-cover shadow-sm z-10">
@@ -139,53 +139,51 @@
                                 </form>
                             @endauth
 
-                            @if($comment->replies->count() > 0)
-                                <div class="relative ml-2 pl-6 border-l-2 border-gray-100 space-y-4 pt-2">
-                                    @foreach($comment->replies as $reply)
-                                        <div x-data="{ editingReply: false }" class="relative group">
-                                            <div class="absolute -left-6 top-5 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
-                                            
-                                            <div class="flex gap-3 relative">
-                                                @if($reply->user->profile_photo)
-                                                    <img src="{{ \Illuminate\Support\Str::startsWith($reply->user->profile_photo, 'http') ? $reply->user->profile_photo : asset('storage/' . $reply->user->profile_photo) }}" class="w-8 h-8 shrink-0 rounded-full object-cover shadow-sm">
-                                                @else
-                                                    <div class="w-8 h-8 shrink-0 rounded-full bg-[#d0e4f5] flex items-center justify-center font-bold text-[#1a3a5c] text-xs">
-                                                        {{ substr($reply->user->name, 0, 1) }}
-                                                    </div>
-                                                @endif
-                                                <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
-                                                    <div class="flex justify-between items-start mb-1">
-                                                        <div class="flex items-center gap-2">
-                                                            <span class="font-bold text-sm text-[#1a3a5c]">{{ $reply->user->name }}</span>
-                                                            <span class="text-[10px] text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
-                                                        </div>
-                                                        @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->is_admin))
-                                                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <button @click="editingReply = !editingReply" class="text-gray-400 hover:text-[#1a3a5c] p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                                                <form action="/comments/{{ $reply->id }}" method="POST" onsubmit="return confirm('Hapus balasan?');">
-                                                                    @csrf @method('DELETE')
-                                                                    <button type="submit" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                                                                </form>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-
-                                                    <p x-show="!editingReply" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"><span class="text-blue-500 font-semibold text-xs mr-1">{{ '@'.$comment->user->name }}</span>{!! nl2br(e($reply->content)) !!}</p>
-                                                    
-                                                    <form x-show="editingReply" x-cloak action="/comments/{{ $reply->id }}" method="POST" class="mt-2">
-                                                        @csrf @method('PUT')
-                                                        <textarea name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] mb-2">{{ $reply->content }}</textarea>
-                                                        <div class="flex gap-2 justify-end">
-                                                            <button type="button" @click="editingReply = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
-                                                            <button type="submit" class="bg-[#1a3a5c] text-white text-xs font-bold px-4 py-1.5 rounded-lg">Simpan</button>
-                                                        </div>
-                                                    </form>
+                            <div id="replies-{{ $comment->id }}" class="relative ml-2 pl-6 border-l-2 border-gray-100 space-y-4 pt-2 {{ $comment->replies->count() === 0 ? 'hidden' : '' }}">
+                                @foreach($comment->replies as $reply)
+                                    <div x-data="{ editingReply: false }" class="relative group">
+                                        <div class="absolute -left-6 top-5 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
+                                        
+                                        <div class="flex gap-3 relative">
+                                            @if($reply->user->profile_photo)
+                                                <img src="{{ \Illuminate\Support\Str::startsWith($reply->user->profile_photo, 'http') ? $reply->user->profile_photo : asset('storage/' . $reply->user->profile_photo) }}" class="w-8 h-8 shrink-0 rounded-full object-cover shadow-sm">
+                                            @else
+                                                <div class="w-8 h-8 shrink-0 rounded-full bg-[#d0e4f5] flex items-center justify-center font-bold text-[#1a3a5c] text-xs">
+                                                    {{ substr($reply->user->name, 0, 1) }}
                                                 </div>
+                                            @endif
+                                            <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                                                <div class="flex justify-between items-start mb-1">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="font-bold text-sm text-[#1a3a5c]">{{ $reply->user->name }}</span>
+                                                        <span class="text-[10px] text-gray-400">{{ $reply->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->is_admin))
+                                                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button @click="editingReply = !editingReply" class="text-gray-400 hover:text-[#1a3a5c] p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                            <form action="/comments/{{ $reply->id }}" method="POST" onsubmit="return confirm('Hapus balasan?');">
+                                                                @csrf @method('DELETE')
+                                                                <button type="submit" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                            </form>
+                                                        </div>
+                                                    @endif
+                                                </div>
+
+                                                <p x-show="!editingReply" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"><span class="text-blue-500 font-semibold text-xs mr-1">{{ '@'.$comment->user->name }}</span>{!! nl2br(e($reply->content)) !!}</p>
+                                                
+                                                <form x-show="editingReply" x-cloak action="/comments/{{ $reply->id }}" method="POST" class="mt-2">
+                                                    @csrf @method('PUT')
+                                                    <textarea name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] mb-2">{{ $reply->content }}</textarea>
+                                                    <div class="flex gap-2 justify-end">
+                                                        <button type="button" @click="editingReply = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
+                                                        <button type="submit" class="bg-[#1a3a5c] text-white text-xs font-bold px-4 py-1.5 rounded-lg">Simpan</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
-                                    @endforeach
-                                </div>
-                            @endif
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 @empty
@@ -199,5 +197,102 @@
 
     <x-footer />
     <script>lucide.createIcons();</script>
+        <!-- Include compiled JS assets yang berisi Laravel Echo -->
+    @vite(['resources/js/app.js'])
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const discussionId = "{{ $discussion->id }}";
+            
+            // Dengar channel public discussion.[id]
+            window.Echo.channel('discussion.' + discussionId)
+                .listen('.CommentSent', (e) => {
+                    console.log("Komentar baru masuk:", e.comment);
+                    
+                    const comment = e.comment;
+                    const commentUser = comment.user;
+                    
+                    // Tentukan avatar (foto profil atau inisial)
+                    let avatarHtml = '';
+                    if (commentUser.profile_photo) {
+                        const isUrl = commentUser.profile_photo.startsWith('http');
+                        const imgUrl = isUrl ? commentUser.profile_photo : '/storage/' + commentUser.profile_photo;
+                        avatarHtml = `<img src="${imgUrl}" class="w-10 h-10 shrink-0 rounded-full object-cover shadow-sm z-10">`;
+                    } else {
+                        const initial = commentUser.name.substring(0, 1);
+                        avatarHtml = `<div class="w-10 h-10 shrink-0 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] z-10">${initial}</div>`;
+                    }
+                    
+                    if (comment.parent_id) {
+                        // Jika ini adalah balasan (subcomment)
+                        const repliesContainer = document.getElementById('replies-' + comment.parent_id);
+                        if (repliesContainer) {
+                            // Tampilkan container jika sebelumnya kosong/hidden
+                            repliesContainer.classList.remove('hidden');
+                            
+                            // Tentukan avatar berukuran mini (w-8 h-8) untuk reply
+                            let replyAvatarHtml = '';
+                            if (commentUser.profile_photo) {
+                                const isUrl = commentUser.profile_photo.startsWith('http');
+                                const imgUrl = isUrl ? commentUser.profile_photo : '/storage/' + commentUser.profile_photo;
+                                replyAvatarHtml = `<img src="${imgUrl}" class="w-8 h-8 shrink-0 rounded-full object-cover shadow-sm">`;
+                            } else {
+                                const initial = commentUser.name.substring(0, 1);
+                                replyAvatarHtml = `<div class="w-8 h-8 shrink-0 rounded-full bg-[#d0e4f5] flex items-center justify-center font-bold text-[#1a3a5c] text-xs">${initial}</div>`;
+                            }
+                            
+                            const newReplyHtml = `
+                                <div class="relative group animate-fade-in">
+                                    <div class="absolute -left-6 top-5 w-6 h-4 border-b-2 border-l-2 border-gray-100 rounded-bl-xl"></div>
+                                    <div class="flex gap-3 relative">
+                                        ${replyAvatarHtml}
+                                        <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                                            <div class="flex justify-between items-start mb-1">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="font-bold text-sm text-[#1a3a5c]">${commentUser.name}</span>
+                                                    <span class="text-[10px] text-gray-400">Baru saja</span>
+                                                </div>
+                                            </div>
+                                            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">${comment.content}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            repliesContainer.insertAdjacentHTML('beforeend', newReplyHtml);
+                        }
+                    } else {
+                        // Jika ini adalah komentar utama (root)
+                        const newCommentHtml = `
+                            <div x-data="{ replying: false, editing: false }" id="comment-${comment.id}" class="flex gap-4 group animate-fade-in">
+                                ${avatarHtml}
+                                <div class="flex-1 relative">
+                                    <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4 mb-2">
+                                        <div class="flex justify-between items-start mb-2">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-bold text-sm text-[#1a3a5c]">${commentUser.name}</span>
+                                                <span class="text-[10px] text-gray-400">Baru saja</span>
+                                            </div>
+                                        </div>
+                                        <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">${comment.content}</p>
+                                    </div>
+                                    
+                                    <div id="replies-${comment.id}" class="relative ml-2 pl-6 border-l-2 border-gray-100 space-y-4 pt-2 hidden"></div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        const commentContainer = document.querySelector('.space-y-6');
+                        if (commentContainer) {
+                            const emptyPlaceholder = commentContainer.querySelector('.text-center.py-8');
+                            if (emptyPlaceholder) {
+                                emptyPlaceholder.remove();
+                            }
+                            commentContainer.insertAdjacentHTML('beforeend', newCommentHtml);
+                        }
+                    }
+                });
+        });
+    </script>
+
 </body>
 </html>

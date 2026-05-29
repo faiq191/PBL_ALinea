@@ -136,15 +136,20 @@ class DiscussionController extends Controller
             'parent_id' => 'nullable|exists:comments,id'
         ]);
         
-        Comment::create([
+        // 1. Simpan hasil komentar ke dalam variabel $comment
+        $comment = Comment::create([
             'discussion_id' => $id,
             'user_id'       => auth()->id(),
             'parent_id'     => $request->parent_id,
             'content'       => $request->content,
         ]);
         
+        // 2. BROADCAST SECARA REAL-TIME (.toOthers() biar pengirim sendiri tidak duplikat chat di layarnya)
+        broadcast(new \App\Events\CommentSent($comment))->toOthers();
+        
         return back();
     }
+
 
     public function edit($id)
     {
