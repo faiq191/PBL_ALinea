@@ -10,7 +10,8 @@
     <x-header />
     
     <div class="p-8 flex justify-center pt-10">
-        <div class="max-w-6xl w-full bg-[#e6ddd6] p-8 md:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row gap-10 text-[#1a3a5c]">
+        {{-- Card Utama diubah dari bg-[#e6ddd6] menjadi bg-[#ffffff] border border-gray-100 --}}
+        <div class="max-w-6xl w-full bg-[#ffffff] border border-gray-100 p-8 md:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row gap-10 text-[#1a3a5c]">
             
             {{-- Kiri: Sampul & Informasi --}}
             <div class="w-full md:w-1/3 lg:w-1/4 shrink-0">
@@ -19,7 +20,7 @@
                 
                 <div class="mb-8">
                     <h3 class="text-xl font-bold mb-2">Informasi</h3>
-                    <hr class="border-[#1a3a5c] border-t-[1.5px] mb-4">
+                    <hr class="border-[#1a3a5c]/20 border-t-[1.5px] mb-4">
                     <ul class="text-sm space-y-4 font-bold">
                         <li>Type : <span class="font-normal">{{ $book->type->name ?? '-' }}</span></li>
                         <li>Tahun : <span class="font-normal">{{ $book->year->year ?? '-' }}</span></li>
@@ -42,7 +43,7 @@
                     {{ $book->title }}
                 </h1>
                 
-                {{-- Pesan Error (Jika form Tambah ke Koleksi gagal) --}}
+                {{-- Pesan Error --}}
                 @if($errors->any())
                     <div class="bg-red-500 text-white p-4 rounded-xl mb-6 shadow-md">
                         <ul class="list-disc pl-5 text-sm font-bold">
@@ -56,20 +57,21 @@
                 {{-- Sinopsis Buku --}}
                 <div class="mb-10">
                     <h3 class="text-xl font-bold mb-2">Sinopsis</h3>
-                    <hr class="border-[#1a3a5c] border-t-[1.5px] mb-4">
-                    <div class="text-sm leading-loose font-medium space-y-4">
+                    <hr class="border-[#1a3a5c]/20 border-t-[1.5px] mb-4">
+                    <div class="text-sm leading-loose font-medium space-y-4 text-gray-700">
                         {!! strip_tags($book->description ?? 'Deskripsi belum tersedia.', '<br><p><b><i><strong><em><ul><li><ol>') !!}
                     </div>
                 </div>
 
                 {{-- Daftar Pemilik Lain & Request Pinjam --}}
-                <div class="mt-10 bg-white/50 p-6 rounded-2xl">
+                {{-- Diubah menjadi bg-[#f8fafc] agar kontras dengan putih --}}
+                <div class="mt-10 bg-[#f8fafc] p-6 rounded-2xl border border-gray-100">
                     <h3 class="text-xl font-bold mb-4">Tersedia di Koleksi:</h3>
                     <div class="space-y-4">
                         @forelse($otherOwners as $otherBook)
-                            <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
+                            <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                                 <a href="/users/{{ $otherBook->user->id }}" class="flex items-center gap-3 hover:opacity-85 transition">
-                                    <div class="w-10 h-10 rounded-full bg-[#1a3a5c] flex items-center justify-center text-white font-bold">
+                                    <div class="w-10 h-10 rounded-full bg-[#1a3a5c] flex items-center justify-center text-white font-bold shadow-sm">
                                         {{ substr($otherBook->user->name, 0, 1) }}
                                     </div>
                                     <div>
@@ -81,12 +83,12 @@
                                 @if($otherBook->isAvailable())
                                     <form action="/loans/{{ $otherBook->id }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-[#1a3a5c] text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-[#122b45] transition">
+                                        <button type="submit" class="bg-[#1a3a5c] text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-[#122b45] transition shadow-md">
                                             Request Pinjam
                                         </button>
                                     </form>
                                 @else
-                                    <span class="text-xs text-red-500 font-bold italic">Sedang Dipinjam</span>
+                                    <span class="text-xs text-red-500 font-bold italic bg-red-50 px-3 py-1.5 rounded-lg border border-red-100">Sedang Dipinjam</span>
                                 @endif
                             </div>
                         @empty
@@ -96,11 +98,11 @@
                 </div>
 
                 {{-- Kumpulan Tombol Aksi --}}
-                <div class="flex flex-wrap gap-4 mt-8 pt-6 border-t border-[#1a3a5c]/20">
+                <div class="flex flex-wrap gap-4 mt-8 pt-6 border-t border-gray-200">
                     
                     {{-- Tombol Kembali --}}
                     <a href="{{ url()->previous() }}"
-                        class="inline-flex items-center bg-gray-400 hover:bg-gray-500 text-white font-bold px-6 py-2.5 rounded-xl shadow transition">
+                        class="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition">
                         ← Kembali
                     </a>
                     
@@ -111,16 +113,16 @@
                                 ->exists();
                         @endphp
 
-                        {{-- Tombol Edit Buku (Hanya muncul jika buku milik user & berasal dari database lokal) --}}
+                        {{-- Tombol Edit Buku --}}
                         @if(!isset($book->is_google_api) || !$book->is_google_api)
                             @if(auth()->id() === $book->user_id || auth()->user()->is_admin)
-                                <a href="/books/{{ $book->id }}/edit" class="bg-[#1a3a5c] text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-[#122b45] transition">
+                                <a href="/books/{{ $book->id }}/edit" class="bg-[#e8edf2] text-[#1a3a5c] font-bold px-6 py-2.5 rounded-xl hover:bg-[#d0e4f5] transition">
                                     Edit Buku
                                 </a>
                             @endif
                         @endif
 
-                        {{-- Tombol Tambahkan ke Koleksi (Hanya muncul jika user belum memiliki buku ini) --}}
+                        {{-- Tombol Tambahkan ke Koleksi --}}
                         @if(!$userOwnsBook)
                             <form action="/books" method="POST" class="inline-flex">
                                 @csrf
@@ -131,7 +133,7 @@
                                     <input type="hidden" name="source_mode" value="existing">
                                     <input type="hidden" name="existing_book_id" value="{{ $book->id }}">
                                 @endif
-                                <button type="submit" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white font-bold px-6 py-2.5 rounded-xl shadow transition">
+                                <button type="submit" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition">
                                     Tambahkan ke Koleksi
                                 </button>
                             </form>

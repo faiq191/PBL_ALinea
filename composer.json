@@ -11,7 +11,8 @@
         "filament/filament": "^4.0",
         "laravel/framework": "^13.0",
         "laravel/reverb": "^1.0",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "pusher/pusher-php-server": "^7.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
