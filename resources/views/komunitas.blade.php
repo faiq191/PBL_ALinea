@@ -53,7 +53,7 @@
                                 <h4 class="text-xl font-bold text-[#1a3a5c] leading-tight mb-2">
                                     {{ $discussion->title }}
                                 </h4>
-                                <div class="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                                <a href="/users/{{ $discussion->user->id ?? '#' }}" class="flex items-center gap-2 text-xs text-gray-500 mb-3 hover:opacity-85 transition">
                                     @if($discussion->user->profile_photo)
                                         <img src="{{ \Illuminate\Support\Str::startsWith($discussion->user->profile_photo, 'http') ? $discussion->user->profile_photo : asset('storage/' . $discussion->user->profile_photo) }}" class="w-5 h-5 rounded-full object-cover shadow-sm">
                                     @else
@@ -61,10 +61,10 @@
                                             {{ substr($discussion->user->name ?? 'U', 0, 1) }}
                                         </div>
                                     @endif
-                                    <span class="font-bold text-[#1a3a5c]">{{ $discussion->user->name ?? 'Unknown' }}</span>
+                                    <span class="font-bold text-[#1a3a5c] hover:underline">{{ $discussion->user->name ?? 'Unknown' }}</span>
                                     <span>•</span>
                                     <span>{{ $discussion->created_at->diffForHumans() }}</span>
-                                </div>
+                                </a>
                                 <a href="/diskusi/{{ $discussion->id }}" class="inline-flex items-center gap-1 text-[#1a3a5c] text-sm font-bold hover:underline w-max">
                                     Lihat Diskusi <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                 </a>

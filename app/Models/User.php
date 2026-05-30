@@ -31,8 +31,18 @@ class User extends Authenticatable
         ];
     }
 
-        public function canAccessPanel(Panel $panel): bool
+    public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_admin === 1;
+    }
+
+    public function books()
+    {
+        return $this->hasMany(Book::class);
+    }
+
+    public function discussions()
+    {
+        return $this->hasMany(Discussion::class);
     }
 }

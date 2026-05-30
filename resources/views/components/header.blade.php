@@ -69,7 +69,7 @@
                         <p class="font-semibold text-sm">{{ auth()->user()->name }}</p>
                         <p class="text-xs text-gray-400">{{ auth()->user()->email }}</p>
                     </div>
-                    <a href="/profile" class="block px-4 py-3 text-sm hover:bg-gray-50 transition">Akun Saya</a>
+                    <a href="/users/{{ auth()->user()->id }}" class="block px-4 py-3 text-sm hover:bg-gray-50 transition">Akun Saya</a>
                     <form method="POST" action="/logout">
                         @csrf
                         <button class="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition">
