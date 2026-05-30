@@ -68,15 +68,15 @@
                     <div class="space-y-4">
                         @forelse($otherOwners as $otherBook)
                             <div class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm">
-                                <div class="flex items-center gap-3">
+                                <a href="/users/{{ $otherBook->user->id }}" class="flex items-center gap-3 hover:opacity-85 transition">
                                     <div class="w-10 h-10 rounded-full bg-[#1a3a5c] flex items-center justify-center text-white font-bold">
                                         {{ substr($otherBook->user->name, 0, 1) }}
                                     </div>
                                     <div>
-                                        <p class="font-bold text-sm">{{ $otherBook->user->name }}</p>
+                                        <p class="font-bold text-sm hover:underline">{{ $otherBook->user->name }}</p>
                                         <p class="text-xs text-gray-500">Pemilik Buku</p>
                                     </div>
-                                </div>
+                                </a>
 
                                 @if($otherBook->isAvailable())
                                     <form action="/loans/{{ $otherBook->id }}" method="POST">

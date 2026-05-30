@@ -104,6 +104,7 @@ Route::middleware('auth')->group(function () {
 
 // Detail
 Route::get('/diskusi/{id}', [DiscussionController::class, 'show']);
+Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
 Route::get('/perpustakaan', fn() => view('perpustakaan'));
 Route::get('/informasi', fn() => view('informasi'));
 
