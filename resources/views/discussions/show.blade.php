@@ -68,15 +68,18 @@
             @auth
                 <form action="/diskusi/{{ $discussion->id }}/comment" method="POST" class="mb-10 relative">
                     @csrf
-                    <textarea name="content" required rows="3" class="w-full bg-[#e8edf2] border-none rounded-2xl p-4 text-sm text-[#1a3a5c] outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none" placeholder="Tulis balasanmu di sini..."></textarea>
+                    <textarea name="content" required rows="3" class="w-full bg-[#e8edf2] border-none rounded-2xl p-4 text-sm text-[#1a3a5c] outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror" placeholder="Tulis balasanmu di sini..."></textarea>
                     <div class="absolute right-3 bottom-4">
                         <button type="submit" class="bg-[#1a3a5c] text-white px-5 py-2 rounded-xl font-bold text-sm hover:bg-[#122b45] transition">Kirim</button>
                     </div>
+                    @error('content')
+                        <p class="text-red-600 text-xs mt-1 font-semibold absolute -bottom-6 left-0">{{ $message }}</p>
+                    @enderror
                 </form>
             @else
                 <div class="bg-[#e8edf2] p-6 rounded-2xl text-center mb-10">
-                    <p class="text-sm text-[#5a7a9c] font-medium mb-3">Login untuk ikut berdiskusi</p>
-                    <a href="/login" class="bg-[#1a3a5c] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-[#122b45] transition">Login</a>
+                    <p class="text-sm text-[#5a7a9c] font-medium mb-3">Masuk untuk ikut berdiskusi</p>
+                    <a href="/login" class="bg-[#1a3a5c] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-[#122b45] transition">Masuk</a>
                 </div>
             @endauth
 
@@ -103,7 +106,7 @@
                                             <span>{{ $comment->created_at == $comment->updated_at ? $comment->created_at->diffForHumans() : $comment->updated_at->diffForHumans() }}</span>
                                             @if($comment->created_at != $comment->updated_at && !str_starts_with($comment->content, '_deleted_'))
                                                 <span class="text-gray-300">•</span>
-                                                <span class="italic text-[9px] text-gray-400">(diedit)</span>
+                                                <span class="italic text-[9px] text-gray-400">(disunting)</span>
                                             @endif
                                         </span>
                                     </div>
@@ -133,7 +136,10 @@
                                 
                                 <form x-show="editing" x-cloak action="/comments/{{ $comment->id }}" method="POST" class="mt-2">
                                     @csrf @method('PUT')
-                                    <textarea name="content" required rows="2" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#1a3a5c] mb-2">{{ $comment->content }}</textarea>
+                                    <textarea name="content" required rows="2" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#1a3a5c] mb-2 @error('content') ring-2 ring-red-500 @enderror">{{ $comment->content }}</textarea>
+                                    @error('content')
+                                        <p class="text-red-600 text-xs mt-1 mb-2 font-semibold">{{ $message }}</p>
+                                    @enderror
                                     <div class="flex gap-2 justify-end">
                                         <button type="button" @click="editing = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
                                         <button type="submit" class="bg-[#1a3a5c] text-white text-xs font-bold px-4 py-1.5 rounded-lg">Simpan</button>
@@ -184,7 +190,7 @@
                                                             <span>{{ $reply->created_at == $reply->updated_at ? $reply->created_at->diffForHumans() : $reply->updated_at->diffForHumans() }}</span>
                                                             @if($reply->created_at != $reply->updated_at && !str_starts_with($reply->content, '_deleted_'))
                                                                 <span class="text-gray-300">•</span>
-                                                                <span class="italic text-[9px] text-gray-400">(diedit)</span>
+                                                                <span class="italic text-[9px] text-gray-400">(disunting)</span>
                                                             @endif
                                                         </span>
                                                     </div>
@@ -260,7 +266,10 @@
                                                 
                                                 <form x-show="editingReply" x-cloak action="/comments/{{ $reply->id }}" method="POST" class="mt-2">
                                                     @csrf @method('PUT')
-                                                    <textarea name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] mb-2">{{ $reply->content }}</textarea>
+                                                    <textarea name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] mb-2 @error('content') ring-2 ring-red-500 @enderror">{{ $reply->content }}</textarea>
+                                                    @error('content')
+                                                        <p class="text-red-600 text-xs mt-1 mb-2 font-semibold">{{ $message }}</p>
+                                                    @enderror
                                                     <div class="flex gap-2 justify-end">
                                                         <button type="button" @click="editingReply = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
                                                         <button type="submit" class="bg-[#1a3a5c] text-white text-xs font-bold px-4 py-1.5 rounded-lg">Simpan</button>
@@ -285,7 +294,10 @@
                                             <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
                                                 @csrf
                                                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                                <textarea id="reply-textarea-{{ $comment->id }}" name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none" placeholder="Tulis balasan..."></textarea>
+                                                <textarea id="reply-textarea-{{ $comment->id }}" name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror" placeholder="Tulis balasan..."></textarea>
+                                                @error('content')
+                                                    <p class="text-red-600 text-xs mt-1 mb-2 font-semibold">{{ $message }}</p>
+                                                @enderror
                                                 <div class="flex justify-end gap-2 mt-2">
                                                     <button type="button" @click="replying = false" class="text-xs font-bold text-gray-500 hover:text-gray-700 px-3 py-1.5">Batal</button>
                                                     <button type="submit" class="bg-[#1a3a5c] text-white px-4 py-1.5 rounded-lg font-bold text-xs hover:bg-[#122b45] transition">Kirim Balasan</button>
@@ -501,13 +513,13 @@
                                 }
                             }
                             
-                            // Update waktu menjadi "Baru saja" dan tambahkan penanda "(diedit)" agar sinkron instan di semua user!
+                            // Update waktu menjadi "Baru saja" dan tambahkan penanda "(disunting)" agar sinkron instan di semua user!
                             const metaEl = commentEl.querySelector('.text-\\[10px\\]') || commentEl.querySelector('.text-gray-400');
                             if (metaEl) {
                                 metaEl.innerHTML = `
                                     <span>Baru saja</span>
                                     <span class="text-gray-300">•</span>
-                                    <span class="italic text-[9px] text-gray-400">(diedit)</span>
+                                    <span class="italic text-[9px] text-gray-400">(disunting)</span>
                                 `;
                             }
                             

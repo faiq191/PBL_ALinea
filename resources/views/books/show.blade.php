@@ -10,7 +10,6 @@
     <x-header />
     
     <div class="p-8 flex justify-center pt-10">
-        {{-- Card Utama diubah dari bg-[#e6ddd6] menjadi bg-[#ffffff] border border-gray-100 --}}
         <div class="max-w-6xl w-full bg-[#ffffff] border border-gray-100 p-8 md:p-10 rounded-3xl shadow-xl flex flex-col md:flex-row gap-10 text-[#1a3a5c]">
             
             {{-- Kiri: Sampul & Informasi --}}
@@ -22,9 +21,9 @@
                     <h3 class="text-xl font-bold mb-2">Informasi</h3>
                     <hr class="border-[#1a3a5c]/20 border-t-[1.5px] mb-4">
                     <ul class="text-sm space-y-4 font-bold">
-                        <li>Type : <span class="font-normal">{{ $book->type->name ?? '-' }}</span></li>
+                        <li>Tipe : <span class="font-normal">{{ $book->type->name ?? '-' }}</span></li>
                         <li>Tahun : <span class="font-normal">{{ $book->year->year ?? '-' }}</span></li>
-                        <li>Demografis : <span class="font-normal">{{ $book->demographic->name ?? '-' }}</span></li>
+                        <li>Demografi : <span class="font-normal">{{ $book->demographic->name ?? '-' }}</span></li>
                         <li>Genre : <span class="font-normal">
                                 @if($book->genres && $book->genres->count() > 0)
                                     {{ $book->genres->pluck('name')->implode(', ') }}
@@ -43,7 +42,7 @@
                     {{ $book->title }}
                 </h1>
                 
-                {{-- Pesan Error --}}
+                {{-- Pesan Galat --}}
                 @if($errors->any())
                     <div class="bg-red-500 text-white p-4 rounded-xl mb-6 shadow-md">
                         <ul class="list-disc pl-5 text-sm font-bold">
@@ -63,8 +62,7 @@
                     </div>
                 </div>
 
-                {{-- Daftar Pemilik Lain & Request Pinjam --}}
-                {{-- Diubah menjadi bg-[#f8fafc] agar kontras dengan putih --}}
+                {{-- Daftar Pemilik Lain & Ajukan Peminjaman --}}
                 <div class="mt-10 bg-[#f8fafc] p-6 rounded-2xl border border-gray-100">
                     <h3 class="text-xl font-bold mb-4">Tersedia di Koleksi:</h3>
                     <div class="space-y-4">
@@ -84,7 +82,7 @@
                                     <form action="/loans/{{ $otherBook->id }}" method="POST">
                                         @csrf
                                         <button type="submit" class="bg-[#1a3a5c] text-white text-xs px-4 py-2 rounded-lg font-bold hover:bg-[#122b45] transition shadow-md">
-                                            Request Pinjam
+                                            Ajukan Peminjaman
                                         </button>
                                     </form>
                                 @else
@@ -113,11 +111,11 @@
                                 ->exists();
                         @endphp
 
-                        {{-- Tombol Edit Buku --}}
+                        {{-- Tombol Sunting Buku --}}
                         @if(!isset($book->is_google_api) || !$book->is_google_api)
                             @if(auth()->id() === $book->user_id || auth()->user()->is_admin)
                                 <a href="/books/{{ $book->id }}/edit" class="bg-[#e8edf2] text-[#1a3a5c] font-bold px-6 py-2.5 rounded-xl hover:bg-[#d0e4f5] transition">
-                                    Edit Buku
+                                    Sunting Buku
                                 </a>
                             @endif
                         @endif

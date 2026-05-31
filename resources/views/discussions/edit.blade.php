@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Edit Diskusi</title>
+    <title>Sunting Diskusi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -26,7 +26,7 @@
 
     <div class="p-8 pt-24 flex justify-center">
         <div class="max-w-2xl w-full bg-[#ffffff] rounded-3xl p-8 shadow-xl border border-gray-100">
-            <h1 class="text-2xl font-bold text-[#1a3a5c] mb-6">Edit Diskusi</h1>
+            <h1 class="text-2xl font-bold text-[#1a3a5c] mb-6">Sunting Diskusi</h1>
 
             <form action="/diskusi/{{ $discussion->id }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
@@ -42,9 +42,9 @@
                             <div class="flex-shrink-0 relative group">
                                 <img
                                     :src="cover_source === 'file' 
-                                        ? (filePreview ? filePreview : '{{ $discussion->image ? (\Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image)) : 'https://placehold.co/100x140?text=No+Image' }}')
-                                        : (imageUrl ? imageUrl : '{{ $discussion->image ? (\Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image)) : 'https://placehold.co/100x140?text=No+Image' }}')"
-                                    x-on:error="$el.src = 'https://placehold.co/100x140?text=Error'"
+                                        ? (filePreview ? filePreview : '{{ $discussion->image ? (\Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image)) : 'https://placehold.co/100x140?text=Tanpa+Gambar' }}')
+                                        : (imageUrl ? imageUrl : '{{ $discussion->image ? (\Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image)) : 'https://placehold.co/100x140?text=Tanpa+Gambar' }}')"
+                                    x-on:error="$el.src = 'https://placehold.co/100x140?text=Galat'"
                                     class="w-24 h-32 object-cover rounded-xl shadow-md border-2 border-white transition group-hover:scale-105 duration-300">
                                 
                                 <!-- "Aktif" Badge (Only show if no new file/url is modified) -->
@@ -67,12 +67,12 @@
                                         <button type="button" @click="cover_source = 'file'"
                                             :class="cover_source === 'file' ? 'bg-[#1a3a5c] text-white shadow-sm' : 'text-gray-500 hover:text-[#1a3a5c]'"
                                             class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200">
-                                            File
+                                            Berkas
                                         </button>
                                         <button type="button" @click="cover_source = 'url'"
                                             :class="cover_source === 'url' ? 'bg-[#1a3a5c] text-white shadow-sm' : 'text-gray-500 hover:text-[#1a3a5c]'"
                                             class="px-4 py-1.5 rounded-lg text-xs font-bold transition-all duration-200">
-                                            Link Gambar
+                                            Tautan Gambar
                                         </button>
                                     </div>
                                 </div>
@@ -81,10 +81,10 @@
                                 <!-- File Input Zone -->
                                 <div x-show="cover_source === 'file'" x-transition class="space-y-2">
                                     <div class="relative flex items-center justify-center border border-dashed border-gray-300 hover:border-[#1a3a5c] bg-white/50 rounded-xl p-4 transition cursor-pointer group">
-                                        <input type="file" name="image" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="disc-image-input-edit" @change="handleFileChange($event); document.getElementById('disc-file-chosen-edit').textContent = $event.target.files[0]?.name || 'Pilih file gambar...'">
+                                        <input type="file" name="image" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" id="disc-image-input-edit" @change="handleFileChange($event); document.getElementById('disc-file-chosen-edit').textContent = $event.target.files[0]?.name || 'Pilih berkas gambar...'">
                                         <div class="text-center space-y-1.5 pointer-events-none">
                                             <svg class="w-6 h-6 mx-auto text-gray-400 group-hover:text-[#1a3a5c] transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                            <p id="disc-file-chosen-edit" class="text-xs text-gray-500 font-medium group-hover:text-[#1a3a5c] transition">Pilih file gambar...</p>
+                                            <p id="disc-file-chosen-edit" class="text-xs text-gray-500 font-medium group-hover:text-[#1a3a5c] transition">Pilih berkas gambar...</p>
                                         </div>
                                     </div>
                                     <p class="text-xs text-gray-400">Kosongkan jika tidak ingin mengubah gambar</p>
@@ -116,23 +116,32 @@
                     <div class="space-y-3">
                         <label class="block text-sm font-bold text-[#1a3a5c]">Genre</label>
                         <div class="bg-white/40 p-4 rounded-2xl border border-white/50 shadow-inner h-[68px] flex items-center">
-                            <select name="genre" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] transition">
+                            <select name="genre" class="w-full px-4 py-3 rounded-xl bg-white border border-gray-200 outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] transition @error('genre') ring-2 ring-red-500 @enderror">
                                 @foreach($genres as $genre)
                                     <option value="{{ $genre->name }}" {{ $discussion->genre == $genre->name ? 'selected' : '' }}>{{ $genre->name }}</option>
                                 @endforeach
                             </select>
                         </div>
+                        @error('genre')
+                            <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Judul Diskusi</label>
-                    <input type="text" name="title" required value="{{ $discussion->title }}" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c]">
+                    <input type="text" name="title" required value="{{ $discussion->title }}" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] @error('title') ring-2 ring-red-500 @enderror">
+                    @error('title')
+                        <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Isi Diskusi</label>
-                    <textarea name="content" rows="6" required class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] resize-none">{{ $discussion->content }}</textarea>
+                    <textarea name="content" rows="6" required class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror">{{ $discussion->content }}</textarea>
+                    @error('content')
+                        <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex gap-4 pt-4">

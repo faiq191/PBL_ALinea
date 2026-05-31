@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Login - ALinea</title>
+    <title>Masuk - ALinea</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Base deep blue radial background */
@@ -59,35 +59,67 @@
 
         <h2 class="text-2xl font-light tracking-widest mb-10 uppercase text-shadow-sm">Selamat datang!</h2>
 
-        <form method="POST" action="/login" class="w-full">
+        <form method="POST" action="/login" class="w-full" novalidate>
             @csrf
 
-            <div class="relative flex items-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <input type="email" name="email" placeholder="Email ID"
-                    style="background-color: transparent !important;"
-                    class="w-full border-0 border-b border-white text-white pl-10 py-2 focus:outline-none focus:ring-0 placeholder-white/80 appearance-none drop-shadow-md">
+            @if (session('error'))
+                <div class="w-full bg-red-500/20 border border-red-500/50 text-red-100 px-4 py-3 rounded-xl mb-6 text-sm text-center backdrop-blur-sm shadow-md">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if (session('status'))
+                <div class="w-full bg-green-500/20 border border-green-500/50 text-green-100 px-4 py-3 rounded-xl mb-6 text-sm text-center backdrop-blur-sm shadow-md">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="w-full bg-red-500/20 border border-red-500/50 text-red-100 px-4 py-3 rounded-xl mb-6 text-sm backdrop-blur-sm shadow-md">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="mb-6 w-full">
+                <div class="relative flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <input type="email" name="email" placeholder="Surel" value="{{ old('email') }}" required
+                        style="background-color: transparent !important;"
+                        class="w-full border-0 border-b border-white text-white pl-10 py-2 focus:outline-none focus:ring-0 placeholder-white/80 appearance-none drop-shadow-md">
+                </div>
+                @error('email')
+                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
-            <div class="relative flex items-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <input type="password" name="password" placeholder="Password"
-                    style="background-color: transparent !important;"
-                    class="w-full border-0 border-b border-white text-white pl-10 py-2 focus:outline-none focus:ring-0 placeholder-white/80 appearance-none drop-shadow-md">
+            <div class="mb-6 w-full">
+                <div class="relative flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <input type="password" name="password" placeholder="Kata Sandi" required
+                        style="background-color: transparent !important;"
+                        class="w-full border-0 border-b border-white text-white pl-10 py-2 focus:outline-none focus:ring-0 placeholder-white/80 appearance-none drop-shadow-md">
+                </div>
+                @error('password')
+                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                @enderror
             </div>
 
             <button
                 class="w-full bg-[#0a356e] text-white py-3 text-sm font-semibold tracking-widest uppercase hover:bg-[#15468f] transition shadow-lg mt-4 backdrop-blur-md">
-                Login
+                Masuk
             </button>
         </form>
 
         <p class="text-center mt-8 text-sm drop-shadow-md">
-            Belum punya akun?
+            Belum memiliki akun?
             <a href="/register" class="underline hover:text-[#6aa5e3] transition-colors">Daftar</a>
         </p>
 
