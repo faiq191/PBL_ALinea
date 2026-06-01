@@ -45,4 +45,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Discussion::class);
     }
+
+    public function customNotifications()
+    {
+        return $this->hasMany(CustomNotification::class)->latest();
+    }
+
+    public function unreadCustomNotificationsCount()
+    {
+        return $this->customNotifications()->where('is_read', false)->count();
+    }
 }

@@ -36,6 +36,14 @@ class LoanController extends Controller
             'status'      => 'pending',
         ]);
 
+        \App\Models\CustomNotification::send(
+            $book->user_id,
+            'Permintaan Peminjaman Baru',
+            auth()->user()->name . ' ingin meminjam buku Anda: "' . $book->title . '".',
+            '/loans/incoming',
+            auth()->id()
+        );
+
         return back()->with('success', 'Permintaan peminjaman dikirim.');
     }
 
@@ -52,6 +60,15 @@ class LoanController extends Controller
             'borrowed_at' => $request->status === 'dipinjam' ? now() : $loan->borrowed_at,
             'returned_at' => $request->status === 'dikembalikan' ? now() : null,
         ]);
+
+        $statusText = $request->status === 'dipinjam' ? 'disetujui' : ($request->status === 'dikembalikan' ? 'dikonfirmasi telah dikembalikan' : $request->status);
+        \App\Models\CustomNotification::send(
+            $loan->borrower_id,
+            'Update Status Peminjaman',
+            'Permintaan peminjaman buku "' . $loan->book->title . '" Anda telah ' . $statusText . '.',
+            '/loans/my',
+            auth()->id()
+        );
 
         return back()->with('success', 'Status diperbarui.');
     }
@@ -70,26 +87,24 @@ class LoanController extends Controller
             'returned_at' => now(),
         ]);
 
+        \App\Models\CustomNotification::send(
+            $loan->owner_id,
+            'Buku Telah Dikembalikan oleh Peminjam',
+            $loan->borrower->name . ' telah mengembalikan buku "' . $loan->book->title . '" Anda. Silakan verifikasi dan ubah status jika sudah diterima.',
+            '/loans/incoming',
+            auth()->id()
+        );
+
         return back()->with('success', 'Buku telah dikembalikan.');
     }
 
     public function myLoans()
     {
-        $loans = Loan::where('borrower_id', auth()->id())
-            ->with('book')
-            ->latest()
-            ->get();
-
-        return view('loans.my_loans', compact('loans'));
+        return redirect('/koleksi');
     }
 
     public function incomingRequests()
     {
-        $loans = Loan::where('owner_id', auth()->id())
-            ->with(['book', 'borrower'])
-            ->latest()
-            ->get();
-
-        return view('loans.incoming', compact('loans'));
+        return redirect('/koleksi');
     }
 }

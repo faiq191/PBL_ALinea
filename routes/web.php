@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\PerpustakaanController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\NotificationController;
 
 //Keter
 Route::get('/', function () {
@@ -130,6 +131,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/loans/{loan}/return', [LoanController::class, 'returnBook']);
     Route::get('/loans/my', [LoanController::class, 'myLoans']);
     Route::get('/loans/incoming', [LoanController::class, 'incomingRequests']);
+
+    // Notifications
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Temporary route to generate highly-accurate Vol 1 dummy books for testing
     Route::get('/generate-dummy-books', function (Request $request) {

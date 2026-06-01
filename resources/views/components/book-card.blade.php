@@ -13,8 +13,10 @@
 
 <div class="bg-white rounded-xl p-4 shadow hover:shadow-xl hover:-translate-y-2 transition duration-300 flex flex-col">
 
-    <img src="{{ \Illuminate\Support\Str::startsWith($image, 'http') ? $image : asset('storage/' . $image) }}"
-        class="w-full h-72 object-cover rounded-lg mb-3">
+    <div class="w-full aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-slate-50 border border-slate-100/50">
+        <img src="{{ \Illuminate\Support\Str::startsWith($image, 'http') ? $image : asset('storage/' . $image) }}"
+            class="w-full h-full object-cover">
+    </div>
 
     <h4 class="font-semibold text-sm text-[#1a3a5c]">
         {{ $title }}

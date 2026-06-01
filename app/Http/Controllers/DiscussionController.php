@@ -144,6 +144,89 @@ class DiscussionController extends Controller
             'content'       => $request->content,
         ]);
         
+        // Kirim Notifikasi ke Pemilik Diskusi / Pemilik Komentar Utama / Orang yang Di-tag
+        try {
+            $discussion = Discussion::findOrFail($id);
+            $notifiedUserIds = [];
+
+            if ($request->parent_id) {
+                $parentComment = Comment::findOrFail($request->parent_id);
+                $targetUserId = $parentComment->user_id;
+                
+                // Smart Mention Detection: check if reply starts with @Username to route the notification to the actual recipient
+                if (str_starts_with($comment->content, '@')) {
+                    $contentWithoutAt = substr($comment->content, 1);
+                    $allUsers = \App\Models\User::all()->sortByDesc(function($u) {
+                        return strlen($u->name);
+                    });
+                    
+                    foreach ($allUsers as $u) {
+                        if (str_starts_with($contentWithoutAt, $u->name)) {
+                            $targetUserId = $u->id;
+                            break;
+                        }
+                    }
+                }
+
+                // Only send notification if the target recipient is NOT the sender itself!
+                if ($targetUserId !== auth()->id()) {
+                    $cleanedContent = \Illuminate\Support\Str::limit(strip_tags($comment->content), 60);
+                    \App\Models\CustomNotification::send(
+                        $targetUserId,
+                        'Balasan Komentar Baru',
+                        auth()->user()->name . ' membalas: "' . $cleanedContent . '" di diskusi: "' . $discussion->title . '".',
+                        '/diskusi/' . $id . '#comment-' . $comment->id,
+                        auth()->id()
+                    );
+                    $notifiedUserIds[] = $targetUserId;
+                }
+            } else {
+                if ($discussion->user_id !== auth()->id()) {
+                    $cleanedContent = \Illuminate\Support\Str::limit(strip_tags($comment->content), 60);
+                    \App\Models\CustomNotification::send(
+                        $discussion->user_id,
+                        'Komentar Baru di Diskusi Anda',
+                        auth()->user()->name . ' menulis: "' . $cleanedContent . '" di diskusi Anda: "' . $discussion->title . '".',
+                        '/diskusi/' . $id . '#comment-' . $comment->id,
+                        auth()->id()
+                    );
+                    $notifiedUserIds[] = $discussion->user_id;
+                }
+            }
+
+            // Handle Mentions (@Name)
+            preg_match_all('/@([a-zA-Z0-9\s]{2,30})/i', $comment->content, $matches);
+            if (!empty($matches[1])) {
+                foreach ($matches[1] as $match) {
+                    $trimmedName = trim(rtrim($match, '.,!?;:'));
+                    
+                    // Cari user yang namanya cocok dengan teks mention (bisa exact atau prefix untuk nama panjang)
+                    $mentionedUser = \App\Models\User::where(function($query) use ($trimmedName) {
+                            $query->where('name', '=', $trimmedName)
+                                  ->orWhere('name', 'like', $trimmedName . '%');
+                        })
+                        ->where('id', '!=', auth()->id())
+                        ->whereNotIn('id', $notifiedUserIds)
+                        ->first();
+
+                    if ($mentionedUser) {
+                        $cleanedContent = \Illuminate\Support\Str::limit(strip_tags($comment->content), 60);
+                        \App\Models\CustomNotification::send(
+                            $mentionedUser->id,
+                            'Anda Disebut dalam Diskusi',
+                            auth()->user()->name . ' menyebut Anda: "' . $cleanedContent . '" di diskusi: "' . $discussion->title . '".',
+                            '/diskusi/' . $id . '#comment-' . $comment->id,
+                            auth()->id()
+                        );
+                        // Hindari pengiriman notifikasi ganda ke user yang sama dalam 1 request
+                        $notifiedUserIds[] = $mentionedUser->id;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Notification sending failed: ' . $e->getMessage());
+        }
+        
         // 2. BROADCAST SECARA REAL-TIME (.toOthers() biar pengirim sendiri tidak duplikat chat di layarnya)
         try {
             broadcast(new \App\Events\CommentSent($comment))->toOthers();
@@ -151,7 +234,7 @@ class DiscussionController extends Controller
             \Log::warning('Reverb broadcast failed: ' . $e->getMessage());
         }
         
-        return back();
+        return redirect('/diskusi/' . $id . '#comment-' . $comment->id);
     }
 
 
@@ -236,7 +319,7 @@ class DiscussionController extends Controller
             \Log::warning('Reverb broadcast failed: ' . $e->getMessage());
         }
         
-        return back();
+        return redirect('/diskusi/' . $comment->discussion_id . '#comment-' . $comment->id);
     }
 
     public function destroyComment($id)
@@ -259,6 +342,6 @@ class DiscussionController extends Controller
             \Log::warning('Reverb broadcast failed: ' . $e->getMessage());
         }
         
-        return back();
+        return redirect('/diskusi/' . $comment->discussion_id . '#comment-' . $comment->id);
     }
 }

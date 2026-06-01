@@ -2,10 +2,32 @@
 <html>
 <head>
     <title>Detail Diskusi</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+        .hash-loading body { opacity: 0 !important; }
+    </style>
+    <script>
+        const isReload = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+        if (isReload) {
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+            if (window.location.hash) {
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+            }
+            window.scrollTo(0, 0);
+        }
+        if (!isReload && window.location.hash && window.location.hash.startsWith('#comment-')) {
+            document.documentElement.classList.add('hash-loading');
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+        }
+    </script>
 </head>
 <body class="bg-[#f5f5f5]">
     <x-header />
@@ -98,7 +120,7 @@
                         </a>
                         
                         <div class="flex-1 relative">
-                            <div class="bg-gray-50 rounded-2xl rounded-tl-none p-4 mb-2">
+                            <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-none p-4 mb-2 shadow-sm hover:shadow-md hover:bg-gray-50/80 hover:border-gray-200 transition-all duration-300">
                                 <div class="flex justify-between items-start mb-2">
                                     <div class="flex items-center gap-2">
                                         <a href="/users/{{ $comment->user->id }}" class="font-bold text-sm text-[#1a3a5c] hover:underline">{{ $comment->user->name }}</a>
@@ -182,7 +204,7 @@
                                                     </div>
                                                 @endif
                                             </a>
-                                            <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
+                                            <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm hover:shadow-md hover:bg-gray-50/80 hover:border-gray-200 transition-all duration-300">
                                                 <div class="flex justify-between items-start mb-1">
                                                     <div class="flex items-center gap-2">
                                                         <a href="/users/{{ $reply->user->id }}" class="font-bold text-sm text-[#1a3a5c] hover:underline">{{ $reply->user->name }}</a>
@@ -356,6 +378,150 @@
         document.addEventListener('DOMContentLoaded', () => {
             const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
             const discussionId = "{{ $discussion->id }}";
+            
+            let activeAnchor = (window.location.hash && window.location.hash.startsWith('#comment-')) 
+                ? window.location.hash.substring(1) 
+                : null;
+
+            const scrollToAnchor = () => {
+                const isReload = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+                if (isReload) {
+                    window.scrollTo(0, 0);
+                    document.documentElement.classList.remove('hash-loading');
+                    return;
+                }
+                
+                if (activeAnchor) {
+                    const target = document.getElementById(activeAnchor);
+                    if (target) {
+                        // Instant scroll to keep target centered
+                        target.scrollIntoView({ behavior: 'auto', block: 'center' });
+                        
+                        // Reveal page content once we are locked on target element
+                        document.documentElement.classList.remove('hash-loading');
+                        
+                        // Strip the hash from the URL bar immediately so that subsequent manual refreshes go to the top
+                        if (window.location.hash) {
+                            history.replaceState(null, null, window.location.pathname + window.location.search);
+                        }
+                        
+                        // Highlight comment box with a beautiful premium animation
+                        const cardInner = target.querySelector('.bg-white.border');
+                        if (cardInner && !cardInner.classList.contains('ring-2')) {
+                            cardInner.classList.add('ring-2', 'ring-[#1a3a5c]/40', 'scale-[1.01]', 'duration-700', 'transition-all');
+                            setTimeout(() => {
+                                cardInner.classList.remove('ring-2', 'ring-[#1a3a5c]/40', 'scale-[1.01]');
+                            }, 2500);
+                        }
+                        
+                        // Reset scroll restoration
+                        setTimeout(() => {
+                            if ('scrollRestoration' in history) {
+                                history.scrollRestoration = 'auto';
+                            }
+                        }, 200);
+                    }
+                } else {
+                    document.documentElement.classList.remove('hash-loading');
+                }
+            };
+
+            // Run immediately
+            scrollToAnchor();
+            // Run on window load (after all assets and layout settle height)
+            window.addEventListener('load', scrollToAnchor);
+            // Run in multiple passes to cancel out Alpine.js dynamic height layout shifts
+            setTimeout(scrollToAnchor, 100);
+            setTimeout(scrollToAnchor, 300);
+            setTimeout(scrollToAnchor, 600);
+            
+            // Safety fallback to ensure page is always visible
+            setTimeout(() => {
+                document.documentElement.classList.remove('hash-loading');
+            }, 850);
+
+            // AJAX Comment & Reply Submit Handler (100% SPA experience, no page reload or jumps to top!)
+            document.addEventListener('submit', async (e) => {
+                const form = e.target;
+                if (form.action && (form.action.includes('/comment') || form.action.includes('/comments'))) {
+                    e.preventDefault();
+                    
+                    // 1. Snapshot old comment IDs IMMEDIATELY before fetch or WebSockets can run!
+                    const oldIds = Array.from(document.querySelectorAll('[id^="comment-"]')).map(el => el.id);
+                    
+                    const submitBtn = form.querySelector('button[type="submit"]');
+                    if (submitBtn) submitBtn.disabled = true;
+                    
+                    try {
+                        const formData = new FormData(form);
+                        const csrfToken = form.querySelector('input[name="_token"]')?.value || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                        
+                        // Set headers including Laravel Socket ID to exclude sender from Echo broadcast
+                        const headers = {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': csrfToken
+                        };
+                        if (window.Echo && window.Echo.socketId()) {
+                            headers['X-Socket-ID'] = window.Echo.socketId();
+                        }
+
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: headers
+                        });
+                        
+                        if (response.ok) {
+                            const html = await response.text();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            
+                            // 2. Replace comments container
+                            const newComments = doc.querySelector('.space-y-6');
+                            const currentComments = document.querySelector('.space-y-6');
+                            if (newComments && currentComments) {
+                                currentComments.innerHTML = newComments.innerHTML;
+                                if (window.lucide) {
+                                    window.lucide.createIcons();
+                                }
+                            }
+                            
+                            // Clear textarea
+                            const textarea = form.querySelector('textarea');
+                            if (textarea) textarea.value = '';
+                            
+                            // 3. Find the newly added comment ID from the fetched response doc compared to our pre-submit snapshot
+                            const newIds = Array.from(doc.querySelectorAll('[id^="comment-"]')).map(el => el.id);
+                            const addedId = newIds.find(id => !oldIds.includes(id));
+                            
+                            if (addedId) {
+                                window.location.hash = addedId;
+                                const target = document.getElementById(addedId);
+                                if (target) {
+                                    setTimeout(() => {
+                                        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        
+                                        const cardInner = target.querySelector('.bg-white.border');
+                                        if (cardInner) {
+                                            cardInner.classList.add('ring-2', 'ring-[#1a3a5c]/40', 'scale-[1.01]', 'duration-700', 'transition-all');
+                                            setTimeout(() => {
+                                                cardInner.classList.remove('ring-2', 'ring-[#1a3a5c]/40', 'scale-[1.01]');
+                                            }, 2500);
+                                        }
+                                    }, 120);
+                                }
+                            }
+                        } else {
+                            form.submit();
+                        }
+                    } catch (err) {
+                        console.error(err);
+                        form.submit();
+                    } finally {
+                        if (submitBtn) submitBtn.disabled = false;
+                    }
+                }
+            });
             
             // Dengar channel public discussion.[id]
             window.Echo.channel('discussion.' + discussionId)
