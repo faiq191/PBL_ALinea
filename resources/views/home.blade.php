@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Homepage</title>
+    <link rel="icon" type="image/png" href="/Gambar/logo_alinea_tanpa_tulisan2.png?v=2">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 

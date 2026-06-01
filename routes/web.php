@@ -89,6 +89,9 @@ Route::middleware('auth')->group(function () {
 
 // Komunitas page
 Route::get('/komunitas', [DiscussionController::class, 'index']);
+Route::get('/diskusi', function () {
+    return response()->view('errors.405', [], 405);
+});
 
 // Create, Edit, Delete (Discussions & Comments)
 Route::middleware('auth')->group(function () {

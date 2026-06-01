@@ -11,6 +11,17 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+        ]);
+
+        // Block registration with admin email domain
+        if (str_ends_with(strtolower($request->email), '@admin.com')) {
+            return back()->withErrors(['email' => 'Pendaftaran dengan domain email ini tidak diperbolehkan.'])->withInput();
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
