@@ -85,7 +85,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
                 <div class="flex items-baseline gap-2">
                     <span class="font-bold text-white whitespace-nowrap">• Surel:</span>
-                    <span class="text-white/80">bantuan@alinea.id</span>
+                    <span class="notranslate text-white/80">halo@alinea.org</span>
                 </div>
                 <div class="flex items-baseline gap-2">
                     <span class="font-bold text-white whitespace-nowrap">• Instagram:</span>
