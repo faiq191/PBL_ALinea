@@ -1,6 +1,20 @@
 @php
     $isHome = request()->is('/');
+    // Check if the user has a Google Translate cookie set to English
+    $googtrans = isset($_COOKIE['googtrans']) ? $_COOKIE['googtrans'] : '';
+    $activeLang = ($googtrans === '/id/en') ? 'en' : 'id';
 @endphp
+
+{{-- Hide the default Google Translate banner and popup --}}
+<style>
+    .skiptranslate iframe { display: none !important; }
+    body { top: 0 !important; }
+    .goog-te-banner-frame { display: none !important; }
+    #goog-gt-tt { display: none !important; }
+    .goog-tooltip skiptranslate { display: none !important; }
+    .goog-text-highlight { background-color: transparent !important; box-shadow: none !important; }
+</style>
+
 <nav id="main-nav"
     class="fixed top-0 left-0 w-full transition-all duration-300 px-12 flex items-center justify-between z-50 h-16
     {{ $isHome ? 'bg-transparent' : 'bg-white shadow-md border-b border-gray-200' }}">
@@ -10,7 +24,6 @@
         class="flex items-center gap-3 font-serif font-bold text-2xl tracking-tight transition hover:opacity-80
         {{ $isHome ? 'text-white' : 'text-[#1a3a5c]' }}">
         
-        {{-- Ubah h-8 menjadi h-12 atau h-14 agar lebih besar --}}
         <img src="{{ asset('Gambar/logo_alinea_tanpa_tulisan2.png') }}" alt="Logo Alinea" class="h-12 w-auto object-contain">
         
         <span>Alinea</span>
@@ -40,8 +53,21 @@
         @endforeach
     </div>
 
-    {{-- RIGHT: Auth --}}
+    {{-- RIGHT: Auth & Lang --}}
     <div class="flex items-center gap-4">
+
+        {{-- Language Selector (EN / ID) --}}
+        <div id="nav-lang-container" class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest transition-colors duration-300 {{ $isHome ? 'text-white' : 'text-[#1a3a5c]' }}">
+            <button type="button" onclick="changeLanguage('en')" 
+               class="transition-all hover:opacity-80 outline-none {{ $activeLang === 'en' ? 'text-[#e84b7a] scale-110' : '' }}">
+                EN
+            </button>
+            <span class="opacity-40 font-normal">/</span>
+            <button type="button" onclick="changeLanguage('id')" 
+               class="transition-all hover:opacity-80 outline-none {{ $activeLang === 'id' ? 'text-[#e84b7a] scale-110' : '' }}">
+                ID
+            </button>
+        </div>
 
         @auth
             {{-- Notification Dropdown --}}
@@ -259,6 +285,38 @@
     </div>
 
 </nav>
+
+{{-- Hidden Google Translate Element --}}
+<div id="google_translate_element" style="display:none;"></div>
+
+<script type="text/javascript">
+    // Initialize Google Translate Widget
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'id', 
+            includedLanguages: 'en,id',
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+
+    // Function to handle custom EN / ID button clicks
+    function changeLanguage(lang) {
+        const domain = window.location.hostname;
+        if (lang === 'en') {
+            document.cookie = `googtrans=/id/en; path=/; domain=${domain}`;
+            document.cookie = `googtrans=/id/en; path=/;`;
+        } else {
+            // Delete cookies to revert to default Indonesian
+            document.cookie = `googtrans=/id/id; path=/; domain=${domain}`;
+            document.cookie = `googtrans=/id/id; path=/;`;
+            document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${domain}`;
+            document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        }
+        window.location.reload(); // Reload to apply translation automatically
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 <script>
     // 1. Fungsi Toggle Dropdown
     function toggleDropdown(event) {
@@ -296,6 +354,7 @@
             const userBtn = document.getElementById('nav-user-btn');
             const userChevron = document.getElementById('nav-user-chevron');
             const notifBtn = document.getElementById('nav-notif-btn');
+            const langContainer = document.getElementById('nav-lang-container'); // NEW
 
             if (window.scrollY > 50) {
                 // SAAT SCROLL KE BAWAH (Header Putih)
@@ -304,6 +363,10 @@
 
                 logo.classList.replace('text-white', 'text-[#1a3a5c]');
                 if (loginBtn) loginBtn.classList.replace('text-white', 'text-[#1a3a5c]');
+
+                if (langContainer) {
+                    langContainer.classList.replace('text-white', 'text-[#1a3a5c]');
+                }
 
                 // Ubah tombol daftar jadi solid biru
                 if (registerBtn) {
@@ -345,6 +408,10 @@
                 logo.classList.replace('text-[#1a3a5c]', 'text-white');
                 if (loginBtn) loginBtn.classList.replace('text-[#1a3a5c]', 'text-white');
 
+                if (langContainer) {
+                    langContainer.classList.replace('text-[#1a3a5c]', 'text-white');
+                }
+
                 // Kembalikan tombol daftar jadi putih
                 if (registerBtn) {
                     registerBtn.classList.replace('bg-[#1a3a5c]', 'bg-white');
@@ -382,7 +449,6 @@
 </script>
 
 @auth
-    <!-- Include compiled JS assets yang berisi Laravel Echo -->
     <script>
         window.laravelReverb = {
             key: "{{ env('VITE_REVERB_APP_KEY', 'z2qmiwap8byabk4uu6vt') }}",
