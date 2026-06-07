@@ -10,6 +10,7 @@ use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\PerpustakaanController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Password;
 
 //Keter
 Route::get('/', function () {
@@ -29,6 +30,25 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect('/');
 });
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->middleware('guest')->name('password.request');
+Route::post('/forgot-password', function (Request $request) {
+    $request->validate(['email' => 'required|email']);
+ 
+    $status = Password::sendResetLink(
+        $request->only('email')
+    );
+ 
+    return $status === Password::ResetLinkSent
+        ? back()->with(['status' => __($status)])
+        : back()->withErrors(['email' => __($status)]);
+})->middleware('guest')->name('password.email');
+Route::get('/reset-password/{token}', function (string $token) {
+    return view('auth.reset-password', ['token' => $token]);
+})->middleware('guest')->name('password.reset');
+
 
 //Login-User
 
