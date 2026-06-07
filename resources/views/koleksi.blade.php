@@ -297,8 +297,8 @@
                                 <div class="flex items-center gap-3 min-w-0 flex-1 pl-1">
                                     <img src="{{ \Illuminate\Support\Str::startsWith($loan->book->image, 'http') ? $loan->book->image : asset('storage/' . $loan->book->image) }}" class="w-10 h-14 object-cover rounded-xl shadow-sm border border-slate-200/50 flex-shrink-0">
                                     <div class="min-w-0 flex-1">
-                                        <p class="font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $loan->book->title }}</p>
-                                        <p class="text-[10px] text-gray-500 mt-1 truncate">{{ $loan->book->author }}</p>
+                                        <p class="notranslate font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $loan->book->title }}</p>
+                                        <p class="notranslate text-[10px] text-gray-500 mt-1 truncate">{{ $loan->book->author }}</p>
                                         <span class="inline-block mt-1.5 text-[8px] px-2 py-0.5 rounded-full font-bold
                                             {{ $loan->status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-100/50' : 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' }}">
                                             {{ ucfirst($loan->status) }}

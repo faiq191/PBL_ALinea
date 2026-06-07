@@ -60,7 +60,7 @@
                         @endif
                     </div>
                     
-                    <h1 class="text-3xl font-extrabold text-[#1a3a5c] leading-tight mb-4">
+                    <h1 class="notranslate text-3xl font-extrabold text-[#1a3a5c] leading-tight mb-4">
                         {{ $discussion->title }}
                     </h1>
                     
@@ -72,12 +72,12 @@
                                 {{ substr($discussion->user->name ?? 'U', 0, 1) }}
                             </div>
                         @endif
-                        <span class="font-bold text-[#1a3a5c] hover:underline">{{ $discussion->user->name ?? 'Unknown' }}</span>
+                        <span class="notranslate font-bold text-[#1a3a5c] hover:underline">{{ $discussion->user->name ?? 'Unknown' }}</span>
                         <span>•</span>
                         <span>{{ $discussion->created_at->translatedFormat('d M Y, H:i') }}</span>
                     </a>
 
-                    <div class="text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(e($discussion->content)) !!}</div>
+                    <div class="notranslate text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(e($discussion->content)) !!}</div>
                 </div>
             </div>
         </div>
@@ -123,7 +123,7 @@
                             <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-none p-4 mb-2 shadow-sm hover:shadow-md hover:bg-gray-50/80 hover:border-gray-200 transition-all duration-300">
                                 <div class="flex justify-between items-start mb-2">
                                     <div class="flex items-center gap-2">
-                                        <a href="/users/{{ $comment->user->id }}" class="font-bold text-sm text-[#1a3a5c] hover:underline">{{ $comment->user->name }}</a>
+                                        <a href="/users/{{ $comment->user->id }}" class="notranslate font-bold text-sm text-[#1a3a5c] hover:underline">{{ $comment->user->name }}</a>
                                         <span class="text-[10px] text-gray-400 flex items-center gap-1">
                                             <span>{{ $comment->created_at == $comment->updated_at ? $comment->created_at->diffForHumans() : $comment->updated_at->diffForHumans() }}</span>
                                             @if($comment->created_at != $comment->updated_at && !str_starts_with($comment->content, '_deleted_'))
@@ -153,7 +153,7 @@
                                         <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-red-500"></i> Pesan ini telah dihapus oleh moderator/admin
                                     </p>
                                 @else
-                                    <p x-show="!editing" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(e($comment->content)) !!}</p>
+                                    <p x-show="!editing" class="notranslate text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(e($comment->content)) !!}</p>
                                 @endif
                                 
                                 <form x-show="editing" x-cloak action="/comments/{{ $comment->id }}" method="POST" class="mt-2">
@@ -207,7 +207,7 @@
                                             <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm hover:shadow-md hover:bg-gray-50/80 hover:border-gray-200 transition-all duration-300">
                                                 <div class="flex justify-between items-start mb-1">
                                                     <div class="flex items-center gap-2">
-                                                        <a href="/users/{{ $reply->user->id }}" class="font-bold text-sm text-[#1a3a5c] hover:underline">{{ $reply->user->name }}</a>
+                                                        <a href="/users/{{ $reply->user->id }}" class="notranslate font-bold text-sm text-[#1a3a5c] hover:underline">{{ $reply->user->name }}</a>
                                                         <span class="text-[10px] text-gray-400 flex items-center gap-1">
                                                             <span>{{ $reply->created_at == $reply->updated_at ? $reply->created_at->diffForHumans() : $reply->updated_at->diffForHumans() }}</span>
                                                             @if($reply->created_at != $reply->updated_at && !str_starts_with($reply->content, '_deleted_'))
@@ -261,7 +261,7 @@
                                                             $renderedContent = preg_replace('/^@([a-zA-Z0-9_]+)/', '<span class="text-blue-500 font-semibold text-xs mr-1">@$1</span>', $renderedContent);
                                                         }
                                                     @endphp
-                                                    <p x-show="!editingReply" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br($renderedContent) !!}</p>
+                                                    <p x-show="!editingReply" class="notranslate text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br($renderedContent) !!}</p>
                                                 @endif
                                                 
                                                 @auth

@@ -119,14 +119,14 @@
                                 <div class="flex justify-between items-start gap-4">
                                     <div>
                                         {!! $badgeHtml !!}
-                                        <h4 class="text-lg font-bold text-[#1a3a5c] leading-snug {{ $notif->is_read ? 'font-semibold' : 'font-extrabold' }}">
+                                        <h4 class="notranslate text-lg font-bold text-[#1a3a5c] leading-snug {{ $notif->is_read ? 'font-semibold' : 'font-extrabold' }}">
                                             {{ $notif->title }}
                                         </h4>
                                     </div>
                                     <span class="text-xs text-gray-400 font-medium whitespace-nowrap">{{ $notif->created_at->diffForHumans() }}</span>
                                 </div>
                                 
-                                <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+                                <p class="notranslate text-sm text-gray-600 mt-2 leading-relaxed">
                                     {!! $renderedNotifContent !!}
                                 </p>
                                 

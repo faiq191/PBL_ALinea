@@ -69,19 +69,19 @@
                         <div class="flex gap-5">
                             <img src="{{ \Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-20 h-28 object-cover rounded-xl shadow-sm">
                             <div class="flex-1 flex flex-col justify-center">
-                                <span class="text-[10px] font-bold text-[#1a3a5c] uppercase tracking-wider mb-1">{{ $discussion->genre ?? 'Umum' }}</span>
-                                <h4 class="text-xl font-bold text-[#1a3a5c] leading-tight mb-2">
+                                <span class="notranslate text-[10px] font-bold text-[#1a3a5c] uppercase tracking-wider mb-1">{{ $discussion->genre ?? 'Umum' }}</span>
+                                <h4 class="notranslate text-xl font-bold text-[#1a3a5c] leading-tight mb-2">
                                     {{ $discussion->title }}
                                 </h4>
                                 <a href="/users/{{ $discussion->user->id ?? '#' }}" class="flex items-center gap-2 text-xs text-gray-500 mb-3 hover:opacity-85 transition">
                                     @if($discussion->user->profile_photo)
                                         <img src="{{ \Illuminate\Support\Str::startsWith($discussion->user->profile_photo, 'http') ? $discussion->user->profile_photo : asset('storage/' . $discussion->user->profile_photo) }}" class="w-5 h-5 rounded-full object-cover shadow-sm">
                                     @else
-                                        <div class="w-5 h-5 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] text-[8px]">
+                                        <div class="notranslate w-5 h-5 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] text-[8px]">
                                             {{ substr($discussion->user->name ?? 'U', 0, 1) }}
                                         </div>
                                     @endif
-                                    <span class="font-bold text-[#1a3a5c] hover:underline">{{ $discussion->user->name ?? 'Unknown' }}</span>
+                                    <span class="notranslate font-bold text-[#1a3a5c] hover:underline">{{ $discussion->user->name ?? 'Unknown' }}</span>
                                     <span>•</span>
                                     <span>{{ $discussion->created_at->diffForHumans() }}</span>
                                 </a>

@@ -56,7 +56,7 @@
 
                 <div x-show="mode === 'existing'" x-transition>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Pilih Buku dari Perpustakaan</label>
-                    <select name="existing_book_id" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('existing_book_id') ring-2 ring-red-500 @enderror">
+                    <select name="existing_book_id" class="notranslate w-full px-4 py-3 rounded-xl bg-[#e8edf2] outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('existing_book_id') ring-2 ring-red-500 @enderror">
                         <option value="">-- Cari Judul Buku --</option>
                         @foreach($allLibraryBooks as $libBook)
                             <option value="{{ $libBook->id }}" {{ old('existing_book_id') == $libBook->id ? 'selected' : '' }}>{{ $libBook->title }} - {{ $libBook->author }}</option>
@@ -84,9 +84,8 @@
                             <div @click="selected = book.volumeInfo; $refs.googleVolId.value = book.id; results = []" class="p-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3">
                                 <img :src="book.volumeInfo.imageLinks?.thumbnail" class="w-9 h-12 object-cover rounded shadow-sm" x-show="book.volumeInfo.imageLinks?.thumbnail">
                                 <div>
-                                    <p class="font-bold text-sm text-[#1a3a5c]" x-text="book.volumeInfo.title"></p>
-                                    <p class="text-xs text-gray-500" x-text="book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author'"></p>
-                                </div>
+                                    <p class="notranslate font-bold text-sm text-[#1a3a5c]" x-text="book.volumeInfo.title"></p>
+                                    <p class="notranslate text-xs text-gray-500" x-text="book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author'"></p>                                </div>
                             </div>
                         </template>
                     </div>
@@ -96,8 +95,8 @@
                     <div class="bg-[#f8fafc] border border-gray-100 p-4 rounded-xl flex items-center gap-4" x-show="selected">
                         <img :src="selected?.imageLinks?.thumbnail" class="w-12 h-16 object-cover rounded shadow-sm" x-show="selected?.imageLinks?.thumbnail">
                         <div>
-                            <p class="text-xs font-bold text-gray-400 uppercase">Buku Terpilih</p>
-                            <p class="text-sm font-bold text-[#1a3a5c]" x-text="selected?.title"></p>
+                            <p class="notranslate text-xs font-bold text-gray-400 uppercase">Buku Terpilih</p>
+                            <p class="notranslate text-sm font-bold text-[#1a3a5c]" x-text="selected?.title"></p>
                             <p class="text-xs text-gray-600" x-text="selected?.authors ? selected.authors.join(', ') : ''"></p>
                         </div>
                     </div>
@@ -111,7 +110,7 @@
                         <div>
                             <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Judul Buku</label>
                             <input type="text" name="title" :required="mode === 'manual'" value="{{ old('title') }}"
-                                class="w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('title') ring-2 ring-red-500 @enderror">
+                                class="notranslate w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('title') ring-2 ring-red-500 @enderror">
                             @error('title')
                                 <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
                             @enderror
@@ -119,7 +118,7 @@
                         <div>
                             <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Penulis</label>
                             <input type="text" name="author" :required="mode === 'manual'" value="{{ old('author') }}"
-                                class="w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('author') ring-2 ring-red-500 @enderror">
+                                class="notranslate w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c] @error('author') ring-2 ring-red-500 @enderror">
                             @error('author')
                                 <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
                             @enderror

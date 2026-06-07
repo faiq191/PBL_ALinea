@@ -38,12 +38,12 @@
                     <div>
                         <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Judul Buku</label>
                         <input type="text" name="title" required value="{{ $book->title }}"
-                            class="w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c]">
+                            class="notranslate w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c]">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Penulis</label>
                         <input type="text" name="author" required value="{{ $book->author }}"
-                            class="w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c]">
+                            class="notranslate w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c]">
                     </div>
                 </div>
 
@@ -168,7 +168,7 @@
                 <div>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Deskripsi</label>
                     <textarea name="description" rows="3"
-                        class="w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c]">{{ $book->description }}</textarea>
+                        class="notranslate w-full px-4 py-2 rounded-xl bg-[#e8edf2] border-none outline-none focus:ring-2 focus:ring-[#1a3a5c]">{{ $book->description }}</textarea>
                 </div>
 
                 <div class="flex gap-4 pt-4">

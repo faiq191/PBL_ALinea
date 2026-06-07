@@ -48,7 +48,7 @@
 
                 <div x-show="mode === 'existing'" x-transition x-cloak>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Pilih Buku Referensi</label>
-                    <select name="existing_book_id" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] @error('existing_book_id') ring-2 ring-red-500 @enderror">
+                    <select name="existing_book_id" class="notranslate w-full px-4 py-3 rounded-xl bg-[#e8edf2] outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] @error('existing_book_id') ring-2 ring-red-500 @enderror">
                         <option value="">-- Cari Judul Buku --</option>
                         @foreach($allLibraryBooks as $libBook)
                             <option value="{{ $libBook->id }}" {{ old('existing_book_id') == $libBook->id ? 'selected' : '' }}>{{ $libBook->title }} - {{ $libBook->author }}</option>
@@ -71,8 +71,8 @@
                             <div @click="selected = book.volumeInfo; $refs.googleVolId.value = book.id; results = []" class="p-3 hover:bg-white cursor-pointer flex items-center gap-3 transition">
                                 <img :src="book.volumeInfo.imageLinks?.thumbnail" class="w-9 h-12 object-cover rounded shadow-sm" x-show="book.volumeInfo.imageLinks?.thumbnail">
                                 <div>
-                                    <p class="font-bold text-sm text-[#1a3a5c]" x-text="book.volumeInfo.title"></p>
-                                    <p class="text-xs text-gray-500" x-text="book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author'"></p>
+                                    <p class="notranslate font-bold text-sm text-[#1a3a5c]" x-text="book.volumeInfo.title"></p>
+                                    <p class="notranslate text-xs text-gray-500" x-text="book.volumeInfo.authors ? book.volumeInfo.authors.join(', ') : 'Unknown Author'"></p>
                                 </div>
                             </div>
                         </template>
@@ -84,7 +84,7 @@
                         <img :src="selected?.imageLinks?.thumbnail" class="w-12 h-16 object-cover rounded shadow-sm" x-show="selected?.imageLinks?.thumbnail">
                         <div>
                             <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">Referensi Terpilih</p>
-                            <p class="text-sm font-bold text-[#1a3a5c]" x-text="selected?.title"></p>
+                            <p class="notranslate text-sm font-bold text-[#1a3a5c]" x-text="selected?.title"></p>
                         </div>
                     </div>
                     @error('google_volume_id')
@@ -192,7 +192,7 @@
 
                 <div>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Judul Diskusi</label>
-                    <input type="text" name="title" required value="{{ old('title') }}" placeholder="Apa yang ingin kamu diskusikan?" class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] @error('title') ring-2 ring-red-500 @enderror">
+                    <input type="text" name="title" required value="{{ old('title') }}" placeholder="Apa yang ingin kamu diskusikan?" class="notranslate w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] @error('title') ring-2 ring-red-500 @enderror">
                     @error('title')
                         <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
                     @enderror
@@ -200,7 +200,7 @@
 
                 <div>
                     <label class="block text-sm font-bold text-[#1a3a5c] mb-2">Isi Diskusi</label>
-                    <textarea name="content" rows="6" required placeholder="Tulis pendapat atau pertanyaanmu di sini..." class="w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror">{{ old('content') }}</textarea>
+                    <textarea name="content" rows="6" required placeholder="Tulis pendapat atau pertanyaanmu di sini..." class="notranslate w-full px-4 py-3 rounded-xl bg-[#e8edf2] border-none outline-none text-sm text-[#1a3a5c] focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror">{{ old('content') }}</textarea>
                     @error('content')
                         <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
                     @enderror

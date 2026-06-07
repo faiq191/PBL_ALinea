@@ -18,11 +18,11 @@
             class="w-full h-full object-cover">
     </div>
 
-    <h4 class="font-semibold text-sm text-[#1a3a5c]">
+    <h4 class="notranslate font-semibold text-sm text-[#1a3a5c]">
         {{ $title }}
     </h4>
 
-    <p class="text-xs text-gray-500 mt-1">
+    <p class="notranslate text-xs text-gray-500 mt-1">
         {{ $author }}
     </p>
 

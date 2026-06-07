@@ -11,7 +11,7 @@
     {{-- Bottom info --}}
     <div class="absolute bottom-0 left-0 right-0 p-4 z-10 flex items-end justify-between">
         <div class="flex-1 min-w-0 pr-2">
-            <p class="text-white font-bold text-sm uppercase tracking-wide leading-tight line-clamp-2">{{ $title }}</p>
+            <p class="notranslate text-white font-bold text-sm uppercase tracking-wide leading-tight line-clamp-2">{{ $title }}</p>
             @if($firstGenre)
                 <p class="text-white/60 text-[10px] mt-1 uppercase tracking-widest">{{ $firstGenre }}</p>
             @endif
