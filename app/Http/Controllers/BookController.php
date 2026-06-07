@@ -38,7 +38,7 @@ class BookController extends Controller
 
         $myLoans = Loan::where('borrower_id', auth()->id())
             ->whereIn('status', ['pending', 'dipinjam'])
-            ->with('book')
+            ->with(['book', 'owner'])
             ->get();
 
         $incomingRequests = Loan::where('owner_id', auth()->id())

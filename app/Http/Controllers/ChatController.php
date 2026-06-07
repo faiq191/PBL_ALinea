@@ -115,16 +115,21 @@ class ChatController extends Controller
                     'attachment_path' => $msg->attachment_path ? (($msg->attachment_type === 'gmaps' || str_starts_with($msg->attachment_path, 'http')) ? $msg->attachment_path : asset('storage/' . $msg->attachment_path)) : null,
                     'attachment_name' => $msg->attachment_name,
                     'attachment_type' => $msg->attachment_type,
+                    'is_read' => $msg->is_read,
                     'created_at' => $msg->created_at->toISOString(),
                     'created_at_formatted' => $msg->created_at->timezone('Asia/Jakarta')->format('M j, Y | g:i A'),
                 ];
             });
 
         // Mark incoming messages as read
-        Message::where('sender_id', $userId)
+        $updated = Message::where('sender_id', $userId)
             ->where('receiver_id', $myId)
             ->where('is_read', false)
             ->update(['is_read' => true]);
+
+        if ($updated > 0) {
+            broadcast(new \App\Events\MessagesRead($myId, $userId))->toOthers();
+        }
 
         return response()->json([
             'messages' => $messages,
@@ -187,6 +192,7 @@ class ChatController extends Controller
                 'attachment_path' => $msg->attachment_path ? (($msg->attachment_type === 'gmaps' || str_starts_with($msg->attachment_path, 'http')) ? $msg->attachment_path : asset('storage/' . $msg->attachment_path)) : null,
                 'attachment_name' => $msg->attachment_name,
                 'attachment_type' => $msg->attachment_type,
+                'is_read' => $msg->is_read,
                 'created_at' => $msg->created_at->toISOString(),
                 'created_at_formatted' => $msg->created_at->timezone('Asia/Jakarta')->format('M j, Y | g:i A'),
             ]
@@ -195,10 +201,14 @@ class ChatController extends Controller
 
     public function markAsRead($userId)
     {
-        Message::where('sender_id', $userId)
+        $updated = Message::where('sender_id', $userId)
             ->where('receiver_id', auth()->id())
             ->where('is_read', false)
             ->update(['is_read' => true]);
+
+        if ($updated > 0) {
+            broadcast(new \App\Events\MessagesRead(auth()->id(), $userId))->toOthers();
+        }
 
         return response()->json(['status' => 'success']);
     }

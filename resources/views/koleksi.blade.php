@@ -198,16 +198,23 @@
 
                     <div class="space-y-3 max-h-[240px] overflow-y-auto pr-1 custom-scroll">
                         @forelse($incomingRequests ?? [] as $request)
-                            <div class="bg-slate-50/80 border border-slate-100/80 p-4 rounded-2xl flex flex-col shadow-sm hover:shadow-md transition duration-300 gap-3 relative overflow-hidden">
+                            <div onclick="window.openChatWithUser({{ $request->borrower->id }}, '{{ addslashes($request->borrower->name) }}', '{{ $request->borrower->profile_photo ? (str_starts_with($request->borrower->profile_photo, 'http') ? $request->borrower->profile_photo : asset('storage/' . $request->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="cursor-pointer bg-slate-50/80 border border-slate-100/80 p-4 rounded-2xl flex flex-col shadow-sm hover:shadow-md transition duration-300 gap-3 relative overflow-hidden">
                                 <div class="absolute top-0 left-0 w-1 bg-amber-400 h-full"></div>
                                 <div class="flex items-center gap-3 pl-1">
                                     <img src="{{ \Illuminate\Support\Str::startsWith($request->book->image, 'http') ? $request->book->image : asset('storage/' . $request->book->image) }}" class="w-10 h-14 object-cover rounded-xl shadow-sm border border-slate-200/50 flex-shrink-0">
                                     <div class="min-w-0 flex-1">
-                                        <p class="font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $request->book->title }}</p>
-                                        <p class="text-[10px] text-gray-500 mt-1 truncate">Peminjam: <span class="font-extrabold">{{ $request->borrower->name }}</span></p>
+                                        <div class="flex items-start justify-between gap-2">
+                                            <p class="font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $request->book->title }}</p>
+                                            <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $request->borrower->id }}, '{{ addslashes($request->borrower->name) }}', '{{ $request->borrower->profile_photo ? (str_starts_with($request->borrower->profile_photo, 'http') ? $request->borrower->profile_photo : asset('storage/' . $request->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[9px] px-2 py-0.5 rounded-full font-bold transition flex items-center gap-0.5 shrink-0 shadow-sm">
+                                                <i data-lucide="message-circle" class="w-3 h-3"></i> Chat
+                                            </button>
+                                        </div>
+                                        <p class="text-[10px] text-gray-500 mt-1">
+                                            Peminjam: <a href="/users/{{ $request->borrower->id }}" onclick="event.stopPropagation()" class="font-extrabold hover:underline text-[#1a3a5c]">{{ $request->borrower->name }}</a>
+                                        </p>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-2 mt-1">
+                                <div class="grid grid-cols-2 gap-2 mt-1" onclick="event.stopPropagation()">
                                     <form action="/loans/{{ $request->id }}/status" method="POST" class="m-0">
                                         @csrf @method('PATCH')
                                         <input type="hidden" name="status" value="dipinjam">
@@ -249,23 +256,30 @@
 
                     <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1 custom-scroll">
                         @forelse($lentBooks ?? [] as $loan)
-                            <div class="bg-slate-50/80 border border-slate-100/80 p-3.5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition duration-300 gap-3 relative overflow-hidden">
+                            <div onclick="window.openChatWithUser({{ $loan->borrower->id }}, '{{ addslashes($loan->borrower->name) }}', '{{ $loan->borrower->profile_photo ? (str_starts_with($loan->borrower->profile_photo, 'http') ? $loan->borrower->profile_photo : asset('storage/' . $loan->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="cursor-pointer bg-slate-50/80 border border-slate-100/80 p-3.5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition duration-300 gap-3 relative overflow-hidden">
                                 <div class="absolute top-0 left-0 w-1 bg-indigo-500 h-full"></div>
                                 <div class="flex items-center gap-3 min-w-0 flex-1 pl-1">
                                     <img src="{{ \Illuminate\Support\Str::startsWith($loan->book->image, 'http') ? $loan->book->image : asset('storage/' . $loan->book->image) }}" class="w-10 h-14 object-cover rounded-xl shadow-sm border border-slate-200/50 flex-shrink-0">
                                     <div class="min-w-0 flex-1">
                                         <p class="font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $loan->book->title }}</p>
-                                        <p class="text-[10px] text-gray-500 mt-1 truncate">Dipinjam: <span class="font-bold">{{ $loan->borrower->name }}</span></p>
+                                        <p class="text-[10px] text-gray-500 mt-1">
+                                            Dipinjam: <a href="/users/{{ $loan->borrower->id }}" onclick="event.stopPropagation()" class="font-bold hover:underline text-[#1a3a5c]">{{ $loan->borrower->name }}</a>
+                                        </p>
                                         <p class="text-[9px] text-gray-400 italic mt-0.5 flex items-center gap-1">
                                             <i data-lucide="calendar" class="w-2.5 h-2.5"></i>
                                             {{ \Carbon\Carbon::parse($loan->borrowed_at)->format('d M Y') }}
                                         </p>
                                     </div>
                                 </div>
-                                <button class="bg-[#1a3a5c] hover:bg-[#e84b7a] text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm shrink-0 ml-3"
-                                    onclick="alert('Tagihan dikirim ke {{ $loan->borrower->name }}!')">
-                                    Tagih
-                                </button>
+                                <div class="flex items-center gap-2 shrink-0 ml-3" onclick="event.stopPropagation()">
+                                    <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $loan->borrower->id }}, '{{ addslashes($loan->borrower->name) }}', '{{ $loan->borrower->profile_photo ? (str_starts_with($loan->borrower->profile_photo, 'http') ? $loan->borrower->profile_photo : asset('storage/' . $loan->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[10px] px-3 py-2 rounded-xl font-bold transition shadow-sm flex items-center gap-1">
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Pesan
+                                    </button>
+                                    <button class="bg-[#1a3a5c] hover:bg-[#e84b7a] text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm"
+                                        onclick="alert('Tagihan dikirim ke {{ $loan->borrower->name }}!')">
+                                        Tagih
+                                    </button>
+                                </div>
                             </div>
                         @empty
                             <div class="text-center py-8">
@@ -292,27 +306,35 @@
 
                     <div class="space-y-3 max-h-[220px] overflow-y-auto pr-1 custom-scroll">
                         @forelse($myLoans ?? [] as $loan)
-                            <div class="bg-slate-50/80 border border-slate-100/80 p-3.5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition duration-300 gap-3 relative overflow-hidden">
+                            <div onclick="window.openChatWithUser({{ $loan->book->user->id }}, '{{ addslashes($loan->book->user->name) }}', '{{ $loan->book->user->profile_photo ? (str_starts_with($loan->book->user->profile_photo, 'http') ? $loan->book->user->profile_photo : asset('storage/' . $loan->book->user->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="cursor-pointer bg-slate-50/80 border border-slate-100/80 p-3.5 rounded-2xl flex items-center justify-between shadow-sm hover:shadow-md transition duration-300 gap-3 relative overflow-hidden">
                                 <div class="absolute top-0 left-0 w-1 bg-amber-400 h-full"></div>
                                 <div class="flex items-center gap-3 min-w-0 flex-1 pl-1">
                                     <img src="{{ \Illuminate\Support\Str::startsWith($loan->book->image, 'http') ? $loan->book->image : asset('storage/' . $loan->book->image) }}" class="w-10 h-14 object-cover rounded-xl shadow-sm border border-slate-200/50 flex-shrink-0">
                                     <div class="min-w-0 flex-1">
                                         <p class="notranslate font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $loan->book->title }}</p>
                                         <p class="notranslate text-[10px] text-gray-500 mt-1 truncate">{{ $loan->book->author }}</p>
+                                        <p class="text-[10px] text-gray-500 mt-0.5">
+                                            Pemilik: <a href="/users/{{ $loan->book->user->id }}" onclick="event.stopPropagation()" class="font-bold hover:underline text-[#1a3a5c]">{{ $loan->book->user->name }}</a>
+                                        </p>
                                         <span class="inline-block mt-1.5 text-[8px] px-2 py-0.5 rounded-full font-bold
                                             {{ $loan->status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-100/50' : 'bg-emerald-50 text-emerald-600 border border-emerald-100/50' }}">
                                             {{ ucfirst($loan->status) }}
                                         </span>
                                     </div>
                                 </div>
-                                @if($loan->status === 'dipinjam')
-                                    <form action="/loans/{{ $loan->id }}/return" method="POST" class="m-0 shrink-0 ml-3">
-                                        @csrf @method('PATCH')
-                                        <button type="submit" class="bg-[#1a3a5c] hover:bg-slate-800 text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm">
-                                            Kembalikan
-                                        </button>
-                                    </form>
-                                @endif
+                                <div class="flex items-center gap-2 shrink-0 ml-3" onclick="event.stopPropagation()">
+                                    <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $loan->book->user->id }}, '{{ addslashes($loan->book->user->name) }}', '{{ $loan->book->user->profile_photo ? (str_starts_with($loan->book->user->profile_photo, 'http') ? $loan->book->user->profile_photo : asset('storage/' . $loan->book->user->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[10px] px-3 py-2 rounded-xl font-bold transition shadow-sm flex items-center gap-1">
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Pesan
+                                    </button>
+                                    @if($loan->status === 'dipinjam')
+                                        <form action="/loans/{{ $loan->id }}/return" method="POST" class="m-0">
+                                            @csrf @method('PATCH')
+                                            <button type="submit" class="bg-[#1a3a5c] hover:bg-slate-800 text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm whitespace-nowrap">
+                                                Kembalikan
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </div>
                         @empty
                             <div class="text-center py-8">
