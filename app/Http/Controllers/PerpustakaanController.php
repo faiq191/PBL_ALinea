@@ -9,6 +9,7 @@ use App\Models\Year;
 use App\Models\Demographic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class PerpustakaanController extends Controller
 {
@@ -81,6 +82,8 @@ class PerpustakaanController extends Controller
                 ]);
             }
 
+            $translator = new GoogleTranslate('id', 'en'); // Inisialisasi Translator
+
             foreach ($items as $item) {
                 $volume = $item['volumeInfo'] ?? null;
                 if (!$volume) continue;
@@ -103,8 +106,15 @@ class PerpustakaanController extends Controller
                             foreach ($parts as $part) {
                                 $cleanStr = trim($part);
                                 if (!in_array($cleanStr, ['General', 'Comics & Graphic Novels'])) {
-                                    if (!in_array($cleanStr, $genreNames)) {
-                                        $genreNames[] = $cleanStr;
+                                    
+                                    try {
+                                        $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
+                                    } catch (\Exception $e) {
+                                        $translatedStr = $cleanStr; // Fallback jika gagal translate
+                                    }
+
+                                    if (!in_array($translatedStr, $genreNames)) {
+                                        $genreNames[] = $translatedStr;
                                     }
                                 }
                             }

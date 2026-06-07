@@ -13,6 +13,7 @@ use App\Models\Year;
 use App\Models\Demographic;
 use App\Models\Discussion;
 use App\Models\Loan;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class BookController extends Controller
 {
@@ -139,6 +140,7 @@ class BookController extends Controller
 
             $typeName = 'Novel';
             $genreNames = [];
+            $translator = new GoogleTranslate('id', 'en'); // Inisialisasi Translator
 
             if (!empty($bookData['categories'])) {
                 foreach ($bookData['categories'] as $categoryStr) {
@@ -153,8 +155,14 @@ class BookController extends Controller
                         }
 
                         if (!in_array($cleanStr, ['General', 'Comics & Graphic Novels'])) {
-                            if (!in_array($cleanStr, $genreNames)) {
-                                $genreNames[] = $cleanStr;
+                            try {
+                                $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
+                            } catch (\Exception $e) {
+                                $translatedStr = $cleanStr; // Fallback jika gagal translate
+                            }
+
+                            if (!in_array($translatedStr, $genreNames)) {
+                                $genreNames[] = $translatedStr;
                             }
                         }
                     }
@@ -271,6 +279,7 @@ class BookController extends Controller
 
             $typeName = 'Novel';
             $genreNames = [];
+            $translator = new GoogleTranslate('id', 'en'); // Inisialisasi Translator
 
             if (!empty($volume['categories'])) {
                 foreach ($volume['categories'] as $categoryStr) {
@@ -285,8 +294,14 @@ class BookController extends Controller
                         }
 
                         if (!in_array($cleanStr, ['General', 'Comics & Graphic Novels'])) {
-                            if (!in_array($cleanStr, $genreNames)) {
-                                $genreNames[] = $cleanStr;
+                            try {
+                                $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
+                            } catch (\Exception $e) {
+                                $translatedStr = $cleanStr; // Fallback jika gagal translate
+                            }
+
+                            if (!in_array($translatedStr, $genreNames)) {
+                                $genreNames[] = $translatedStr;
                             }
                         }
                     }
