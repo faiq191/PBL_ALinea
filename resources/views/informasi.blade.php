@@ -5,6 +5,26 @@
     <title>Informasi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        /* Custom Scrollbar for Dropdowns */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #b0c8e0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #1a3a5c; }
+
+        .row-scroll::-webkit-scrollbar { height: 8px; }
+        .row-scroll::-webkit-scrollbar-track { background: transparent; }
+        .row-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; transition: all 0.3s; }
+        .row-scroll:hover::-webkit-scrollbar-thumb { background: #cbd5e1; }
+        .row-scroll::-webkit-scrollbar-thumb:hover { background: #1a3a5c; }
+        
+        /* Hide scrollbar completely on mobile for swiping */
+        @media (max-width: 768px) {
+            .row-scroll::-webkit-scrollbar { display: none; }
+        }
+    </style>
 </head>
 
 <body class="bg-[#f5f5f5] text-[#1a3a5c] font-sans">

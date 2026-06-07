@@ -13,7 +13,6 @@
         ::-webkit-scrollbar-thumb { background: #b0c8e0; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #1a3a5c; }
 
-        /* Netflix-style Horizontal Scrollbar for Book Rows */
         .row-scroll::-webkit-scrollbar { height: 8px; }
         .row-scroll::-webkit-scrollbar-track { background: transparent; }
         .row-scroll::-webkit-scrollbar-thumb { background: transparent; border-radius: 10px; transition: all 0.3s; }
