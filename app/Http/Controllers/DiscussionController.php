@@ -132,22 +132,63 @@ class DiscussionController extends Controller
     public function storeComment(Request $request, $id)
     {
         $request->validate([
-            'content' => 'required',
-            'parent_id' => 'nullable|exists:comments,id'
+            'content' => 'nullable|required_without_all:attachment,attachment_url',
+            'parent_id' => 'nullable|exists:comments,id',
+            'attachment' => 'nullable|image|max:10240',
+            'attachment_type' => 'nullable|string',
+            'attachment_url' => 'nullable|string',
         ]);
         
+        $attachmentPath = null;
+        $attachmentName = null;
+        $attachmentType = null;
+
+        if ($request->hasFile('attachment')) {
+            $file = $request->file('attachment');
+            $attachmentName = $file->getClientOriginalName();
+            $attachmentType = 'image';
+            $attachmentPath = $file->store('comments', 'public');
+        } elseif ($request->attachment_type && $request->attachment_url) {
+            $attachmentType = $request->attachment_type;
+            $attachmentPath = $request->attachment_url;
+            if ($attachmentType === 'gmaps') {
+                $parts = explode('|', $request->attachment_url);
+                if (count($parts) > 1) {
+                    $attachmentPath = $parts[0]; // coordinates: lat,lng
+                    $attachmentName = $parts[1]; // location name
+                }
+            }
+        }
+
         // 1. Simpan hasil komentar ke dalam variabel $comment
         $comment = Comment::create([
             'discussion_id' => $id,
             'user_id'       => auth()->id(),
             'parent_id'     => $request->parent_id,
-            'content'       => $request->content,
+            'content'       => $request->content ?? '',
+            'attachment_path'=> $attachmentPath,
+            'attachment_name'=> $attachmentName,
+            'attachment_type'=> $attachmentType,
         ]);
         
         // Kirim Notifikasi ke Pemilik Diskusi / Pemilik Komentar Utama / Orang yang Di-tag
         try {
             $discussion = Discussion::findOrFail($id);
             $notifiedUserIds = [];
+
+            // Build content preview with attachment placeholders
+            $previewText = strip_tags($comment->content) ?: '';
+            $previewText = trim($previewText);
+            
+            if ($comment->attachment_type === 'image') {
+                $previewText = $previewText ? $previewText . ' [Gambar]' : '[Gambar]';
+            } elseif ($comment->attachment_type === 'tenor') {
+                $previewText = $previewText ? $previewText . ' [GIF]' : '[GIF]';
+            } elseif ($comment->attachment_type === 'gmaps') {
+                $previewText = $previewText ? $previewText . ' [Peta Lokasi]' : '[Peta Lokasi]';
+            }
+
+            $cleanedContent = \Illuminate\Support\Str::limit($previewText, 60);
 
             if ($request->parent_id) {
                 $parentComment = Comment::findOrFail($request->parent_id);
@@ -170,7 +211,6 @@ class DiscussionController extends Controller
 
                 // Only send notification if the target recipient is NOT the sender itself!
                 if ($targetUserId !== auth()->id()) {
-                    $cleanedContent = \Illuminate\Support\Str::limit(strip_tags($comment->content), 60);
                     \App\Models\CustomNotification::send(
                         $targetUserId,
                         'Balasan Komentar Baru',
@@ -182,7 +222,6 @@ class DiscussionController extends Controller
                 }
             } else {
                 if ($discussion->user_id !== auth()->id()) {
-                    $cleanedContent = \Illuminate\Support\Str::limit(strip_tags($comment->content), 60);
                     \App\Models\CustomNotification::send(
                         $discussion->user_id,
                         'Komentar Baru di Diskusi Anda',
@@ -210,7 +249,6 @@ class DiscussionController extends Controller
                         ->first();
 
                     if ($mentionedUser) {
-                        $cleanedContent = \Illuminate\Support\Str::limit(strip_tags($comment->content), 60);
                         \App\Models\CustomNotification::send(
                             $mentionedUser->id,
                             'Anda Disebut dalam Diskusi',
@@ -309,8 +347,21 @@ class DiscussionController extends Controller
             abort(403);
         }
         
-        $request->validate(['content' => 'required']);
-        $comment->update(['content' => $request->content]);
+        $request->validate([
+            'content' => 'required',
+            'attachment_path' => 'nullable|string',
+            'attachment_name' => 'nullable|string',
+        ]);
+        
+        $updateData = ['content' => $request->content];
+        if ($request->has('attachment_path')) {
+            $updateData['attachment_path'] = $request->attachment_path;
+        }
+        if ($request->has('attachment_name')) {
+            $updateData['attachment_name'] = $request->attachment_name;
+        }
+        
+        $comment->update($updateData);
         
         // Broadcast pembaruan komentar secara real-time
         try {

@@ -225,21 +225,24 @@ class BookController extends Controller
 
     public function home(Request $request = null)
     {
-        $query = auth()->check()
-            ? Book::where('user_id', auth()->id())->with('genres')
-            : Book::with('genres');
+        $query = Book::with('genres')->latest();
 
         if ($request && $request->genre_id) {
             $query->whereHas('genres', fn($q) => $q->where('genres.id', $request->genre_id));
         }
 
-        $books       = $query->take(4)->get();
-        $discussions = Discussion::latest()->take(5)->get();
-        $totalBooks  = Book::count();
-        $myBooks     = auth()->check() ? Book::where('user_id', auth()->id())->count() : 0;
+        $books            = $query->take(4)->get();
+        $discussions      = Discussion::latest()->take(5)->get();
+        
+        // Stats
+        $totalBorrowed    = Loan::where('status', 'dipinjam')->count();
+        $totalDiscussions = Discussion::count();
+        $totalBooks       = Book::count();
+        $myBooks          = auth()->check() ? Book::where('user_id', auth()->id())->count() : 0;
+        
         $genres = \App\Models\Genre::all();
 
-        return view('home', compact('books', 'discussions', 'totalBooks', 'myBooks', 'genres'));
+        return view('home', compact('books', 'discussions', 'totalBorrowed', 'totalDiscussions', 'totalBooks', 'myBooks', 'genres'));
     }
 
     public function show($id)

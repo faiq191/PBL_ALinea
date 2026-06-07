@@ -58,4 +58,14 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->customNotifications()->where('is_read', false)->count();
     }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
 }

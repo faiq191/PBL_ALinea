@@ -117,7 +117,7 @@
                 <i data-lucide="book-open" class="w-5.5 h-5.5"></i>
             </div>
             <div>
-                <p class="text-2xl font-extrabold text-[#1a3a5c] tracking-tight leading-none">2</p>
+                <p class="text-2xl font-extrabold text-[#1a3a5c] tracking-tight leading-none">{{ $totalBorrowed }}</p>
                 <p class="text-xs font-semibold text-slate-500 mt-1 whitespace-nowrap">Buku Dipinjam</p>
             </div>
         </div>
@@ -128,7 +128,7 @@
                 <i data-lucide="message-square" class="w-5.5 h-5.5"></i>
             </div>
             <div>
-                <p class="text-2xl font-extrabold text-[#1a3a5c] tracking-tight leading-none">{{ $discussions->count() }}</p>
+                <p class="text-2xl font-extrabold text-[#1a3a5c] tracking-tight leading-none">{{ $totalDiscussions }}</p>
                 <p class="text-xs font-semibold text-slate-500 mt-1 whitespace-nowrap">Diskusi Aktif</p>
             </div>
         </div>

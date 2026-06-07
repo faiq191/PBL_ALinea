@@ -707,7 +707,6 @@
                         
                         // Highlight quotes (book titles)
                         renderedContent = renderedContent.replace(/&quot;([^&]+)&quot;/g, '<span class="font-bold text-[#1a3a5c]">&ldquo;$1&rdquo;</span>');
-                        renderedContent = renderedContent.replace(/"([^"]+)"/g, '<span class="font-bold text-[#1a3a5c]">&ldquo;$1&rdquo;</span>');
                         
                         // Highlight sender name
                         if (notif.sender) {
@@ -921,7 +920,6 @@
                 });
         });
     </script>
-
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         // 1. Create a "TreeWalker" to look ONLY at visible text on the page
@@ -963,4 +961,6 @@
         });
     });
 </script>
+    
+    <x-chat />
 @endauth

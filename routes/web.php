@@ -103,6 +103,12 @@ Route::middleware('auth')->group(function () {
         return back();
     });
 
+    // Chat Routes
+    Route::get('/chat/users', [\App\Http\Controllers\ChatController::class, 'getUsers']);
+    Route::get('/chat/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getMessages']);
+    Route::post('/chat/send', [\App\Http\Controllers\ChatController::class, 'sendMessage']);
+    Route::post('/chat/read/{userId}', [\App\Http\Controllers\ChatController::class, 'markAsRead']);
+
 });
 
 //Main  Pages
