@@ -233,6 +233,146 @@
         </div>
     @endif
 </div>
+
+{{-- ACARA BERLANGSUNG --}}
+<div class="bg-[#ffffff] px-16 py-10 mb-6">
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <h3 class="text-3xl font-bold text-[#1a3a5c] tracking-tight">Acara Berlangsung</h3>
+            <p class="text-sm text-gray-400 mt-1">Ikuti keseruan acara dan kegiatan komunitas kami</p>
+        </div>
+    </div>
+
+    @if($runningEvents->isEmpty())
+        <div class="bg-gradient-to-r from-[#1a3a5c]/5 to-slate-50 border border-[#1a3a5c]/10 rounded-3xl p-8 text-center">
+            <i data-lucide="calendar" class="w-12 h-12 text-[#1a3a5c]/35 mx-auto mb-3"></i>
+            <p class="text-[#1a3a5c] font-bold text-lg mb-1">Belum Ada Acara Aktif</p>
+            <p class="text-gray-400 text-sm max-w-md mx-auto">Nantikan info acara menarik selanjutnya yang akan diselenggarakan oleh admin di komunitas kami.</p>
+        </div>
+    @else
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            @foreach($runningEvents as $event)
+                <div class="relative bg-white rounded-3xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-gray-100 flex flex-col md:flex-row group hover:shadow-lg transition duration-300">
+                    {{-- Banner Image --}}
+                    <div class="w-full md:w-2/5 h-48 md:h-auto min-h-[192px] bg-gray-100 relative overflow-hidden flex-shrink-0">
+                        @if($event->image)
+                            <img src="{{ \Illuminate\Support\Str::startsWith($event->image, 'http') ? $event->image : asset('storage/' . $event->image) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#1a3a5c]/20 to-[#1a3a5c]/5 text-[#1a3a5c]">
+                                <i data-lucide="calendar" class="w-12 h-12 opacity-40"></i>
+                            </div>
+                        @endif
+                        <div class="absolute top-4 left-4 bg-emerald-500 text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
+                            Running
+                        </div>
+                    </div>
+
+                    {{-- Event Details --}}
+                    <div class="p-6 flex flex-col justify-between flex-1">
+                        <div>
+                            <h4 class="text-xl font-extrabold text-[#1a3a5c] group-hover:text-[#e84b7a] transition duration-300 leading-snug mb-2">
+                                {{ $event->title }}
+                            </h4>
+                            <p class="text-sm text-gray-500 line-clamp-3 mb-4 leading-relaxed">
+                                {{ $event->description }}
+                            </p>
+                        </div>
+
+                        <div>
+                            {{-- Event Dates --}}
+                            @if($event->start_date || $event->end_date)
+                                <div class="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-4 bg-slate-50 p-2 rounded-xl border border-slate-100">
+                                    <i data-lucide="clock" class="w-4 h-4 text-[#1a3a5c]"></i>
+                                    <span>
+                                        @if($event->start_date && $event->end_date)
+                                            {{ $event->start_date->translatedFormat('d M Y H:i') }} - {{ $event->end_date->translatedFormat('d M Y H:i') }}
+                                        @elseif($event->start_date)
+                                            Mulai: {{ $event->start_date->translatedFormat('d M Y H:i') }}
+                                        @else
+                                            Selesai: {{ $event->end_date->translatedFormat('d M Y H:i') }}
+                                        @endif
+                                    </span>
+                                </div>
+                            @endif
+
+                            {{-- Call to action --}}
+                            @if($event->link)
+                                <a href="{{ $event->link }}" target="_blank" class="w-full text-center inline-flex items-center justify-center gap-2 bg-[#1a3a5c] text-white font-bold text-sm px-4 py-2.5 rounded-xl hover:bg-[#122b45] transition duration-300 shadow-sm">
+                                    <span>Ikuti Acara</span>
+                                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
+{{-- DISKUSI TERHANGAT --}}
+<div class="bg-[#ffffff] px-16 py-10 mb-6">
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            <h3 class="text-3xl font-bold text-[#1a3a5c] tracking-tight">Diskusi Terhangat</h3>
+            <p class="text-sm text-gray-400 mt-1">Topik yang paling banyak dibicarakan di komunitas</p>
+        </div>
+        <a href="/komunitas" class="text-sm text-[#1a3a5c] font-semibold hover:underline">Lihat Semua →</a>
+    </div>
+
+    @if($hotDiscussions->isEmpty())
+        <div class="text-center py-12">
+            <i data-lucide="message-square" class="w-12 h-12 text-[#d0e4f5] mx-auto mb-3"></i>
+            <p class="text-gray-400 font-medium">Belum ada diskusi aktif.</p>
+        </div>
+    @else
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach($hotDiscussions as $discussion)
+                <div class="bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:-translate-y-1 transition duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="relative w-full h-48 rounded-2xl overflow-hidden mb-4 bg-gray-100">
+                            @if($discussion->image)
+                                <img src="{{ \Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-[#e8edf2] text-[#1a3a5c]">
+                                    <i data-lucide="message-square" class="w-12 h-12 opacity-40"></i>
+                                </div>
+                            @endif
+                            <div class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-[#1a3a5c] shadow-sm">
+                                {{ $discussion->genre ?? 'Umum' }}
+                            </div>
+                        </div>
+                        
+                        <h4 class="text-lg font-bold text-[#1a3a5c] line-clamp-2 leading-tight mb-2">
+                            {{ $discussion->title }}
+                        </h4>
+                        <p class="text-sm text-gray-500 line-clamp-2 mb-4">
+                            {{ strip_tags($discussion->content) }}
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
+                        <div class="flex items-center gap-2">
+                            @if($discussion->user->profile_photo)
+                                <img src="{{ \Illuminate\Support\Str::startsWith($discussion->user->profile_photo, 'http') ? $discussion->user->profile_photo : asset('storage/' . $discussion->user->profile_photo) }}" class="w-6 h-6 rounded-full object-cover">
+                            @else
+                                <div class="w-6 h-6 rounded-full bg-[#e8edf2] flex items-center justify-center font-bold text-[#1a3a5c] text-[10px]">
+                                    {{ substr($discussion->user->name ?? 'U', 0, 1) }}
+                                </div>
+                            @endif
+                            <span class="text-xs font-semibold text-[#1a3a5c] line-clamp-1 max-w-[100px]">{{ $discussion->user->name ?? 'Unknown' }}</span>
+                        </div>
+                        
+                        <a href="/diskusi/{{ $discussion->id }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-white bg-[#1a3a5c] hover:bg-[#122b45] px-3 py-2 rounded-xl transition duration-300 shadow-sm">
+                            <span>Detail</span>
+                            <span class="bg-white/20 px-1.5 py-0.5 rounded-md text-[10px]">{{ $discussion->comments_count }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
  
 {{-- CTA GUEST SECTION --}}
 @guest

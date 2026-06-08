@@ -232,7 +232,15 @@ class BookController extends Controller
         }
 
         $books            = $query->take(4)->get();
-        $discussions      = Discussion::latest()->take(5)->get();
+        $hotDiscussions   = Discussion::withCount('comments')
+            ->with('user')
+            ->orderByDesc('comments_count')
+            ->orderByDesc('created_at')
+            ->take(4)
+            ->get();
+        $runningEvents    = \App\Models\Event::where('status', 'running')
+            ->orderBy('start_date', 'asc')
+            ->get();
         
         // Stats
         $totalBorrowed    = Loan::where('status', 'dipinjam')->count();
@@ -242,7 +250,7 @@ class BookController extends Controller
         
         $genres = \App\Models\Genre::all();
 
-        return view('home', compact('books', 'discussions', 'totalBorrowed', 'totalDiscussions', 'totalBooks', 'myBooks', 'genres'));
+        return view('home', compact('books', 'hotDiscussions', 'runningEvents', 'totalBorrowed', 'totalDiscussions', 'totalBooks', 'myBooks', 'genres'));
     }
 
     public function show($id)
