@@ -171,6 +171,15 @@ class BookController extends Controller
 
             $typeRecord = Type::firstOrCreate(['name' => $typeName]);
 
+            $description = $bookData['description'] ?? null;
+            if ($description) {
+                try {
+                    $description = $translator->translate($description);
+                } catch (\Exception $e) {
+                    // Fallback to original description if translation fails
+                }
+            }
+
             $newBook = Book::create([
                 'title'          => $bookData['title'] ?? 'Unknown Title',
                 'author'         => isset($bookData['authors']) ? implode(', ', $bookData['authors']) : 'Unknown Author',
@@ -179,7 +188,7 @@ class BookController extends Controller
                 'type_id'        => $request->type_id ?? $typeRecord->id,
                 'year_id'        => $yearRecord->id,
                 'demographic_id' => $request->demographic_id ?? 1,
-                'description'    => $bookData['description'] ?? null,
+                'description'    => $description,
             ]);
 
             foreach ($genreNames as $gName) {
@@ -269,10 +278,21 @@ class BookController extends Controller
 
             $volume = $response->json()['volumeInfo'];
 
+            $translator = new GoogleTranslate('id', 'en'); // Inisialisasi Translator
+
+            $description = $volume['description'] ?? 'Deskripsi belum tersedia.';
+            if ($description && $description !== 'Deskripsi belum tersedia.') {
+                try {
+                    $description = $translator->translate($description);
+                } catch (\Exception $e) {
+                    // Fallback to original if translation fails
+                }
+            }
+
             $book = new Book([
                 'title'       => $volume['title'] ?? 'Unknown Title',
                 'author'      => isset($volume['authors']) ? implode(', ', $volume['authors']) : 'Unknown Author',
-                'description' => $volume['description'] ?? 'Deskripsi belum tersedia.',
+                'description' => $description,
             ]);
 
             $imageLinks = $volume['imageLinks'] ?? [];
@@ -290,7 +310,6 @@ class BookController extends Controller
 
             $typeName = 'Novel';
             $genreNames = [];
-            $translator = new GoogleTranslate('id', 'en'); // Inisialisasi Translator
 
             if (!empty($volume['categories'])) {
                 foreach ($volume['categories'] as $categoryStr) {
