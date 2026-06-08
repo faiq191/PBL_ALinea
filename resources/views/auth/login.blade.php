@@ -124,7 +124,7 @@
         </p>
 
         <p class="text-center mt-8 text-sm drop-shadow-md">
-            <a href="/forgot-password" class="underline hover:text-[#6aa5e3] transition-colors">Lupa Password</a>
+            <a href="/forgot-password" class="underline hover:text-[#6aa5e3] transition-colors">Lupa Kata Sandi</a>
         </p>
 
 

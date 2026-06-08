@@ -114,12 +114,12 @@
                         <button type="button" @click="photoMode = 'file'"
                             :class="photoMode === 'file' ? 'bg-white text-[#1a3a5c] shadow-sm' : 'text-gray-500 hover:text-gray-700'"
                             class="flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> Upload File
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i> Unggah Berkas
                         </button>
                         <button type="button" @click="photoMode = 'url'"
                             :class="photoMode === 'url' ? 'bg-white text-[#1a3a5c] shadow-sm' : 'text-gray-500 hover:text-gray-700'"
                             class="flex-1 py-2 text-xs font-bold rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                            <i data-lucide="link" class="w-4 h-4"></i> Link URL
+                            <i data-lucide="link" class="w-4 h-4"></i> Tautan URL
                         </button>
                     </div>
                     <input type="hidden" name="photo_source" :value="photoMode">

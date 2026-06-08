@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Lupa Password</title>
+    <title>Lupa Kata Sandi - ALinea</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Base deep blue radial background */
@@ -57,7 +57,7 @@
             </svg>
         </div>
 
-        <h2 class="text-2xl font-light tracking-widest mb-10 uppercase text-shadow-sm">masukan surel!</h2>
+        <h2 class="text-2xl font-light tracking-widest mb-10 uppercase text-shadow-sm">masukkan surel!</h2>
 
         <form method="POST" action="/forgot-password" class="w-full" novalidate>
             @csrf

@@ -36,7 +36,7 @@
                 <button @click="mode = 'manual'"
                     :class="mode === 'manual' ? 'bg-[#1a3a5c] text-white shadow-sm' : 'text-[#1a3a5c] hover:bg-white/40'"
                     class="flex-1 py-2 rounded-xl text-xs font-bold transition">
-                    Masukan Manual
+                    Masukkan Manual
                 </button>
                 <button @click="mode = 'existing'"
                     :class="mode === 'existing' ? 'bg-[#1a3a5c] text-white shadow-sm' : 'text-[#1a3a5c] hover:bg-white/40'"

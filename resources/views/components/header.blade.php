@@ -62,7 +62,7 @@
                class="transition-all hover:opacity-80 outline-none {{ $activeLang === 'en' ? 'text-[#e84b7a] scale-110' : '' }}">
                 EN
             </button>
-            <span class="opacity-40 font-normal">/</span>
+            <span class="opacity-40 font-normal">|</span>
             <button type="button" onclick="changeLanguage('id')" 
                class="transition-all hover:opacity-80 outline-none {{ $activeLang === 'id' ? 'text-[#e84b7a] scale-110' : '' }}">
                 ID
@@ -262,7 +262,7 @@
                     <form method="POST" action="/logout">
                         @csrf
                         <button class="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition">
-                            Logout
+                            Keluar
                         </button>
                     </form>
                 </div>

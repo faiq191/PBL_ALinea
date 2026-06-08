@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Atur Passwprd</title>
+    <title>Atur Kata Sandi - ALinea</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Base deep blue radial background */
@@ -57,7 +57,7 @@
             </svg>
         </div>
 
-        <h2 class="text-2xl font-light tracking-widest mb-10 uppercase text-shadow-sm">atur password</h2>
+        <h2 class="text-2xl font-light tracking-widest mb-10 uppercase text-shadow-sm">atur kata sandi</h2>
 
         <form method="POST" action="" class="w-full" novalidate>
             @csrf
@@ -117,7 +117,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-1 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
-                    <input type="password" name="password-confirmation" placeholder="Masukan Ulang" required
+                    <input type="password" name="password-confirmation" placeholder="Masukkan Ulang" required
                         style="background-color: transparent !important;"
                         class="w-full border-0 border-b border-white text-white pl-10 py-2 focus:outline-none focus:ring-0 placeholder-white/80 appearance-none drop-shadow-md">
                 </div>
