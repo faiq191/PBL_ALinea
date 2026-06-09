@@ -4,6 +4,8 @@
 <head>
     <title>Lihat Buku - {{ $book->title }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="bg-[#f5f5f5] min-h-screen font-sans pt-10">
@@ -169,6 +171,8 @@
             </div>
         </div>
     </div>
+
+    <script>lucide.createIcons();</script>
 </body>
 
 </html>

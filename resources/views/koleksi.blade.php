@@ -60,15 +60,39 @@
     <x-header />
 
     @if(session('success'))
-        <div class="mx-6 lg:mx-12 mt-6 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
-            {{ session('success') }}
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform -translate-y-4"
+             class="fixed top-24 right-6 lg:right-12 z-[60] bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-3.5 rounded-2xl text-sm font-semibold flex items-center gap-3 shadow-lg max-w-sm">
+            <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+            </div>
+            <p>{{ session('success') }}</p>
+            <button @click="show = false" class="ml-2 text-emerald-400 hover:text-emerald-600 transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
         </div>
     @endif
     @if(session('error'))
-        <div class="mx-6 lg:mx-12 mt-6 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2">
-            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
-            {{ session('error') }}
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" 
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 transform translate-y-4"
+             x-transition:enter-end="opacity-100 transform translate-y-0"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 transform translate-y-0"
+             x-transition:leave-end="opacity-0 transform -translate-y-4"
+             class="fixed top-24 right-6 lg:right-12 z-[60] bg-rose-50 border border-rose-200 text-rose-800 px-5 py-3.5 rounded-2xl text-sm font-semibold flex items-center gap-3 shadow-lg max-w-sm">
+            <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center shrink-0">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-rose-600"></i>
+            </div>
+            <p>{{ session('error') }}</p>
+            <button @click="show = false" class="ml-2 text-rose-400 hover:text-rose-600 transition">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
         </div>
     @endif
 
