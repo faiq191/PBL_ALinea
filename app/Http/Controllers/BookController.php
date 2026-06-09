@@ -263,7 +263,7 @@ class BookController extends Controller
         $totalBooks       = Book::count();
         $myBooks          = auth()->check() ? Book::where('user_id', auth()->id())->count() : 0;
         
-        $genres = \App\Models\Genre::all();
+        $genres = \App\Models\Genre::inRandomOrder()->get();
 
         return view('home', compact('books', 'hotDiscussions', 'runningEvents', 'totalBorrowed', 'totalDiscussions', 'totalBooks', 'myBooks', 'genres'));
     }
