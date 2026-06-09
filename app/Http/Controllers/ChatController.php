@@ -180,7 +180,11 @@ class ChatController extends Controller
         ]);
 
         // Broadcast event for real-time
-        broadcast(new MessageSent($msg))->toOthers();
+        try {
+            broadcast(new MessageSent($msg))->toOthers();
+        } catch (\Exception $e) {
+            \Log::warning('WebSockets broadcast failed: ' . $e->getMessage());
+        }
 
         return response()->json([
             'status' => 'success',
@@ -207,7 +211,11 @@ class ChatController extends Controller
             ->update(['is_read' => true]);
 
         if ($updated > 0) {
-            broadcast(new \App\Events\MessagesRead(auth()->id(), $userId))->toOthers();
+            try {
+                broadcast(new \App\Events\MessagesRead(auth()->id(), $userId))->toOthers();
+            } catch (\Exception $e) {
+                \Log::warning('WebSockets broadcast failed: ' . $e->getMessage());
+            }
         }
 
         return response()->json(['status' => 'success']);

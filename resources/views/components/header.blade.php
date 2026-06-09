@@ -51,8 +51,7 @@
 <div id="google_translate_element" style="display:none;"></div>
 
 {{-- Scripts --}}
-<x-header.scripts.translate />
-<x-header.scripts.dropdown />
+<x-header.scripts.utils />
 <x-header.scripts.scroll :isHome="$isHome" />
 
 @auth
@@ -68,7 +67,6 @@
 
     <x-header.scripts.swipe-delete />
     <x-header.scripts.echo-listener />
-    <x-header.scripts.alinea-formatter />
     
     <x-chat />
 @endauth
