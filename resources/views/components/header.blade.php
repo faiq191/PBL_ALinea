@@ -57,10 +57,10 @@
 @auth
     <script>
         window.laravelReverb = {
-            key: "{{ env('VITE_REVERB_APP_KEY', 'z2qmiwap8byabk4uu6vt') }}",
-            host: "{{ env('VITE_REVERB_HOST', 'reverb-production-b867.up.railway.app') }}",
-            port: "{{ env('VITE_REVERB_PORT', '443') }}",
-            scheme: "{{ env('VITE_REVERB_SCHEME', 'https') }}"
+            key: "{{ config('broadcasting.connections.reverb.key') ?? 'z2qmiwap8byabk4uu6vt' }}",
+            host: "{{ config('broadcasting.connections.reverb.options.host') ?? '127.0.0.1' }}",
+            port: "{{ config('broadcasting.connections.reverb.options.port') ?? '8080' }}",
+            scheme: "{{ config('broadcasting.connections.reverb.options.scheme') ?? 'http' }}"
         };
     </script>
     @vite(['resources/js/app.js'])

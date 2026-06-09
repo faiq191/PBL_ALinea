@@ -159,6 +159,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/loans/{loan}/status', [LoanController::class, 'updateStatus']);
     Route::patch('/loans/{loan}/return', [LoanController::class, 'returnBook']);
     Route::post('/loans/{loan}/remind', [LoanController::class, 'remindUser']);
+    Route::post('/loans/{loan}/confirm-return', [LoanController::class, 'confirmReturn']);
+    Route::post('/loans/{loan}/reject-return', [LoanController::class, 'rejectReturn']);
     Route::get('/loans/my', [LoanController::class, 'myLoans']);
     Route::get('/loans/incoming', [LoanController::class, 'incomingRequests']);
 

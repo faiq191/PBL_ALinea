@@ -2,9 +2,15 @@
     document.addEventListener('DOMContentLoaded', () => {
         const userId = "{{ auth()->id() }}";
         
-        // Listen to public user-notifications.[userId] channel
-        window.Echo.channel('user-notifications.' + userId)
-            .listen('.NotificationSent', (e) => {
+        function initEchoListener() {
+            if (!window.Echo) {
+                setTimeout(initEchoListener, 100);
+                return;
+            }
+            
+            // Listen to public user-notifications.[userId] channel
+            window.Echo.channel('user-notifications.' + userId)
+                .listen('.NotificationSent', (e) => {
                 console.log("Real-time Notification Received:", e.notification);
                 
                 const notif = e.notification;
@@ -276,5 +282,7 @@
                     }
                 }
             });
+        }
+        initEchoListener();
     });
 </script>

@@ -77,7 +77,7 @@ class LoanController extends Controller
         return back()->with('success', 'Status diperbarui.');
     }
 
-    // FUNGSI BARU: Untuk mengembalikan buku
+    // FUNGSI BARU: Untuk mengembalikan buku (mengajukan permintaan kembali)
     public function returnBook($loanId)
     {
         $loan = Loan::findOrFail($loanId);
@@ -87,21 +87,74 @@ class LoanController extends Controller
         }
 
         $loan->update([
-            'status'      => 'dikembalikan',
-            'returned_at' => now(),
+            'return_requested' => true,
         ]);
 
         \App\Models\CustomNotification::send(
             $loan->owner_id,
-            'Buku Telah Dikembalikan oleh Peminjam',
-            $loan->borrower->name . ' telah mengembalikan buku "' . $loan->book->title . '" Anda. Silakan verifikasi dan ubah status jika sudah diterima.',
-            '/loans/incoming',
+            'Permintaan Pengembalian Buku',
+            $loan->borrower->name . ' ingin mengembalikan buku "' . $loan->book->title . '" Anda. Silakan konfirmasi jika sudah Anda terima.',
+            '/koleksi',
             auth()->id()
         );
 
         try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
 
-        return back()->with('success', 'Buku telah dikembalikan.');
+        return back()->with('success', 'Permintaan pengembalian buku telah dikirim ke pemilik.');
+    }
+
+    // FUNGSI BARU: Pemilik mengonfirmasi pengembalian buku
+    public function confirmReturn($loanId)
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        if ($loan->owner_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $loan->update([
+            'status'           => 'dikembalikan',
+            'returned_at'      => now(),
+            'return_requested' => false,
+        ]);
+
+        \App\Models\CustomNotification::send(
+            $loan->borrower_id,
+            'Pengembalian Buku Dikonfirmasi',
+            'Pemilik buku telah mengonfirmasi pengembalian buku "' . $loan->book->title . '". Terima kasih!',
+            '/koleksi',
+            auth()->id()
+        );
+
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
+        return back()->with('success', 'Pengembalian buku berhasil dikonfirmasi.');
+    }
+
+    // FUNGSI BARU: Pemilik menolak pengembalian buku (menyatakan belum menerima)
+    public function rejectReturn($loanId)
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        if ($loan->owner_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $loan->update([
+            'return_requested' => false,
+        ]);
+
+        \App\Models\CustomNotification::send(
+            $loan->borrower_id,
+            'Pengembalian Buku Ditolak',
+            'Pemilik menyatakan belum menerima buku "' . $loan->book->title . '". Silakan hubungi pemilik buku.',
+            '/koleksi',
+            auth()->id()
+        );
+
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
+        return back()->with('success', 'Permintaan pengembalian buku ditolak.');
     }
 
     public function myLoans()
@@ -123,6 +176,14 @@ class LoanController extends Controller
             abort(403);
         }
 
+        $cooldownKey = 'loan_remind_cooldown_' . $loan->id;
+        if (\Illuminate\Support\Facades\Cache::has($cooldownKey)) {
+            $expiresAt = \Illuminate\Support\Facades\Cache::get($cooldownKey);
+            $remainingSeconds = max(0, $expiresAt - time());
+            $minutes = ceil($remainingSeconds / 60);
+            return back()->with('error', "Anda hanya dapat mengirim tagihan sekali setiap 5 menit. Silakan tunggu {$minutes} menit lagi.");
+        }
+
         \App\Models\CustomNotification::send(
             $loan->borrower_id,
             'Tagihan Pengembalian Buku',
@@ -130,6 +191,9 @@ class LoanController extends Controller
             '/koleksi',
             auth()->id()
         );
+
+        // Cooldown 5 menit (300 detik)
+        \Illuminate\Support\Facades\Cache::put($cooldownKey, time() + 300, 300);
 
         return back()->with('success', 'Tagihan pengembalian buku telah dikirim.');
     }

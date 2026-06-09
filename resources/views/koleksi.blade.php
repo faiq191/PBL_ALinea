@@ -312,12 +312,48 @@
                                     <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $loan->borrower->id }}, '{{ addslashes($loan->borrower->name) }}', '{{ $loan->borrower->profile_photo ? (str_starts_with($loan->borrower->profile_photo, 'http') ? $loan->borrower->profile_photo : asset('storage/' . $loan->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[10px] px-3 py-2 rounded-xl font-bold transition shadow-sm flex items-center gap-1">
                                         <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Obrolan
                                     </button>
-                                    <form action="/loans/{{ $loan->id }}/remind" method="POST" class="m-0">
-                                        @csrf
-                                        <button type="submit" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm whitespace-nowrap">
-                                            Tagih
-                                        </button>
-                                    </form>
+                                    @if($loan->return_requested)
+                                        <div class="flex flex-col gap-1 items-stretch shrink-0">
+                                            <div class="text-[9px] text-amber-600 font-bold text-center mb-0.5 flex items-center justify-center gap-0.5">
+                                                <i data-lucide="info" class="w-2.5 h-2.5"></i> Minta kembali
+                                            </div>
+                                            <div class="flex gap-1.5">
+                                                <form action="/loans/{{ $loan->id }}/confirm-return" method="POST" class="m-0 flex-1">
+                                                    @csrf
+                                                    <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] px-2.5 py-1.5 rounded-xl font-bold transition shadow-sm whitespace-nowrap flex items-center justify-center gap-0.5">
+                                                        <i data-lucide="check" class="w-3 h-3"></i> Ya
+                                                    </button>
+                                                </form>
+                                                <form action="/loans/{{ $loan->id }}/reject-return" method="POST" class="m-0 flex-1">
+                                                    @csrf
+                                                    <button type="submit" class="w-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100/80 text-[10px] px-2.5 py-1.5 rounded-xl font-bold transition shadow-sm whitespace-nowrap flex items-center justify-center gap-0.5">
+                                                        <i data-lucide="x" class="w-3 h-3"></i> Belum
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    @else
+                                        @php
+                                            $cooldownKey = 'loan_remind_cooldown_' . $loan->id;
+                                            $remainingSeconds = 0;
+                                            if (\Illuminate\Support\Facades\Cache::has($cooldownKey)) {
+                                                $remainingSeconds = max(0, \Illuminate\Support\Facades\Cache::get($cooldownKey) - time());
+                                            }
+                                        @endphp
+                                        <form action="/loans/{{ $loan->id }}/remind" method="POST" class="m-0 remind-form" data-loan-id="{{ $loan->id }}">
+                                            @csrf
+                                            <button type="submit" 
+                                                    {{ $remainingSeconds > 0 ? 'disabled' : '' }} 
+                                                    data-remaining="{{ $remainingSeconds }}"
+                                                    class="remind-btn bg-[#1a3a5c] hover:bg-[#122b45] text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm whitespace-nowrap disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed">
+                                                @if($remainingSeconds > 0)
+                                                    Tagih (<span class="cooldown-timer">{{ $remainingSeconds }}s</span>)
+                                                @else
+                                                    Tagih
+                                                @endif
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         @empty
@@ -366,12 +402,18 @@
                                         <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Obrolan
                                     </button>
                                     @if($loan->status === 'dipinjam')
-                                        <form action="/loans/{{ $loan->id }}/return" method="POST" class="m-0">
-                                            @csrf @method('PATCH')
-                                            <button type="submit" class="bg-[#1a3a5c] hover:bg-slate-800 text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm whitespace-nowrap">
-                                                Kembalikan
-                                            </button>
-                                        </form>
+                                        @if($loan->return_requested)
+                                            <span class="bg-amber-50 text-amber-600 border border-amber-200 text-[10px] px-3.5 py-2 rounded-xl font-bold whitespace-nowrap shadow-sm flex items-center gap-1">
+                                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> Menunggu Verifikasi
+                                            </span>
+                                        @else
+                                            <form action="/loans/{{ $loan->id }}/return" method="POST" class="m-0">
+                                                @csrf @method('PATCH')
+                                                <button type="submit" class="bg-[#1a3a5c] hover:bg-slate-800 text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm whitespace-nowrap">
+                                                    Kembalikan
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 </div>
                             </div>
@@ -395,6 +437,36 @@
     <x-footer />
 
     <script>
+        let activeIntervals = [];
+
+        function initCooldownTimers() {
+            activeIntervals.forEach(clearInterval);
+            activeIntervals = [];
+
+            const cooldownButtons = document.querySelectorAll('.remind-btn[data-remaining]');
+            cooldownButtons.forEach(btn => {
+                let remaining = parseInt(btn.getAttribute('data-remaining'), 10);
+                if (remaining > 0) {
+                    const timerSpan = btn.querySelector('.cooldown-timer');
+                    const interval = setInterval(() => {
+                        remaining--;
+                        if (remaining <= 0) {
+                            clearInterval(interval);
+                            btn.removeAttribute('disabled');
+                            btn.innerHTML = 'Tagih';
+                            btn.removeAttribute('data-remaining');
+                        } else {
+                            btn.setAttribute('data-remaining', remaining);
+                            if (timerSpan) {
+                                timerSpan.textContent = remaining + 's';
+                            }
+                        }
+                    }, 1000);
+                    activeIntervals.push(interval);
+                }
+            });
+        }
+
         async function refreshKoleksiData() {
             try {
                 const res = await fetch(window.location.href);
@@ -413,6 +485,9 @@
                     if (window.lucide) {
                         window.lucide.createIcons();
                     }
+
+                    // Re-initialize cooldown timers
+                    initCooldownTimers();
                 }
             } catch (err) {
                 console.error("Failed to auto-refresh Koleksi data:", err);
@@ -421,20 +496,26 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            initCooldownTimers();
 
             // Listen to real-time notification events to update loan statuses
-            if (window.Echo) {
-                const userId = '{{ auth()->id() }}';
-                window.Echo.channel('user-notifications.' + userId)
-                    .listen('.NotificationSent', (e) => {
-                        console.log("Koleksi page received real-time notification:", e.notification);
-                        const title = e.notification.title;
-                        if (title.includes('Peminjaman') || title.includes('Pengembalian') || title.includes('Status') || title.includes('Tagihan')) {
-                            // Delay slightly to ensure database transaction is fully committed on the server
-                            setTimeout(refreshKoleksiData, 300);
-                        }
-                    });
+            function setupEchoListener() {
+                if (window.Echo) {
+                    const userId = '{{ auth()->id() }}';
+                    window.Echo.channel('user-notifications.' + userId)
+                        .listen('.NotificationSent', (e) => {
+                            console.log("Koleksi page received real-time notification:", e.notification);
+                            const title = e.notification.title;
+                            if (title.includes('Peminjaman') || title.includes('Pengembalian') || title.includes('Status') || title.includes('Tagihan')) {
+                                // Delay slightly to ensure database transaction is fully committed on the server
+                                setTimeout(refreshKoleksiData, 300);
+                            }
+                        });
+                } else {
+                    setTimeout(setupEchoListener, 100);
+                }
             }
+            setupEchoListener();
         });
     </script>
     <script src="//unpkg.com/alpinejs" defer></script>
