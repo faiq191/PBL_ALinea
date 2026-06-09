@@ -44,6 +44,8 @@ class LoanController extends Controller
             auth()->id()
         );
 
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
         return back()->with('success', 'Permintaan peminjaman dikirim.');
     }
 
@@ -70,6 +72,8 @@ class LoanController extends Controller
             auth()->id()
         );
 
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
         return back()->with('success', 'Status diperbarui.');
     }
 
@@ -95,6 +99,8 @@ class LoanController extends Controller
             auth()->id()
         );
 
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
         return back()->with('success', 'Buku telah dikembalikan.');
     }
 
@@ -106,5 +112,25 @@ class LoanController extends Controller
     public function incomingRequests()
     {
         return redirect('/koleksi');
+    }
+
+    // FUNGSI BARU: Untuk menagih pengembalian buku
+    public function remindUser($loanId)
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        if ($loan->owner_id !== auth()->id()) {
+            abort(403);
+        }
+
+        \App\Models\CustomNotification::send(
+            $loan->borrower_id,
+            'Tagihan Pengembalian Buku',
+            'Pemilik buku "' . $loan->book->title . '" meminta Anda untuk segera mengembalikan buku tersebut.',
+            '/koleksi',
+            auth()->id()
+        );
+
+        return back()->with('success', 'Tagihan pengembalian buku telah dikirim.');
     }
 }

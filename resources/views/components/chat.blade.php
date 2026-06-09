@@ -1,12 +1,12 @@
 @auth
 <!-- Floating Chat Toggle Button -->
-<button id="chat-toggle-btn" onclick="toggleChatPanel()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-tr from-[#1a3a5c] to-[#255283] hover:from-[#e84b7a] hover:to-[#f06292] border border-[#1a3a5c] text-white rounded-full flex items-center justify-center shadow-2xl transition hover:scale-105 active:scale-95 group">
+<button id="chat-toggle-btn" onclick="toggleChatPanel()" class="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-tr from-[#1a3a5c] to-[#255283] hover:from-[#122b45] hover:to-[#1a3a5c] border border-[#1a3a5c] text-white rounded-full flex items-center justify-center shadow-2xl transition hover:scale-105 active:scale-95 group">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-white group-hover:rotate-6 transition duration-200">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM21.375 9.75a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM16.5 18.75h-2.25a.75.75 0 0 1-.75-.75v-1.5a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75ZM6.75 18.75H4.5a.75.75 0 0 1-.75-.75v-1.5a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75Z" />
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
     </svg>
     <!-- Total Unread Badge -->
-    <span id="chat-global-badge" class="hidden absolute -top-1 -right-1 bg-[#e84b7a] text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border border-white min-w-[20px] text-center">
+    <span id="chat-global-badge" class="hidden absolute -top-1 -right-1 bg-[#1a3a5c] text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full border border-white min-w-[20px] text-center">
         0
     </span>
 </button>
@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="closeActiveChat()" class="text-slate-400 hover:text-[#e84b7a] transition p-1">
+                    <button onclick="closeActiveChat()" class="text-slate-400 hover:text-[#1a3a5c] transition p-1">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
@@ -65,8 +65,8 @@
 
                 <!-- TextInput Row -->
                 <div class="flex items-center gap-2">
-                    <input type="text" id="chat-message-text" placeholder="Ketik pesan..." class="flex-grow bg-slate-100 border border-gray-200 text-slate-800 placeholder-slate-450 rounded-xl px-4 py-2.5 text-xs outline-none focus:bg-white focus:border-[#e84b7a]/40 transition duration-200">
-                    <button type="submit" class="w-8 h-8 rounded-xl bg-[#e84b7a] hover:bg-[#d83f6c] text-white flex items-center justify-center transition shrink-0 shadow-sm">
+                    <textarea id="chat-message-text" placeholder="Ketik pesan..." maxlength="256" rows="1" class="flex-grow bg-slate-100 border border-gray-200 text-slate-800 placeholder-slate-450 rounded-xl px-4 py-2 text-xs outline-none focus:bg-white focus:border-[#1a3a5c]/40 transition duration-200 resize-none h-[36px] max-h-24 overflow-y-auto leading-relaxed"></textarea>
+                    <button type="submit" class="w-8 h-8 rounded-xl bg-[#1a3a5c] hover:bg-[#122b45] text-white flex items-center justify-center transition shrink-0 shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                         </svg>
@@ -96,7 +96,7 @@
                     </button>
 
                     <!-- Share Location Leaflet -->
-                    <button type="button" onclick="openChatMapModal()" class="text-slate-400 hover:text-[#e84b7a] transition p-1" title="Bagikan Lokasi">
+                    <button type="button" onclick="openChatMapModal()" class="text-slate-400 hover:text-[#1a3a5c] transition p-1" title="Bagikan Lokasi">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 115 0z" />
@@ -123,7 +123,7 @@
             
             <!-- Friend Search Input -->
             <div class="relative flex items-center">
-                <input type="text" id="chat-search-input" oninput="loadChatUsers(this.value)" placeholder="Cari teman..." class="w-full bg-slate-100 border border-gray-200 text-slate-800 placeholder-slate-450 rounded-xl pl-8 pr-3 py-1.5 text-xs outline-none focus:bg-white focus:border-[#e84b7a]/40 transition">
+                <input type="text" id="chat-search-input" oninput="loadChatUsers(this.value)" placeholder="Cari teman..." class="w-full bg-slate-100 border border-gray-200 text-slate-800 placeholder-slate-450 rounded-xl pl-8 pr-3 py-1.5 text-xs outline-none focus:bg-white focus:border-[#1a3a5c]/40 transition">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 absolute left-3 text-slate-400">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
                 </svg>
@@ -152,7 +152,7 @@
     <div class="bg-white text-slate-800 rounded-3xl w-full max-w-xl shadow-2xl border border-gray-150 overflow-hidden flex flex-col max-h-[80vh] animate-scale-up">
         <div class="p-5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
             <h3 class="text-sm font-bold text-[#1a3a5c] flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#e84b7a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#1a3a5c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Bagikan Lokasi
             </h3>
             <button onclick="closeChatMapModal()" class="text-slate-400 hover:text-slate-600 transition">
@@ -161,8 +161,8 @@
         </div>
         <div class="p-3 bg-white border-b border-gray-100 flex flex-col gap-2 relative">
             <div class="flex gap-2">
-                <input type="text" id="chat-map-search-input" class="flex-1 bg-slate-100 border border-gray-200 text-slate-850 rounded-xl px-3.5 py-2 text-xs outline-none focus:border-[#e84b7a]/40 focus:bg-white transition" placeholder="Cari nama lokasi atau alamat...">
-                <button onclick="searchChatLocation()" class="bg-[#e84b7a] hover:bg-[#d83f6c] text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
+                <input type="text" id="chat-map-search-input" class="flex-1 bg-slate-100 border border-gray-200 text-slate-850 rounded-xl px-3.5 py-2 text-xs outline-none focus:border-[#1a3a5c]/40 focus:bg-white transition" placeholder="Cari nama lokasi atau alamat...">
+                <button onclick="searchChatLocation()" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
                     Cari
                 </button>
                 <button onclick="getCurrentChatLocation()" class="bg-slate-100 text-slate-655 border border-gray-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-200 transition flex items-center gap-1" title="Gunakan Lokasi Saat Ini">
@@ -174,12 +174,18 @@
         </div>
         <div id="chat-leaflet-map-container" class="flex-grow min-h-[280px] relative bg-slate-100">
             <div id="chat-leaflet-map" class="absolute inset-0"></div>
+            <!-- Layer Selector Floating Control -->
+            <div class="absolute top-3 right-3 z-[1000] bg-white/95 backdrop-blur-sm p-1.5 rounded-xl border border-gray-200 shadow-lg flex gap-1">
+                <button type="button" onclick="switchChatMapLayer('streets')" id="chat-layer-btn-streets" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-[#1a3a5c] text-white">Jalan</button>
+                <button type="button" onclick="switchChatMapLayer('satellite')" id="chat-layer-btn-satellite" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200">Satelit</button>
+                <button type="button" onclick="switchChatMapLayer('dark')" id="chat-layer-btn-dark" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200">Gelap</button>
+            </div>
         </div>
         <div class="p-3 border-t border-gray-100 flex items-center justify-between bg-slate-50">
             <p class="text-[10px] text-slate-500 max-w-[240px] truncate" id="chat-selected-coords-text">Koordinat: -6.2088, 106.8456</p>
             <div class="flex gap-2 shrink-0">
                 <button type="button" onclick="closeChatMapModal()" class="px-4 py-2 rounded-xl font-bold text-xs text-slate-500 hover:bg-slate-200 transition">Batal</button>
-                <button onclick="confirmChatShareLocation()" class="bg-[#e84b7a] hover:bg-[#d83f6c] text-white px-5 py-2 rounded-xl font-bold text-xs transition shadow-sm">Bagikan Lokasi Ini</button>
+                <button onclick="confirmChatShareLocation()" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white px-5 py-2 rounded-xl font-bold text-xs transition shadow-sm">Bagikan Lokasi Ini</button>
             </div>
         </div>
     </div>
@@ -190,7 +196,7 @@
     <div class="bg-white text-slate-800 rounded-3xl w-full max-w-xl shadow-2xl border border-gray-150 overflow-hidden flex flex-col max-h-[80vh] animate-scale-up">
         <div class="p-5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
             <h3 class="text-sm font-bold text-[#1a3a5c] flex items-center gap-2 truncate max-w-[80%]">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#e84b7a]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-[#1a3a5c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 <span id="chat-view-map-title">Lokasi Terbagikan</span>
             </h3>
             <button onclick="closeChatViewMapModal()" class="text-slate-450 hover:text-slate-700 transition">
@@ -200,13 +206,19 @@
         
         <div id="chat-view-leaflet-map-container" class="flex-grow min-h-[300px] relative bg-slate-100">
             <div id="chat-view-leaflet-map" class="absolute inset-0"></div>
+            <!-- Layer Selector Floating Control -->
+            <div class="absolute top-3 right-3 z-[1000] bg-white/95 backdrop-blur-sm p-1.5 rounded-xl border border-gray-200 shadow-lg flex gap-1">
+                <button type="button" onclick="switchChatViewMapLayer('streets')" id="chat-view-layer-btn-streets" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-[#1a3a5c] text-white">Jalan</button>
+                <button type="button" onclick="switchChatViewMapLayer('satellite')" id="chat-view-layer-btn-satellite" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200">Satelit</button>
+                <button type="button" onclick="switchChatViewMapLayer('dark')" id="chat-view-layer-btn-dark" class="px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200">Gelap</button>
+            </div>
         </div>
         
         <div class="p-3 border-t border-gray-100 flex items-center justify-between bg-slate-50">
             <p class="text-[10px] text-slate-500 max-w-[200px] truncate" id="chat-view-map-coords-text">Koordinat: -6.2088, 106.8456</p>
             <div class="flex gap-2 shrink-0">
                 <button type="button" onclick="closeChatViewMapModal()" class="px-4 py-2 rounded-xl font-bold text-xs text-slate-500 hover:bg-slate-200 transition">Tutup</button>
-                <a id="chat-view-map-gmaps-link" href="#" target="_blank" class="bg-[#e84b7a] hover:bg-[#d83f6c] text-white px-5 py-2 rounded-xl font-bold text-xs transition shadow-sm flex items-center gap-1.5">
+                <a id="chat-view-map-gmaps-link" href="#" target="_blank" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white px-5 py-2 rounded-xl font-bold text-xs transition shadow-sm flex items-center gap-1.5">
                     Buka di Google Maps
                 </a>
             </div>
@@ -233,7 +245,8 @@
 </style>
 
 <script>
-    const EMOJI_DATA = [
+    if (typeof EMOJI_DATA === 'undefined') {
+        var EMOJI_DATA = [
         {
             category: 'Ekspresi',
             icon: '😀',
@@ -275,6 +288,7 @@
             emojis: ['⌚','📱','💻','⌨️','📷','📺','📻','🕯️','💡','🔦','🧱','🔪','🛡️','🚬','🔮','🧿','💈','🧲','🧪','🧬','🗝️','🔑','🔨','🪛','🔧','🪚','⚙️','⚖️','🔗','⛓️','🩹','🩺','📦','✉️','🏷️','✏️','✒️','📝','💼','📁','📅','🗑️','🔒','🔓','🔔','📣','❓','❔','❗','❕','💯']
         }
     ];
+    }
 
     // Ensure Leaflet assets are loaded globally
     if (!document.getElementById('leaflet-css-chat')) {
@@ -286,7 +300,9 @@
     }
     
     // Global variable references
-    const TENOR_API_KEY = 'LIVDSRZULELA';
+    if (typeof TENOR_API_KEY === 'undefined') {
+        var TENOR_API_KEY = 'LIVDSRZULELA';
+    }
     const onlineUsers = new Set();
     let chatActiveUserId = null;
     let chatMap = null;
@@ -294,6 +310,9 @@
     let chatViewMap = null;
     let chatViewMapMarker = null;
     let chatMapSelectedCoords = [-7.9839, 112.6214]; // Default Malang
+    let chatMapLayers = null;
+    let currentChatTileLayer = null;
+    let currentChatViewTileLayer = null;
     
     function toggleChatPanel() {
         const panel = document.getElementById('roblox-chat-panel');
@@ -336,7 +355,7 @@
             <div class="p-2 border-b border-gray-100 flex items-center justify-between bg-slate-50">
                 <span class="text-[10px] font-bold text-[#1a3a5c]">Pilih Emoji</span>
                 <div class="flex items-center gap-1.5">
-                    <input type="text" placeholder="Cari..." class="chat-emoji-search bg-slate-100 border border-gray-200 text-slate-800 placeholder-slate-450 rounded-lg px-2 py-0.5 text-[10px] outline-none w-24 focus:bg-white focus:border-[#e84b7a]/40">
+                    <input type="text" placeholder="Cari..." class="chat-emoji-search bg-slate-100 border border-gray-200 text-slate-800 placeholder-slate-450 rounded-lg px-2 py-0.5 text-[10px] outline-none w-24 focus:bg-white focus:border-[#1a3a5c]/40">
                     <button type="button" class="btn-close-emoji text-slate-400 hover:text-red-500 transition" title="Tutup">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
@@ -468,7 +487,7 @@
             </div>
             <div class="p-2 bg-slate-50/50 border-b border-gray-100 relative flex items-center gap-2">
                 <div class="relative flex-1">
-                    <input type="text" class="chat-tenor-search w-full bg-white text-slate-800 border border-gray-200 rounded-xl pl-3 pr-8 py-1 text-xs outline-none focus:border-[#e84b7a]/40 transition" placeholder="Cari di Tenor...">
+                    <input type="text" class="chat-tenor-search w-full bg-white text-slate-800 border border-gray-200 rounded-xl pl-3 pr-8 py-1 text-xs outline-none focus:border-[#1a3a5c]/40 transition" placeholder="Cari di Tenor...">
                     <button type="button" class="btn-clear-search hidden absolute right-2.5 top-1.5 text-slate-400 hover:text-slate-600 transition">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </button>
@@ -728,26 +747,96 @@
         }
     }
 
-    // --- LEAFLET MAPS INTEGRATION FOR CHAT ---
-    function openChatMapModal() {
-        document.getElementById('chat-map-modal').classList.remove('hidden');
+    // Ensure Leaflet JS/CSS are loaded dynamically
+    function ensureLeafletLoaded(callback) {
+        if (!document.getElementById('leaflet-css-chat')) {
+            const link = document.createElement('link');
+            link.id = 'leaflet-css-chat';
+            link.rel = 'stylesheet';
+            link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            document.head.appendChild(link);
+        }
         
-        // Ensure Leaflet JS is fully initialized before mapping
         if (typeof L === 'undefined') {
             const script = document.createElement('script');
             script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
             script.onload = () => {
-                setTimeout(initChatMap, 300);
+                setTimeout(callback, 300);
             };
             document.head.appendChild(script);
         } else {
-            setTimeout(initChatMap, 100);
+            setTimeout(callback, 100);
         }
+    }
+
+    function getChatMapLayers() {
+        if (!chatMapLayers) {
+            chatMapLayers = {
+                streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }),
+                satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                    attribution: 'Tiles &copy; Esri &mdash; Source: Esri'
+                }),
+                dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &copy; CARTO'
+                })
+            };
+        }
+        return chatMapLayers;
+    }
+
+    function switchChatMapLayer(layerName) {
+        if (!chatMap || typeof L === 'undefined') return;
+        if (currentChatTileLayer) {
+            chatMap.removeLayer(currentChatTileLayer);
+        }
+        currentChatTileLayer = getChatMapLayers()[layerName];
+        currentChatTileLayer.addTo(chatMap);
+        
+        ['streets', 'satellite', 'dark'].forEach(name => {
+            const btn = document.getElementById(`chat-layer-btn-${name}`);
+            if (btn) {
+                if (name === layerName) {
+                    btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-[#1a3a5c] text-white shadow-sm";
+                } else {
+                    btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200";
+                }
+            }
+        });
+    }
+
+    function switchChatViewMapLayer(layerName) {
+        if (!chatViewMap || typeof L === 'undefined') return;
+        if (currentChatViewTileLayer) {
+            chatViewMap.removeLayer(currentChatViewTileLayer);
+        }
+        currentChatViewTileLayer = getChatMapLayers()[layerName];
+        currentChatViewTileLayer.addTo(chatViewMap);
+        
+        ['streets', 'satellite', 'dark'].forEach(name => {
+            const btn = document.getElementById(`chat-view-layer-btn-${name}`);
+            if (btn) {
+                if (name === layerName) {
+                    btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-[#1a3a5c] text-white shadow-sm";
+                } else {
+                    btn.className = "px-2.5 py-1 text-[10px] font-bold rounded-lg transition bg-gray-100 text-gray-700 hover:bg-gray-200";
+                }
+            }
+        });
+    }
+
+    function openChatMapModal() {
+        document.getElementById('chat-map-modal').classList.remove('hidden');
+        ensureLeafletLoaded(() => {
+            initChatMap();
+        });
     }
 
     function initChatMap() {
         if (chatMap) {
             chatMap.invalidateSize();
+            switchChatMapLayer('streets');
             return;
         }
 
@@ -755,9 +844,8 @@
             zoomControl: false
         }).setView(chatMapSelectedCoords, 13);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(chatMap);
+        currentChatTileLayer = getChatMapLayers().streets;
+        currentChatTileLayer.addTo(chatMap);
 
         L.control.zoom({ position: 'bottomright' }).addTo(chatMap);
 
@@ -779,6 +867,7 @@
         });
 
         updateCoords(chatMapSelectedCoords[0], chatMapSelectedCoords[1]);
+        switchChatMapLayer('streets');
     }
 
     function closeChatMapModal() {
@@ -801,8 +890,11 @@
             if (data.length > 0) {
                 data.forEach(item => {
                     const row = document.createElement('div');
-                    row.className = 'p-2.5 hover:bg-[#181a1b] cursor-pointer text-xs transition text-white border-b border-slate-800';
-                    row.textContent = item.display_name;
+                    row.className = 'p-2.5 hover:bg-gray-50 cursor-pointer text-xs transition text-gray-700 border-b border-gray-100 flex items-start gap-2';
+                    row.innerHTML = `
+                        <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <span class="truncate">${item.display_name}</span>
+                    `;
                     row.onclick = () => {
                         const lat = parseFloat(item.lat);
                         const lng = parseFloat(item.lon);
@@ -810,6 +902,7 @@
                         chatMapMarker.setLatLng(chatMapSelectedCoords);
                         chatMap.setView(chatMapSelectedCoords, 15);
                         document.getElementById('chat-selected-coords-text').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        document.getElementById('chat-map-search-input').value = item.display_name;
                         resultsContainer.classList.add('hidden');
                     };
                     resultsContainer.appendChild(row);
@@ -861,11 +954,12 @@
         const lat = parseFloat(parts[0]);
         const lng = parseFloat(parts[1]);
 
-        setTimeout(() => {
+        ensureLeafletLoaded(() => {
             if (chatViewMap) {
                 chatViewMap.setView([lat, lng], 15);
                 chatViewMapMarker.setLatLng([lat, lng]);
                 chatViewMap.invalidateSize();
+                switchChatViewMapLayer('streets');
                 return;
             }
 
@@ -873,13 +967,13 @@
                 zoomControl: false
             }).setView([lat, lng], 15);
 
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(chatViewMap);
+            currentChatViewTileLayer = getChatMapLayers().streets;
+            currentChatViewTileLayer.addTo(chatViewMap);
 
             chatViewMapMarker = L.marker([lat, lng]).addTo(chatViewMap);
             L.control.zoom({ position: 'bottomright' }).addTo(chatViewMap);
-        }, 200);
+            switchChatViewMapLayer('streets');
+        });
     }
 
     function closeChatViewMapModal() {
@@ -919,7 +1013,7 @@
                     const isOnline = onlineUsers.has(parseInt(u.id));
 
                     const row = document.createElement('div');
-                    row.className = `p-3.5 flex items-center justify-between cursor-pointer hover:bg-[#e84b7a]/5 transition duration-150 relative ${parseInt(chatActiveUserId) === parseInt(u.id) ? 'bg-[#e84b7a]/10' : ''}`;
+                    row.className = `p-3.5 flex items-center justify-between cursor-pointer hover:bg-[#1a3a5c]/5 transition duration-150 relative ${parseInt(chatActiveUserId) === parseInt(u.id) ? 'bg-[#1a3a5c]/10' : ''}`;
                     row.onclick = () => selectChatUser(u.id, u.name, u.profile_photo);
 
                     row.innerHTML = `
@@ -935,7 +1029,7 @@
                         </div>
                         <div class="flex flex-col items-end gap-1 shrink-0">
                             <span class="text-[8px] text-slate-400 font-bold">${u.latest_message_time_human || ''}</span>
-                            ${u.unread_count > 0 ? `<span class="bg-[#e84b7a] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center border border-white">${u.unread_count}</span>` : ''}
+                            ${u.unread_count > 0 ? `<span class="bg-[#1a3a5c] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center border border-white">${u.unread_count}</span>` : ''}
                         </div>
                     `;
                     list.appendChild(row);
@@ -974,7 +1068,11 @@
 
         // Clear preview & form
         clearChatAttachment();
-        document.getElementById('chat-message-text').value = '';
+        const textInput = document.getElementById('chat-message-text');
+        if (textInput) {
+            textInput.value = '';
+            textInput.style.height = '36px';
+        }
 
         // Load history messages
         await fetchChatMessages(id);
@@ -1036,7 +1134,7 @@
             } else if (msg.attachment_type === 'gmaps') {
                 attachmentHtml = `
                     <div onclick="openChatViewMap('${msg.attachment_path}', '${msg.attachment_name || 'Lokasi Terbagikan'}')" class="mt-1 flex items-center gap-2 bg-slate-50 border border-gray-100 rounded-xl p-2 hover:bg-slate-100 transition cursor-pointer max-w-[200px]">
-                        <div class="w-8 h-8 bg-[#e84b7a] rounded-lg flex items-center justify-center text-white shrink-0 shadow-sm">
+                        <div class="w-8 h-8 bg-[#1a3a5c] rounded-lg flex items-center justify-center text-white shrink-0 shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
                         </div>
                         <div class="min-w-0">
@@ -1067,7 +1165,7 @@
         wrapper.innerHTML = `
             ${!isMe ? `<img src="${avatarUrl}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-150 mt-0.5">` : ''}
             <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
-                <div class="px-3.5 py-2 rounded-2xl text-[11px] leading-relaxed break-words max-w-full ${isMe ? 'bg-[#e84b7a] text-white rounded-tr-none shadow-sm' : 'bg-white text-slate-800 rounded-tl-none border border-gray-200 shadow-sm'}">
+                <div class="px-3.5 py-2 rounded-2xl text-[11px] leading-relaxed break-words break-all max-w-full ${isMe ? 'bg-[#1a3a5c] text-white rounded-tr-none shadow-sm' : 'bg-white text-slate-800 rounded-tl-none border border-gray-200 shadow-sm'}">
                     ${msg.message ? escapeChatHtml(msg.message) : ''}
                     ${attachmentHtml}
                 </div>
@@ -1122,6 +1220,11 @@
 
         if (!text && !attType && !fileInput.files[0]) return;
 
+        if (text.length > 256) {
+            alert('Pesan maksimal 256 karakter.');
+            return;
+        }
+
         // Build FormData
         const formData = new FormData();
         formData.append('_token', '{{ csrf_token() }}');
@@ -1137,6 +1240,7 @@
 
         // Clear input bar
         textInput.value = '';
+        textInput.style.height = '36px';
         clearChatAttachment();
 
         try {
@@ -1201,11 +1305,16 @@
         return true;
     }
 
-    // Listen click outside to close popovers
+    // Listen click outside to close popovers and search results
     document.addEventListener('click', (e) => {
-        if (!e.target.closest('#chat-input-form')) {
+        if (!e.target.closest('#chat-input-form') && document.body.contains(e.target)) {
             document.querySelectorAll('.chat-emoji-picker-panel').forEach(p => p.remove());
             document.querySelectorAll('.chat-tenor-popover').forEach(p => p.remove());
+        }
+        
+        const results = document.getElementById('chat-map-search-results');
+        if (results && !results.contains(e.target) && e.target.id !== 'chat-map-search-input') {
+            results.classList.add('hidden');
         }
     });
 
@@ -1213,6 +1322,40 @@
     document.addEventListener('DOMContentLoaded', () => {
         // Load initial users
         loadChatUsers();
+
+        const textInput = document.getElementById('chat-message-text');
+        if (textInput) {
+            textInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    const form = document.getElementById('chat-input-form');
+                    if (form) {
+                        if (typeof form.requestSubmit === 'function') {
+                            form.requestSubmit();
+                        } else {
+                            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                        }
+                    }
+                }
+            });
+            textInput.addEventListener('input', function() {
+                this.style.height = '36px';
+                const scrollHeight = this.scrollHeight;
+                if (scrollHeight > 36) {
+                    this.style.height = Math.min(scrollHeight, 96) + 'px';
+                }
+            });
+        }
+
+        const chatSearchInput = document.getElementById('chat-map-search-input');
+        if (chatSearchInput) {
+            chatSearchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchChatLocation();
+                }
+            });
+        }
 
         // Check if Echo is loaded
         if (window.Echo) {

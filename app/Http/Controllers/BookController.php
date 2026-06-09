@@ -105,6 +105,8 @@ class BookController extends Controller
 
             $newBook->genres()->sync($existingBook->genres->pluck('id'));
 
+            try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
             return redirect('/koleksi');
         }
 
@@ -196,6 +198,8 @@ class BookController extends Controller
                 $newBook->genres()->attach($genreRecord->id);
             }
 
+            try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
             return redirect('/koleksi');
         }
 
@@ -229,6 +233,8 @@ class BookController extends Controller
             'description'    => $request->description,
         ])->genres()->attach($request->genre_ids);
 
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
         return redirect('/koleksi');
     }
 
@@ -252,7 +258,7 @@ class BookController extends Controller
             ->get();
         
         // Stats
-        $totalBorrowed    = Loan::where('status', 'dipinjam')->count();
+        $totalBorrowed    = auth()->check() ? Loan::where('borrower_id', auth()->id())->where('status', 'dipinjam')->count() : 0;
         $totalDiscussions = Discussion::count();
         $totalBooks       = Book::count();
         $myBooks          = auth()->check() ? Book::where('user_id', auth()->id())->count() : 0;
@@ -445,6 +451,8 @@ class BookController extends Controller
 
         $book->genres()->detach();
         $book->delete();
+
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
 
         return back();
     }

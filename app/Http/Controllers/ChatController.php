@@ -147,7 +147,7 @@ class ChatController extends Controller
     {
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
-            'message' => 'nullable|string',
+            'message' => 'nullable|string|max:256',
             'attachment' => 'nullable|file|max:5120',
             'attachment_url' => 'nullable|string',
             'attachment_name' => 'nullable|string',

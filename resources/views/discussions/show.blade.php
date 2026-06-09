@@ -142,7 +142,7 @@
             @auth
                 <form action="/diskusi/{{ $discussion->id }}/comment" method="POST" enctype="multipart/form-data" class="mb-10 attachment-form relative">
                     @csrf
-                    <textarea name="content" rows="3" class="w-full bg-[#e8edf2] border-none rounded-2xl p-4 text-sm text-[#1a3a5c] outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror" placeholder="Tulis balasanmu di sini... (Bisa paste screenshot/gambar juga!)"></textarea>
+                    <textarea name="content" maxlength="256" rows="3" class="w-full bg-[#e8edf2] border-none rounded-2xl p-4 text-sm text-[#1a3a5c] outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror" placeholder="Tulis balasanmu di sini... (Bisa paste screenshot/gambar juga!)"></textarea>
                     @error('content')
                         <p class="text-red-600 text-xs mt-1 font-semibold">{{ $message }}</p>
                     @enderror
@@ -176,20 +176,20 @@
 
                     <div class="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
                         <div class="flex items-center gap-1.5">
-                            <input type="file" name="attachment" class="hidden attachment-file-input">
+                            <input type="file" name="attachment" class="hidden attachment-file-input" onchange="(function(fi){var f=fi.closest('.attachment-form');var file=fi.files[0];if(!file)return;var t=f.querySelector('.attachment-type-input');var u=f.querySelector('.attachment-url-input');if(t)t.value='';if(u)u.value='';if(file.type.startsWith('image/')){var r=new FileReader();r.onload=function(e){renderPreview(f,'image',e.target.result)};r.readAsDataURL(file)}})(this)">
                             <input type="hidden" name="attachment_type" class="attachment-type-input">
                             <input type="hidden" name="attachment_url" class="attachment-url-input">
                             
-                            <button type="button" class="btn-attach-image p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition" title="Unggah Gambar">
+                            <button type="button" onclick="var fi=this.closest('.attachment-form').querySelector('.attachment-file-input');fi.setAttribute('accept','image/*');fi.click(); event.stopPropagation();" class="btn-attach-image p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition" title="Unggah Gambar">
                                 <i data-lucide="image" class="w-5 h-5"></i>
                             </button>
-                            <button type="button" class="btn-attach-tenor p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition" title="Cari GIF Tenor">
+                            <button type="button" onclick="toggleTenorPopover(this.closest('.attachment-form')); event.stopPropagation();" class="btn-attach-tenor p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition" title="Cari GIF Tenor">
                                 <i data-lucide="film" class="w-5 h-5"></i>
                             </button>
-                            <button type="button" class="btn-attach-gmaps p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition" title="Bagikan Lokasi">
+                            <button type="button" onclick="openMapModal(this.closest('.attachment-form')); event.stopPropagation();" class="btn-attach-gmaps p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition" title="Bagikan Lokasi">
                                 <i data-lucide="map-pin" class="w-5 h-5"></i>
                             </button>
-                            <button type="button" class="btn-attach-emoji p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition relative" title="Pilih Emoji">
+                            <button type="button" onclick="toggleEmojiPicker(this,this.closest('.attachment-form')); event.stopPropagation();" class="btn-attach-emoji p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-100 rounded-xl transition relative" title="Pilih Emoji">
                                 <i data-lucide="smile" class="w-5 h-5"></i>
                             </button>
                         </div>
@@ -251,7 +251,7 @@
                                         <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-red-500"></i> Pesan ini telah dihapus oleh moderator/admin
                                     </p>
                                 @else
-                                    <p x-show="!editing" class="notranslate text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br(parseGifsInContent(e($comment->content))) !!}</p>
+                                    <p x-show="!editing" class="notranslate text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-all">{!! nl2br(parseGifsInContent(e($comment->content))) !!}</p>
                                 @endif
 
                                 @if($comment->attachment_path && !str_starts_with($comment->content, '_deleted_'))
@@ -292,7 +292,7 @@
                                 
                                 <form x-show="editing" x-cloak action="/comments/{{ $comment->id }}" method="POST" class="mt-2">
                                     @csrf @method('PUT')
-                                    <textarea name="content" required rows="2" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#1a3a5c] mb-2 @error('content') ring-2 ring-red-500 @enderror">{{ $comment->content }}</textarea>
+                                    <textarea name="content" required maxlength="256" rows="2" class="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm outline-none focus:border-[#1a3a5c] mb-2 @error('content') ring-2 ring-red-500 @enderror">{{ $comment->content }}</textarea>
                                     @error('content')
                                         <p class="text-red-600 text-xs mt-1 mb-2 font-semibold">{{ $message }}</p>
                                     @enderror
@@ -417,7 +417,7 @@
                                                             $renderedContent = preg_replace('/^@([a-zA-Z0-9_]+)/', '<span class="text-blue-500 font-semibold text-xs mr-1">@$1</span>', $renderedContent);
                                                         }
                                                     @endphp
-                                                    <p x-show="!editingReply" class="notranslate text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{!! nl2br($renderedContent) !!}</p>
+                                                    <p x-show="!editingReply" class="notranslate text-sm text-gray-700 leading-relaxed whitespace-pre-wrap break-all">{!! nl2br($renderedContent) !!}</p>
                                                 @endif
 
                                                 @if($reply->attachment_path && !str_starts_with($reply->content, '_deleted_'))
@@ -480,7 +480,7 @@
                                                 
                                                 <form x-show="editingReply" x-cloak action="/comments/{{ $reply->id }}" method="POST" class="mt-2">
                                                     @csrf @method('PUT')
-                                                    <textarea name="content" required rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] mb-2 @error('content') ring-2 ring-red-500 @enderror">{{ $reply->content }}</textarea>
+                                                    <textarea name="content" required maxlength="256" rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] mb-2 @error('content') ring-2 ring-red-500 @enderror">{{ $reply->content }}</textarea>
                                                     @error('content')
                                                         <p class="text-red-600 text-xs mt-1 mb-2 font-semibold">{{ $message }}</p>
                                                     @enderror
@@ -530,7 +530,7 @@
                                             <div class="flex-1 bg-white border border-gray-100 rounded-2xl rounded-tl-none p-3 shadow-sm">
                                                 @csrf
                                                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-                                                <textarea id="reply-textarea-{{ $comment->id }}" name="content" rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror" placeholder="Tulis balasan... (Bisa paste screenshot juga)"></textarea>
+                                                <textarea id="reply-textarea-{{ $comment->id }}" name="content" maxlength="256" rows="2" class="w-full bg-[#f5f5f5] border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-[#1a3a5c] resize-none @error('content') ring-2 ring-red-500 @enderror" placeholder="Tulis balasan... (Bisa paste screenshot juga)"></textarea>
                                                 @error('content')
                                                     <p class="text-red-600 text-xs mt-1 mb-2 font-semibold">{{ $message }}</p>
                                                 @enderror
@@ -540,20 +540,20 @@
 
                                                 <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-50">
                                                     <div class="flex items-center gap-1">
-                                                        <input type="file" name="attachment" class="hidden attachment-file-input">
+                                                        <input type="file" name="attachment" class="hidden attachment-file-input" onchange="(function(fi){var f=fi.closest('.attachment-form');var file=fi.files[0];if(!file)return;var t=f.querySelector('.attachment-type-input');var u=f.querySelector('.attachment-url-input');if(t)t.value='';if(u)u.value='';if(file.type.startsWith('image/')){var r=new FileReader();r.onload=function(e){renderPreview(f,'image',e.target.result)};r.readAsDataURL(file)}})(this)">
                                                         <input type="hidden" name="attachment_type" class="attachment-type-input">
                                                         <input type="hidden" name="attachment_url" class="attachment-url-input">
                                                         
-                                                        <button type="button" class="btn-attach-image p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition" title="Unggah Gambar">
+                                                        <button type="button" onclick="var fi=this.closest('.attachment-form').querySelector('.attachment-file-input');fi.setAttribute('accept','image/*');fi.click(); event.stopPropagation();" class="btn-attach-image p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition" title="Unggah Gambar">
                                                             <i data-lucide="image" class="w-4 h-4"></i>
                                                         </button>
-                                                        <button type="button" class="btn-attach-tenor p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition" title="Cari GIF Tenor">
+                                                        <button type="button" onclick="toggleTenorPopover(this.closest('.attachment-form')); event.stopPropagation();" class="btn-attach-tenor p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition" title="Cari GIF Tenor">
                                                             <i data-lucide="film" class="w-4 h-4"></i>
                                                         </button>
-                                                        <button type="button" class="btn-attach-gmaps p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition" title="Bagikan Lokasi">
+                                                        <button type="button" onclick="openMapModal(this.closest('.attachment-form')); event.stopPropagation();" class="btn-attach-gmaps p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition" title="Bagikan Lokasi">
                                                             <i data-lucide="map-pin" class="w-4 h-4"></i>
                                                         </button>
-                                                        <button type="button" class="btn-attach-emoji p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition relative" title="Pilih Emoji">
+                                                        <button type="button" onclick="toggleEmojiPicker(this,this.closest('.attachment-form')); event.stopPropagation();" class="btn-attach-emoji p-1.5 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-lg transition relative" title="Pilih Emoji">
                                                             <i data-lucide="smile" class="w-4 h-4"></i>
                                                         </button>
                                                     </div>
@@ -790,6 +790,19 @@
                                 if (window.lucide) {
                                     window.lucide.createIcons();
                                 }
+                                // Re-init Alpine for newly injected x-data elements
+                                if (window.Alpine) {
+                                    currentComments.querySelectorAll('[x-data]').forEach(el => {
+                                        try { window.Alpine.initTree(el); } catch(e) {}
+                                    });
+                                }
+                                // Re-bind all attachment forms after DOM replace
+                                currentComments.querySelectorAll('.attachment-form').forEach(form => {
+                                    if (!form.dataset.bound) {
+                                        initAttachmentFormBindings(form);
+                                        form.dataset.bound = 'true';
+                                    }
+                                });
                             }
                             
                             // Clear textarea & attachments
@@ -1018,21 +1031,64 @@
 
             // Bind all attachment forms existing on load
             document.querySelectorAll('.attachment-form').forEach(form => {
+                form.dataset.bound = 'true';
                 initAttachmentFormBindings(form);
             });
-            
-            // Watch for reply forms being dynamically shown/hidden via Alpine
-            // (Alternative: let's bind when reply button is clicked)
-            document.addEventListener('click', (e) => {
-                if (e.target.closest('button') && e.target.closest('button').textContent.trim() === 'Balas') {
-                    setTimeout(() => {
-                        document.querySelectorAll('.attachment-form').forEach(form => {
+
+            // MutationObserver: auto-bind any new .attachment-form inserted into DOM
+            // Handles Alpine x-show reply forms & WebSocket-injected content
+            const _attachObserver = new MutationObserver((mutations) => {
+                mutations.forEach(mutation => {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType !== 1) return;
+                        // Check if the node itself is a form, or contains forms
+                        const forms = node.matches && node.matches('.attachment-form')
+                            ? [node]
+                            : Array.from(node.querySelectorAll ? node.querySelectorAll('.attachment-form') : []);
+                        forms.forEach(form => {
                             if (!form.dataset.bound) {
+                                form.dataset.bound = 'true';
                                 initAttachmentFormBindings(form);
-                                form.dataset.bound = "true";
                             }
                         });
-                    }, 100);
+                    });
+
+                    // Handle Alpine x-show: style attribute toggled on/near .attachment-form
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const el = mutation.target;
+                        if (!el || el.nodeType !== 1) return;
+                        // Check if el is, or contains, an .attachment-form that is now visible
+                        const forms = el.matches && el.matches('.attachment-form')
+                            ? [el]
+                            : Array.from(el.querySelectorAll ? el.querySelectorAll('.attachment-form') : []);
+                        forms.forEach(form => {
+                            if (!form.dataset.bound && form.style.display !== 'none') {
+                                form.dataset.bound = 'true';
+                                initAttachmentFormBindings(form);
+                            }
+                        });
+                    }
+                });
+            });
+            _attachObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
+
+            // Fallback: re-scan on any Balas button click (handles Alpine x-show reveal)
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (btn) {
+                    // Match Balas button by checking for lucide-reply icon or data attribute
+                    const hasReplyIcon = btn.querySelector('[data-lucide="reply"]');
+                    const textContent = (btn.textContent || '').replace(/\s+/g, ' ').trim();
+                    if (hasReplyIcon || textContent === 'Balas' || textContent.includes('Balas')) {
+                        setTimeout(() => {
+                            document.querySelectorAll('.attachment-form').forEach(form => {
+                                if (!form.dataset.bound) {
+                                    form.dataset.bound = 'true';
+                                    initAttachmentFormBindings(form);
+                                }
+                            });
+                        }, 150);
+                    }
                 }
             });
         });
@@ -1091,7 +1147,9 @@
             return html;
         }
 
-        const TENOR_API_KEY = 'LIVDSRZULELA';
+        if (typeof TENOR_API_KEY === 'undefined') {
+            var TENOR_API_KEY = 'LIVDSRZULELA';
+        }
 
         const TENOR_CATEGORIES = [
             { name: 'Favorit', query: 'love', overlayClass: 'bg-[#ff4b5c]/60 hover:bg-[#ff4b5c]/50' },
@@ -1373,7 +1431,12 @@
         }
 
         // Close tenor popovers & emoji pickers when clicking outside
-        document.addEventListener('click', () => {
+        document.addEventListener('click', (e) => {
+            // Don't close if clicking inside a popover/picker or on attachment buttons
+            const isInsidePopover = e.target.closest('.tenor-popover') || e.target.closest('.emoji-picker-panel');
+            const isAttachmentBtn = e.target.closest('.btn-attach-tenor') || e.target.closest('.btn-attach-emoji');
+            if (isInsidePopover || isAttachmentBtn || !document.body.contains(e.target)) return;
+
             document.querySelectorAll('.tenor-popover').forEach(pop => {
                 pop.classList.add('hidden');
             });
@@ -1394,7 +1457,8 @@
             textarea.dispatchEvent(new Event('input', { bubbles: true }));
         }
 
-        const EMOJI_DATA = [
+        if (typeof EMOJI_DATA === 'undefined') {
+            var EMOJI_DATA = [
             {
                 category: 'Ekspresi',
                 icon: '😀',
@@ -1436,6 +1500,7 @@
                 emojis: ['⌚','📱','💻','⌨️','📷','📺','📻','🕯️','💡','🔦','🧱','🔪','🛡️','🚬','🔮','🧿','💈','🧲','🧪','🧬','🗝️','🔑','🔨','🪛','🔧','🪚','⚙️','⚖️','🔗','⛓️','🩹','🩺','📦','✉️','🏷️','✏️','✒️','📝','💼','📁','📅','🗑️','🔒','🔓','🔔','📣','❓','❔','❗','❕','💯']
             }
         ];
+        }
 
         function toggleEmojiPicker(buttonEl, formEl) {
             // Close any other open emoji pickers first
@@ -1571,17 +1636,25 @@
         let selectedLng = 106.8456;
         let selectedLocationName = "Jakarta, Indonesia";
 
-        const MAP_LAYERS = {
-            streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }),
-            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-            }),
-            dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            })
-        };
+        // MAP_LAYERS is created lazily inside openMapModal to avoid
+        // calling L.tileLayer() at script parse time (which crashes if L is not ready)
+        let _mapLayersCache = null;
+        function getMapLayers() {
+            if (!_mapLayersCache) {
+                _mapLayersCache = {
+                    streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }),
+                    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+                    }),
+                    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    })
+                };
+            }
+            return _mapLayersCache;
+        }
 
         function switchMapLayer(layerName) {
             if (!leafletMap) return;
@@ -1592,7 +1665,7 @@
             }
             
             // Add new layer
-            currentTileLayer = MAP_LAYERS[layerName];
+            currentTileLayer = getMapLayers()[layerName];
             currentTileLayer.addTo(leafletMap);
             
             // Update active button state style
@@ -1620,7 +1693,7 @@
                     leafletMap = L.map('leaflet-map').setView([selectedLat, selectedLng], 13);
                     
                     // Set default layer (streets)
-                    currentTileLayer = MAP_LAYERS.streets;
+                    currentTileLayer = getMapLayers().streets;
                     currentTileLayer.addTo(leafletMap);
                     
                     leafletMarker = L.marker([selectedLat, selectedLng], { draggable: true }).addTo(leafletMap);
@@ -1795,24 +1868,31 @@
         let viewSelectedLat = -6.2088;
         let viewSelectedLng = 106.8456;
 
-        const VIEW_MAP_LAYERS = {
-            streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }),
-            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles &copy; Esri &mdash; Source: Esri'
-            }),
-            dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &copy; CARTO'
-            })
-        };
+        // VIEW_MAP_LAYERS is also created lazily
+        let _viewMapLayersCache = null;
+        function getViewMapLayers() {
+            if (!_viewMapLayersCache) {
+                _viewMapLayersCache = {
+                    streets: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }),
+                    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles &copy; Esri &mdash; Source: Esri'
+                    }),
+                    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; OpenStreetMap &copy; CARTO'
+                    })
+                };
+            }
+            return _viewMapLayersCache;
+        }
 
         function switchViewMapLayer(layerName) {
             if (!viewLeafletMap) return;
             if (currentViewTileLayer) {
                 viewLeafletMap.removeLayer(currentViewTileLayer);
             }
-            currentViewTileLayer = VIEW_MAP_LAYERS[layerName];
+            currentViewTileLayer = getViewMapLayers()[layerName];
             currentViewTileLayer.addTo(viewLeafletMap);
             
             ['streets', 'satellite', 'dark'].forEach(name => {
@@ -1856,7 +1936,7 @@
             setTimeout(() => {
                 if (!viewLeafletMap) {
                     viewLeafletMap = L.map('view-leaflet-map').setView([lat, lng], 17);
-                    currentViewTileLayer = VIEW_MAP_LAYERS.streets;
+                    currentViewTileLayer = getViewMapLayers().streets;
                     currentViewTileLayer.addTo(viewLeafletMap);
                     
                     viewLeafletMarker = L.marker([lat, lng]).addTo(viewLeafletMap);
@@ -1886,104 +1966,122 @@
         });
 
         // --- ATTACHMENT BINDINGS ---
+        // ============================================================
+        // PRIMARY ATTACHMENT BUTTON HANDLER - Event Delegation
+        // Handles ALL .btn-attach-* clicks regardless of binding state.
+        // This fires for both the main form and dynamically-shown reply forms.
+        // ============================================================
+        document.addEventListener('click', function(e) {
+            // 1. Handle tenor popover internal controls
+            if (e.target.closest('.tenor-popover')) {
+                const closeBtn = e.target.closest('.btn-close-tenor');
+                const clearBtn = e.target.closest('.btn-clear-search');
+                const gifItem  = e.target.closest('[data-gif-url]');
+                if (closeBtn) {
+                    e.stopPropagation();
+                    closeBtn.closest('.tenor-popover').classList.add('hidden');
+                }
+                if (clearBtn) {
+                    e.stopPropagation();
+                    const popover = clearBtn.closest('.tenor-popover');
+                    const searchInput = popover ? popover.querySelector('.tenor-popover-search') : null;
+                    if (searchInput) searchInput.value = '';
+                    clearBtn.classList.add('hidden');
+                    const form = popover ? popover.closest('.attachment-form') : null;
+                    if (form) renderTenorCategories(form);
+                }
+                if (gifItem) {
+                    // handled inline by Tenor render
+                }
+                return; // Stop further processing
+            }
+            if (e.target.closest('.emoji-picker-panel')) return;
+
+            // 2. Handle attachment toolbar buttons
+            const imageBtn = e.target.closest('.btn-attach-image');
+            const tenorBtn = e.target.closest('.btn-attach-tenor');
+            const gmapsBtn = e.target.closest('.btn-attach-gmaps');
+            const emojiBtn  = e.target.closest('.btn-attach-emoji');
+
+            const btn = imageBtn || tenorBtn || gmapsBtn || emojiBtn;
+            if (!btn) return;
+
+            console.log('[Attach] Button clicked:', btn.className, '| Target:', e.target.tagName);
+            e.stopPropagation();
+            const form = btn.closest('.attachment-form');
+            console.log('[Attach] Form found:', form ? 'YES (class=' + form.className + ')' : 'NULL');
+            if (!form) return;
+
+            if (imageBtn) {
+                const fi = form.querySelector('.attachment-file-input');
+                if (fi) { fi.setAttribute('accept', 'image/*'); fi.click(); }
+            } else if (tenorBtn) {
+                toggleTenorPopover(form);
+            } else if (gmapsBtn) {
+                openMapModal(form);
+            } else if (emojiBtn) {
+                toggleEmojiPicker(emojiBtn, form);
+            }
+        });
+
+        // Delegated oninput for tenor search box
+        document.addEventListener('input', function(e) {
+            if (!e.target.classList.contains('tenor-popover-search')) return;
+            const popover = e.target.closest('.tenor-popover');
+            if (!popover) return;
+            const form = popover.closest('.attachment-form');
+            if (!form) return;
+            const clearBtn = popover.querySelector('.btn-clear-search');
+            const query = e.target.value.trim();
+            if (clearBtn) clearBtn.classList.toggle('hidden', !query);
+            clearTimeout(popover._searchTimeout);
+            popover._searchTimeout = setTimeout(() => {
+                if (query) {
+                    fetchTenorForForm(form, 'search', query);
+                } else {
+                    renderTenorCategories(form);
+                }
+            }, 400);
+        });
+
+        // Delegated change handler for file inputs (backup in case onchange not bound)
+        document.addEventListener('change', function(e) {
+            if (!e.target.classList.contains('attachment-file-input')) return;
+            const form = e.target.closest('.attachment-form');
+            if (!form) return;
+            const file = e.target.files[0];
+            if (!file) return;
+            const typeInput = form.querySelector('.attachment-type-input');
+            const urlInput  = form.querySelector('.attachment-url-input');
+            if (typeInput) typeInput.value = '';
+            if (urlInput)  urlInput.value  = '';
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (evt) => renderPreview(form, 'image', evt.target.result);
+                reader.readAsDataURL(file);
+            }
+        });
+
         function initAttachmentFormBindings(form) {
             const fileInput = form.querySelector('.attachment-file-input');
             const typeInput = form.querySelector('.attachment-type-input');
             const urlInput = form.querySelector('.attachment-url-input');
             
-            const btnImage = form.querySelector('.btn-attach-image');
-            const btnTenor = form.querySelector('.btn-attach-tenor');
-            const btnGmaps = form.querySelector('.btn-attach-gmaps');
-            const btnEmoji = form.querySelector('.btn-attach-emoji');
-            
-            if (btnImage && fileInput) {
-                btnImage.onclick = () => {
-                    fileInput.setAttribute('accept', 'image/*');
-                    fileInput.click();
-                };
-            }
-
-            if (btnEmoji) {
-                btnEmoji.onclick = (e) => {
-                    e.stopPropagation();
-                    toggleEmojiPicker(btnEmoji, form);
-                };
-            }
+            // File input and paste/GIF detection are bound per-form
+            // (Button clicks are handled by the delegated listener above)
             
             if (fileInput) {
                 fileInput.onchange = (e) => {
                     const file = e.target.files[0];
-                    if (file) {
-                        if (typeInput) typeInput.value = '';
-                        if (urlInput) urlInput.value = '';
-                        
-                        const isImg = file.type.startsWith('image/');
-                        
-                        if (isImg) {
-                            const reader = new FileReader();
-                            reader.onload = (evt) => {
-                                renderPreview(form, 'image', evt.target.result);
-                            };
-                            reader.readAsDataURL(file);
-                        }
+                    if (!file) return;
+                    if (typeInput) typeInput.value = '';
+                    if (urlInput) urlInput.value = '';
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = (evt) => renderPreview(form, 'image', evt.target.result);
+                        reader.readAsDataURL(file);
                     }
                 };
-            }
-            
-            if (btnTenor) {
-                btnTenor.onclick = (e) => {
-                    e.stopPropagation();
-                    toggleTenorPopover(form);
-                };
-            }
-            
-            // Popover search, clear, and close controls
-            const popover = form.querySelector('.tenor-popover');
-            if (popover) {
-                popover.onclick = (e) => {
-                    e.stopPropagation();
-                };
-                const closeBtn = popover.querySelector('.btn-close-tenor');
-                if (closeBtn) {
-                    closeBtn.onclick = () => popover.classList.add('hidden');
-                }
-                
-                const searchInput = popover.querySelector('.tenor-popover-search');
-                const clearBtn = popover.querySelector('.btn-clear-search');
-                
-                if (searchInput) {
-                    let timeout = null;
-                    searchInput.oninput = (e) => {
-                        clearTimeout(timeout);
-                        const query = e.target.value.trim();
-                        if (clearBtn) {
-                            if (query) {
-                                clearBtn.classList.remove('hidden');
-                            } else {
-                                clearBtn.classList.add('hidden');
-                            }
-                        }
-                        timeout = setTimeout(() => {
-                            if (query) {
-                                fetchTenorForForm(form, 'search', query);
-                            } else {
-                                renderTenorCategories(form);
-                            }
-                        }, 400);
-                    };
-                }
-
-                if (clearBtn) {
-                    clearBtn.onclick = () => {
-                        if (searchInput) searchInput.value = '';
-                        clearBtn.classList.add('hidden');
-                        renderTenorCategories(form);
-                    };
-                }
-            }
-            
-            if (btnGmaps) {
-                btnGmaps.onclick = () => openMapModal(form);
             }
             
             const textarea = form.querySelector('textarea');

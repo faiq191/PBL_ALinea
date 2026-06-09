@@ -59,6 +59,19 @@
 
     <x-header />
 
+    @if(session('success'))
+        <div class="mx-6 lg:mx-12 mt-6 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="mx-6 lg:mx-12 mt-6 bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl text-sm font-semibold flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- Fluid full-width container to fill all screen margins --}}
     <div class="w-full pt-28 px-6 lg:px-12 pb-16">
         
@@ -69,7 +82,7 @@
         </div>
 
         {{-- MAIN LAYOUT: Left (2/3 width) and Right (1/3 width) to avoid stretched panels --}}
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div id="koleksi-main-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {{-- COLUMN LEFT: KATALOG BUKU (8 COLS) --}}
             <div class="lg:col-span-8 bg-white rounded-3xl p-6 shadow-xl shadow-slate-100/50 border border-slate-100/80 flex flex-col">
@@ -206,7 +219,7 @@
                                         <div class="flex items-start justify-between gap-2">
                                             <p class="font-extrabold text-[#1a3a5c] text-xs truncate leading-snug">{{ $request->book->title }}</p>
                                             <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $request->borrower->id }}, '{{ addslashes($request->borrower->name) }}', '{{ $request->borrower->profile_photo ? (str_starts_with($request->borrower->profile_photo, 'http') ? $request->borrower->profile_photo : asset('storage/' . $request->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[9px] px-2 py-0.5 rounded-full font-bold transition flex items-center gap-0.5 shrink-0 shadow-sm">
-                                                <i data-lucide="message-circle" class="w-3 h-3"></i> Chat
+                                                <i data-lucide="message-circle" class="w-3 h-3"></i> Buka Obrolan
                                             </button>
                                         </div>
                                         <p class="text-[10px] text-gray-500 mt-1">
@@ -273,12 +286,14 @@
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0 ml-3" onclick="event.stopPropagation()">
                                     <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $loan->borrower->id }}, '{{ addslashes($loan->borrower->name) }}', '{{ $loan->borrower->profile_photo ? (str_starts_with($loan->borrower->profile_photo, 'http') ? $loan->borrower->profile_photo : asset('storage/' . $loan->borrower->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[10px] px-3 py-2 rounded-xl font-bold transition shadow-sm flex items-center gap-1">
-                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Pesan
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Obrolan
                                     </button>
-                                    <button class="bg-[#1a3a5c] hover:bg-[#e84b7a] text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm"
-                                        onclick="alert('Tagihan dikirim ke {{ $loan->borrower->name }}!')">
-                                        Tagih
-                                    </button>
+                                    <form action="/loans/{{ $loan->id }}/remind" method="POST" class="m-0">
+                                        @csrf
+                                        <button type="submit" class="bg-[#1a3a5c] hover:bg-[#122b45] text-white text-[10px] px-3.5 py-2 rounded-xl font-bold transition shadow-sm whitespace-nowrap">
+                                            Tagih
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         @empty
@@ -324,7 +339,7 @@
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0 ml-3" onclick="event.stopPropagation()">
                                     <button type="button" onclick="event.stopPropagation(); window.openChatWithUser({{ $loan->book->user->id }}, '{{ addslashes($loan->book->user->name) }}', '{{ $loan->book->user->profile_photo ? (str_starts_with($loan->book->user->profile_photo, 'http') ? $loan->book->user->profile_photo : asset('storage/' . $loan->book->user->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="bg-rose-50 hover:bg-rose-100 text-[#e84b7a] border border-rose-100/80 text-[10px] px-3 py-2 rounded-xl font-bold transition shadow-sm flex items-center gap-1">
-                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Pesan
+                                        <i data-lucide="message-circle" class="w-3.5 h-3.5"></i> Buka Obrolan
                                     </button>
                                     @if($loan->status === 'dipinjam')
                                         <form action="/loans/{{ $loan->id }}/return" method="POST" class="m-0">
@@ -356,8 +371,46 @@
     <x-footer />
 
     <script>
+        async function refreshKoleksiData() {
+            try {
+                const res = await fetch(window.location.href);
+                if (!res.ok) return;
+                const html = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const oldContainer = document.getElementById('koleksi-main-container');
+                const newContainer = doc.getElementById('koleksi-main-container');
+                
+                if (oldContainer && newContainer) {
+                    oldContainer.innerHTML = newContainer.innerHTML;
+                    
+                    // Re-initialize lucide icons since new HTML has been inserted
+                    if (window.lucide) {
+                        window.lucide.createIcons();
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to auto-refresh Koleksi data:", err);
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+
+            // Listen to real-time notification events to update loan statuses
+            if (window.Echo) {
+                const userId = '{{ auth()->id() }}';
+                window.Echo.channel('user-notifications.' + userId)
+                    .listen('.NotificationSent', (e) => {
+                        console.log("Koleksi page received real-time notification:", e.notification);
+                        const title = e.notification.title;
+                        if (title.includes('Peminjaman') || title.includes('Pengembalian') || title.includes('Status') || title.includes('Tagihan')) {
+                            // Delay slightly to ensure database transaction is fully committed on the server
+                            setTimeout(refreshKoleksiData, 300);
+                        }
+                    });
+            }
         });
     </script>
     <script src="//unpkg.com/alpinejs" defer></script>

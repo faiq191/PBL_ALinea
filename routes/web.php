@@ -158,6 +158,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/loans/{book}', [LoanController::class, 'store']);
     Route::patch('/loans/{loan}/status', [LoanController::class, 'updateStatus']);
     Route::patch('/loans/{loan}/return', [LoanController::class, 'returnBook']);
+    Route::post('/loans/{loan}/remind', [LoanController::class, 'remindUser']);
     Route::get('/loans/my', [LoanController::class, 'myLoans']);
     Route::get('/loans/incoming', [LoanController::class, 'incomingRequests']);
 

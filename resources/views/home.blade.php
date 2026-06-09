@@ -110,7 +110,7 @@
     </div>
 
     {{-- ROW 2: 4 GRID STATISTICS --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-5">
+    <div id="home-stats-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-5">
         {{-- Card 1: Buku Dipinjam --}}
         <div class="flex items-center gap-4 p-3.5 rounded-xl bg-slate-100/70 border border-slate-200/50 hover:bg-slate-200/50 hover:border-slate-300/50 transition duration-300">
             <div class="p-2.5 bg-[#1a3a5c]/8 text-[#1a3a5c] rounded-lg">
@@ -442,6 +442,52 @@
     }, { threshold: 0.1 });
 
     document.querySelectorAll('.book-animate').forEach(el => observer.observe(el));
+
+    async function refreshHomeStats() {
+        try {
+            const res = await fetch(window.location.href);
+            if (!res.ok) return;
+            const html = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const oldContainer = document.getElementById('home-stats-container');
+            const newContainer = doc.getElementById('home-stats-container');
+            
+            if (oldContainer && newContainer) {
+                oldContainer.innerHTML = newContainer.innerHTML;
+                
+                // Re-initialize lucide icons inside the stats container
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }
+        } catch (err) {
+            console.error("Failed to auto-refresh home statistics:", err);
+        }
+    }
+
+    // Connect to Laravel Echo to listen for real-time stats updates
+    if (window.Echo) {
+        // 1. Listen to public global-stats channel
+        window.Echo.channel('global-stats')
+            .listen('.StatsUpdated', (e) => {
+                console.log("Global stats updated event received.");
+                setTimeout(refreshHomeStats, 300);
+            });
+
+        // 2. Also listen to user notifications channel (specifically for loan approvals/returns affecting personal stats)
+        const userId = '{{ auth()->id() }}';
+        if (userId) {
+            window.Echo.channel('user-notifications.' + userId)
+                .listen('.NotificationSent', (e) => {
+                    const title = e.notification.title;
+                    if (title.includes('Peminjaman') || title.includes('Pengembalian') || title.includes('Status') || title.includes('Tagihan')) {
+                        setTimeout(refreshHomeStats, 300);
+                    }
+                });
+        }
+    }
 </script>
 </body>
 </html>

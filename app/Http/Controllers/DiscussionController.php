@@ -117,6 +117,8 @@ class DiscussionController extends Controller
             'user_id'  => auth()->id(),
         ]);
 
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
         return redirect('/komunitas');
     }
 
@@ -132,7 +134,7 @@ class DiscussionController extends Controller
     public function storeComment(Request $request, $id)
     {
         $request->validate([
-            'content' => 'nullable|required_without_all:attachment,attachment_url',
+            'content' => 'nullable|max:256|required_without_all:attachment,attachment_url',
             'parent_id' => 'nullable|exists:comments,id',
             'attachment' => 'nullable|image|max:10240',
             'attachment_type' => 'nullable|string',
@@ -337,6 +339,9 @@ class DiscussionController extends Controller
         }
 
         $discussion->delete();
+
+        try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+
         return redirect('/komunitas');
     }
 
@@ -348,7 +353,7 @@ class DiscussionController extends Controller
         }
         
         $request->validate([
-            'content' => 'required',
+            'content' => 'required|max:256',
             'attachment_path' => 'nullable|string',
             'attachment_name' => 'nullable|string',
         ]);
