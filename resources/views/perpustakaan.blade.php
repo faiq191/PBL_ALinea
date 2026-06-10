@@ -125,7 +125,7 @@
                             <div class="relative">
                                 <button type="button" @click="toggle('genres')"
                                     class="bg-white border border-slate-200 text-[#1a3a5c] px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:border-[#1a3a5c]/30 transition-all shadow-sm">
-                                    Genres
+                                    Genre
                                     <i data-lucide="chevron-down" :class="menuOpen === 'genres' ? 'rotate-180' : ''" class="w-4 h-4 transition-transform"></i>
                                 </button>
                                 <div x-show="menuOpen === 'genres'" @click.away="menuOpen = null" x-transition x-cloak
@@ -176,7 +176,7 @@
                                 </button>
                                 <div x-show="menuOpen === 'demo'" @click.away="menuOpen = null" x-transition x-cloak
                                     class="absolute left-0 mt-3 bg-white p-5 rounded-2xl shadow-2xl w-64 border border-gray-100 z-50">
-                                    <h4 class="text-[#1a3a5c] font-bold mb-3 border-b pb-2">Demografis</h4>
+                                    <h4 class="text-[#1a3a5c] font-bold mb-3 border-b pb-2">Demografi</h4>
                                     <div class="flex flex-col gap-2">
                                         @foreach($demographics as $d)
                                         <label class="flex items-center gap-3 text-[#1a3a5c] text-sm cursor-pointer p-2 rounded-lg hover:bg-[#e8edf2] transition">
@@ -261,31 +261,72 @@
                     <span class="bg-[#1a3a5c] text-white py-1 px-4 rounded-full text-sm font-semibold">{{ $books->count() }} Ditemukan</span>
                 </div>
 
-                @if($books->isEmpty())
+                @if($localBooks->isEmpty() && $googleBooks->isEmpty())
                     <div class="flex flex-col items-center justify-center py-32 bg-white rounded-[2.5rem] shadow-sm border border-gray-100">
                         <i data-lucide="search-x" class="w-20 h-20 text-gray-300 mb-6"></i>
-                        <p class="text-gray-500 font-medium text-xl">Waduh, buku yang Anda cari tidak ditemukan.</p>
+                        <p class="text-gray-500 font-medium text-xl">Maaf, buku yang Anda cari tidak ditemukan.</p>
                         <a href="/perpustakaan" class="mt-6 px-8 py-3 bg-[#1a3a5c] text-white rounded-xl text-sm font-bold hover:bg-[#122b45] transition-all shadow-md">Reset Pencarian</a>
                     </div>
                 @else
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-10">
-                        @foreach($books as $index => $book)
-                            <!-- Disesuaikan agar card memiliki proporsi memanjang secara natural -->
-                            <div class="book-animate opacity-0 translate-y-8 transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-105 hover:z-10"
-                                style="transition-delay: {{ $index * 50 }}ms">
-                                <x-book-card-magazine
-                                    :id="$book->id"
-                                    :image="$book->image"
-                                    :title="$book->title"
-                                    :author="$book->author"
-                                    :first-genre="$book->genres->first()?->name ?? null"
-                                    :owner-id="$book->user_id"
-                                    :is-available="!$book->is_google_api && method_exists($book, 'isAvailable') ? $book->isAvailable() : true"
-                                    :is-google-api="$book->is_google_api ?? false"
-                                />
+                    @if($localBooks->isNotEmpty())
+                        <!-- Section: Buku Perpustakaan (Database) -->
+                        <div class="mb-14">
+                            <div class="flex items-center gap-3 mb-6 pl-2">
+                                <h4 class="text-xl font-bold text-[#1a3a5c] flex items-center gap-2">
+                                    <i data-lucide="database" class="w-5 h-5 text-[#e84b7a]"></i>
+                                    Koleksi Perpustakaan
+                                </h4>
+                                <span class="bg-[#1a3a5c] text-white py-0.5 px-3 rounded-full text-xs font-semibold">{{ $localBooks->count() }} Buku</span>
                             </div>
-                        @endforeach
-                    </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-10">
+                                @foreach($localBooks as $index => $book)
+                                    <div class="book-animate opacity-0 translate-y-8 transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-105 hover:z-10"
+                                        style="transition-delay: {{ $index * 50 }}ms">
+                                        <x-book-card-magazine
+                                            :id="$book->id"
+                                            :image="$book->image"
+                                            :title="$book->title"
+                                            :author="$book->author"
+                                            :first-genre="$book->genres->first()?->name ?? null"
+                                            :owner-id="$book->user_id"
+                                            :is-available="method_exists($book, 'isAvailable') ? $book->isAvailable() : true"
+                                            :is-google-api="false"
+                                        />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($googleBooks->isNotEmpty())
+                        <!-- Section: Google Buku API -->
+                        <div class="mb-14">
+                            <div class="flex items-center gap-3 mb-6 pl-2">
+                                <h4 class="text-xl font-bold text-[#1a3a5c] flex items-center gap-2">
+                                    <i data-lucide="globe" class="w-5 h-5 text-[#e84b7a]"></i>
+                                    Katalog Google Buku
+                                </h4>
+                                <span class="bg-[#1a3a5c] text-white py-0.5 px-3 rounded-full text-xs font-semibold">{{ $googleBooks->count() }} Hasil</span>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-6 gap-y-10">
+                                @foreach($googleBooks as $index => $book)
+                                    <div class="book-animate opacity-0 translate-y-8 transition-all duration-500 ease-out hover:-translate-y-2 hover:scale-105 hover:z-10"
+                                        style="transition-delay: {{ $index * 50 }}ms">
+                                        <x-book-card-magazine
+                                            :id="$book->id"
+                                            :image="$book->image"
+                                            :title="$book->title"
+                                            :author="$book->author"
+                                            :first-genre="$book->genres->first()?->name ?? null"
+                                            :owner-id="$book->user_id"
+                                            :is-available="true"
+                                            :is-google-api="true"
+                                        />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 @endif
 
             @else

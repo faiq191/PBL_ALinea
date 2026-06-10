@@ -18,6 +18,8 @@ class PerpustakaanController extends Controller
         $hasFilters = $request->hasAny(['search', 'genre_ids', 'type_ids', 'demo_ids', 'year_ids', 'author']);
         
         $books = collect();
+        $localBooksMapped = collect();
+        $googleBooksMapped = collect();
         $booksByGenre = [];
 
         if ($hasFilters) {
@@ -70,7 +72,7 @@ class PerpustakaanController extends Controller
             });
 
             foreach ($localBooks as $localBook) {
-                $books->push((object)[
+                $localBooksMapped->push((object)[
                     'id'            => $localBook->id,
                     'title'         => $localBook->title,
                     'author'        => $localBook->author,
@@ -92,7 +94,7 @@ class PerpustakaanController extends Controller
                 $author = isset($volume['authors']) ? implode(', ', $volume['authors']) : 'Unknown Author';
 
                 $alreadyExists = $localBooks->contains(function ($local) use ($title, $author) {
-                    return strtolower($local->title) === strtolower($title) || strtolower($local->author) === strtolower($author);
+                    return strtolower($local->title) === strtolower($title) && strtolower($local->author) === strtolower($author);
                 });
 
                 if (!$alreadyExists) {
@@ -107,10 +109,17 @@ class PerpustakaanController extends Controller
                                 $cleanStr = trim($part);
                                 if (!in_array($cleanStr, ['General', 'Comics & Graphic Novels'])) {
                                     
-                                    try {
-                                        $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
-                                    } catch (\Exception $e) {
-                                        $translatedStr = $cleanStr; // Fallback jika gagal translate
+                                    $lowerClean = strtolower($cleanStr);
+                                    if (in_array($lowerClean, ['self-help', 'self-improvement'])) {
+                                        $translatedStr = 'Pengembangan Diri';
+                                    } elseif ($lowerClean === 'light novel') {
+                                        $translatedStr = 'Novel Ringan';
+                                    } else {
+                                        try {
+                                            $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
+                                        } catch (\Exception $e) {
+                                            $translatedStr = $cleanStr; // Fallback jika gagal translate
+                                        }
                                     }
 
                                     if (!in_array($translatedStr, $genreNames)) {
@@ -121,7 +130,7 @@ class PerpustakaanController extends Controller
                         }
                     }
 
-                    $books->push((object)[
+                    $googleBooksMapped->push((object)[
                         'id'            => $item['id'],
                         'title'         => $title,
                         'author'        => $author,
@@ -133,6 +142,8 @@ class PerpustakaanController extends Controller
                     ]);
                 }
             }
+
+            $books = $localBooksMapped->concat($googleBooksMapped);
         } else {
             foreach (Genre::with(['books.user', 'books.genres'])->get() as $genre) {
                 $uniqueBooks = $genre->books->unique(function ($book) {
@@ -158,6 +169,8 @@ class PerpustakaanController extends Controller
 
         return view('perpustakaan', [
             'books'        => $books,
+            'localBooks'   => $localBooksMapped,
+            'googleBooks'  => $googleBooksMapped,
             'booksByGenre' => $booksByGenre,
             'genres'       => Genre::all(),
             'types'        => Type::all(),

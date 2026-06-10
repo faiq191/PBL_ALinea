@@ -157,10 +157,17 @@ class BookController extends Controller
                         }
 
                         if (!in_array($cleanStr, ['General', 'Comics & Graphic Novels'])) {
-                            try {
-                                $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
-                            } catch (\Exception $e) {
-                                $translatedStr = $cleanStr; // Fallback jika gagal translate
+                            $lowerClean = strtolower($cleanStr);
+                            if (in_array($lowerClean, ['self-help', 'self-improvement'])) {
+                                $translatedStr = 'Pengembangan Diri';
+                            } elseif ($lowerClean === 'light novel') {
+                                $translatedStr = 'Novel Ringan';
+                            } else {
+                                try {
+                                    $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
+                                } catch (\Exception $e) {
+                                    $translatedStr = $cleanStr; // Fallback jika gagal translate
+                                }
                             }
 
                             if (!in_array($translatedStr, $genreNames)) {
@@ -330,10 +337,17 @@ class BookController extends Controller
                         }
 
                         if (!in_array($cleanStr, ['General', 'Comics & Graphic Novels'])) {
-                            try {
-                                $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
-                            } catch (\Exception $e) {
-                                $translatedStr = $cleanStr; // Fallback jika gagal translate
+                            $lowerClean = strtolower($cleanStr);
+                            if (in_array($lowerClean, ['self-help', 'self-improvement'])) {
+                                $translatedStr = 'Pengembangan Diri';
+                            } elseif ($lowerClean === 'light novel') {
+                                $translatedStr = 'Novel Ringan';
+                            } else {
+                                try {
+                                    $translatedStr = ucwords(strtolower($translator->translate($cleanStr)));
+                                } catch (\Exception $e) {
+                                    $translatedStr = $cleanStr; // Fallback jika gagal translate
+                                }
                             }
 
                             if (!in_array($translatedStr, $genreNames)) {
