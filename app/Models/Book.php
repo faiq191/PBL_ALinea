@@ -56,4 +56,8 @@ class Book extends Model
         return !$this->loans()->whereIn('status', ['pending', 'dipinjam'])->exists();
     }
 
+    public function reports()
+    {
+        return $this->hasMany(BookReport::class, 'book_id');
+    }
 }

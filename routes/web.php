@@ -172,6 +172,7 @@ Route::middleware('auth')->group(function () {
 
     // User Reports
     Route::post('/reports/user', [\App\Http\Controllers\UserReportController::class, 'store']);
+    Route::post('/reports/book', [\App\Http\Controllers\BookReportController::class, 'store']);
 
 
     // Temporary route to generate highly-accurate Vol 1 dummy books for testing

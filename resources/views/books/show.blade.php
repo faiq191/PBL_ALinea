@@ -116,6 +116,11 @@
                         ← Kembali
                     </a>
 
+                    <button type="button" onclick="openBookReportModal({{ $book->id }}, '{{ addslashes($book->title) }}', {{ $book->user_id ?? 0 }}, '{{ addslashes($book->user->name ?? 'Pengunggah') }}')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-6 py-2.5 rounded-xl transition flex items-center gap-2">
+                        <i data-lucide="flag" class="w-4 h-4"></i>
+                        Laporkan Buku
+                    </button>
+
                     @auth
                         @php
                             $userOwnsBook = \App\Models\Book::where('user_id', auth()->id())
@@ -173,6 +178,7 @@
     </div>
 
     <script>lucide.createIcons();</script>
+    <x-book-report-modal />
 </body>
 
 </html>
