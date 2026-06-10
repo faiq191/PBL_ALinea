@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Books\Schemas;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 
 class BookForm
@@ -13,21 +14,51 @@ class BookForm
     {
         return $schema
             ->components([
-                Textarea::make('description')
-                    ->columnSpanFull(),
-                TextInput::make('title'),
-                TextInput::make('author'),
+                TextInput::make('title')
+                    ->label('Judul Buku')
+                    ->required()
+                    ->maxLength(255),
+                TextInput::make('author')
+                    ->label('Nama Pengarang')
+                    ->required()
+                    ->maxLength(255),
                 FileUpload::make('image')
-                    ->image(),
-                TextInput::make('user_id')
-                    ->numeric(),
-                TextInput::make('genre'),
-                TextInput::make('type_id')
-                    ->numeric(),
-                TextInput::make('year_id')
-                    ->numeric(),
-                TextInput::make('demographic_id')
-                    ->numeric(),
+                    ->label('Sampul Buku')
+                    ->image()
+                    ->directory('books'),
+                Select::make('user_id')
+                    ->relationship('user', 'name')
+                    ->label('Pemilik / Pengunggah')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Select::make('type_id')
+                    ->relationship('type', 'name')
+                    ->label('Tipe Buku')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Select::make('year_id')
+                    ->relationship('year', 'year')
+                    ->label('Tahun Terbit')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Select::make('demographic_id')
+                    ->relationship('demographic', 'name')
+                    ->label('Demografi Pembaca')
+                    ->searchable()
+                    ->preload()
+                    ->required(),
+                Select::make('genres')
+                    ->relationship('genres', 'name')
+                    ->multiple()
+                    ->label('Genre Buku')
+                    ->preload(),
+                Textarea::make('description')
+                    ->label('Sinopsis / Deskripsi Buku')
+                    ->columnSpanFull()
+                    ->rows(6),
             ]);
     }
 }

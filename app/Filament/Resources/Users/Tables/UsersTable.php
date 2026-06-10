@@ -15,26 +15,35 @@ class UsersTable
     {
         return $table
             ->columns([
+                \Filament\Tables\Columns\ImageColumn::make('profile_photo')
+                    ->label('Foto Profil')
+                    ->circular(),
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nama Lengkap')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
+                    ->label('Alamat Email')
+                    ->searchable()
+                    ->sortable(),
                 IconColumn::make('is_admin')
+                    ->label('Administrator')
                     ->boolean(),
                 TextColumn::make('email_verified_at')
+                    ->label('Email Terverifikasi')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
+                    ->label('Tanggal Terdaftar')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Terakhir Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('profile_photo')
-                    ->searchable(),
             ])
             ->filters([
                 //

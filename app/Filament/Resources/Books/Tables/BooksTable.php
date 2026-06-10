@@ -15,33 +15,46 @@ class BooksTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->label('Sampul Buku')
+                    ->circular(),
+                TextColumn::make('title')
+                    ->label('Judul Buku')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('author')
+                    ->label('Nama Pengarang')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->label('Pemilik / Pengunggah')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('type.name')
+                    ->label('Tipe Buku')
+                    ->sortable(),
+                TextColumn::make('year.year')
+                    ->label('Tahun Terbit')
+                    ->sortable(),
+                TextColumn::make('demographic.name')
+                    ->label('Demografis')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('genres.name')
+                    ->label('Genre')
+                    ->badge()
+                    ->color('primary')
+                    ->searchable(),
                 TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Tanggal Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('title')
-                    ->searchable(),
-                TextColumn::make('author')
-                    ->searchable(),
-                ImageColumn::make('image'),
-                TextColumn::make('user_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('genre')
-                    ->searchable(),
-                TextColumn::make('type_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('year_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('demographic_id')
-                    ->numeric()
-                    ->sortable(),
             ])
             ->filters([
                 //

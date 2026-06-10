@@ -18,7 +18,15 @@ class BookResource extends Resource
 {
     protected static ?string $model = Book::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
+
+    protected static ?string $navigationLabel = 'Buku';
+
+    protected static ?string $modelLabel = 'Buku';
+
+    protected static ?string $pluralModelLabel = 'Buku';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'title';
 

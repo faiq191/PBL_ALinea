@@ -16,26 +16,35 @@ class EventForm
         return $schema
             ->components([
                 TextInput::make('title')
+                    ->label('Judul Acara')
                     ->required()
                     ->maxLength(255),
                 Textarea::make('description')
+                    ->label('Deskripsi / Penjelasan Acara')
                     ->required()
                     ->columnSpanFull(),
                 FileUpload::make('image')
+                    ->label('Poster / Pamflet Acara')
                     ->image()
                     ->directory('events')
                     ->columnSpanFull(),
                 TextInput::make('link')
+                    ->label('Tautan Pendaftaran / Informasi')
                     ->url()
                     ->maxLength(255)
-                    ->placeholder('https://example.com/register-event'),
-                DateTimePicker::make('start_date'),
-                DateTimePicker::make('end_date'),
+                    ->placeholder('https://contoh.com/daftar-acara'),
+                DateTimePicker::make('start_date')
+                    ->label('Waktu Mulai')
+                    ->required(),
+                DateTimePicker::make('end_date')
+                    ->label('Waktu Selesai')
+                    ->required(),
                 Select::make('status')
+                    ->label('Status Kegiatan')
                     ->options([
-                        'draft' => 'Draft',
-                        'running' => 'Running',
-                        'completed' => 'Completed',
+                        'draft' => 'Draf / Rencana',
+                        'running' => 'Sedang Berjalan',
+                        'completed' => 'Selesai',
                     ])
                     ->default('running')
                     ->required(),

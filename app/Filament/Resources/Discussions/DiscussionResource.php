@@ -18,7 +18,15 @@ class DiscussionResource extends Resource
 {
     protected static ?string $model = Discussion::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;
+
+    protected static ?string $navigationLabel = 'Diskusi';
+
+    protected static ?string $modelLabel = 'Diskusi';
+
+    protected static ?string $pluralModelLabel = 'Diskusi';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'title';
 

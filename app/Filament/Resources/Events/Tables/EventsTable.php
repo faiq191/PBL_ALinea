@@ -15,30 +15,43 @@ class EventsTable
     {
         return $table
             ->columns([
-                TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ImageColumn::make('image')
+                    ->label('Poster / Pamflet')
+                    ->circular(),
                 TextColumn::make('title')
+                    ->label('Nama Kegiatan')
                     ->searchable()
                     ->sortable(),
-                ImageColumn::make('image'),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
                         'running' => 'success',
-                        'completed' => 'danger',
+                        'completed' => 'info',
                         default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'draft' => 'Draf / Rencana',
+                        'running' => 'Sedang Berjalan',
+                        'completed' => 'Selesai',
+                        default => $state,
                     })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('start_date')
+                    ->label('Waktu Mulai')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('end_date')
+                    ->label('Waktu Selesai')
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

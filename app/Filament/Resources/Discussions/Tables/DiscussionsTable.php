@@ -14,20 +14,37 @@ class DiscussionsTable
     {
         return $table
             ->columns([
+                \Filament\Tables\Columns\ImageColumn::make('image')
+                    ->label('Gambar')
+                    ->circular(),
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->label('Judul Diskusi')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('genre')
-                    ->searchable(),
+                    ->label('Genre')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('category')
-                    ->searchable(),
-                TextColumn::make('user_id')
-                    ->numeric()
+                    ->label('Kategori')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('content')
+                    ->label('Konten Diskusi')
+                    ->limit(30)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('user.name')
+                    ->label('Pembuat Diskusi')
+                    ->searchable()
                     ->sortable(),
                 TextColumn::make('created_at')
+                    ->label('Tanggal Dibuat')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Tanggal Diperbarui')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

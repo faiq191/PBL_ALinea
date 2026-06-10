@@ -18,13 +18,15 @@ class BookReportResource extends Resource
 {
     protected static ?string $model = BookReport::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFlag;
 
     protected static ?string $navigationLabel = 'Laporan Buku';
 
     protected static ?string $modelLabel = 'Laporan Buku';
 
     protected static ?string $pluralModelLabel = 'Laporan Buku';
+
+    protected static ?int $navigationSort = 5;
 
     public static function form(Schema $schema): Schema
     {
