@@ -24,13 +24,20 @@
                                         </span>
                                     </div>
                                     
-                                    @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->is_admin) && !str_starts_with($comment->content, '_deleted_'))
+                                    @if(!str_starts_with($comment->content, '_deleted_'))
                                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button @click="editing = !editing; replying = false" class="text-gray-400 hover:text-[#1a3a5c] p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                            <form action="/comments/{{ $comment->id }}" method="POST" onsubmit="return confirm('Hapus komentar?');">
-                                                @csrf @method('DELETE')
-                                                <button type="submit" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                                            </form>
+                                            @if(auth()->check() && (auth()->id() === $comment->user_id || auth()->user()->is_admin))
+                                                <button @click="editing = !editing; replying = false" class="text-gray-400 hover:text-[#1a3a5c] p-1" title="Sunting Komentar"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                <form action="/comments/{{ $comment->id }}" method="POST" onsubmit="return confirm('Hapus komentar?');">
+                                                    @csrf @method('DELETE')
+                                                    <button type="submit" class="text-gray-400 hover:text-red-600 p-1" title="Hapus Komentar"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                </form>
+                                            @endif
+                                            @if(!auth()->check() || auth()->id() !== $comment->user_id)
+                                                <button type="button" onclick="openReportModal('comment', {{ $comment->id }}, {{ $comment->user_id }}, '{{ addslashes($comment->user->name) }}')" class="text-gray-400 hover:text-red-600 p-1" title="Laporkan Komentar">
+                                                    <i data-lucide="flag" class="w-3 h-3"></i>
+                                                </button>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -165,13 +172,20 @@
                                                             @endif
                                                         </span>
                                                     </div>
-                                                    @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->is_admin) && !str_starts_with($reply->content, '_deleted_'))
+                                                    @if(!str_starts_with($reply->content, '_deleted_'))
                                                         <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            <button @click="editingReply = !editingReply" class="text-gray-400 hover:text-[#1a3a5c] p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
-                                                            <form action="/comments/{{ $reply->id }}" method="POST" onsubmit="return confirm('Hapus balasan?');">
-                                                                @csrf @method('DELETE')
-                                                                <button type="submit" class="text-gray-400 hover:text-red-600 p-1"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-                                                            </form>
+                                                            @if(auth()->check() && (auth()->id() === $reply->user_id || auth()->user()->is_admin))
+                                                                <button @click="editingReply = !editingReply" class="text-gray-400 hover:text-[#1a3a5c] p-1" title="Sunting Balasan"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                                                <form action="/comments/{{ $reply->id }}" method="POST" onsubmit="return confirm('Hapus balasan?');">
+                                                                    @csrf @method('DELETE')
+                                                                    <button type="submit" class="text-gray-400 hover:text-red-600 p-1" title="Hapus Balasan"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                                                                </form>
+                                                            @endif
+                                                            @if(!auth()->check() || auth()->id() !== $reply->user_id)
+                                                                <button type="button" onclick="openReportModal('comment', {{ $reply->id }}, {{ $reply->user_id }}, '{{ addslashes($reply->user->name) }}')" class="text-gray-400 hover:text-red-600 p-1" title="Laporkan Balasan">
+                                                                    <i data-lucide="flag" class="w-3 h-3"></i>
+                                                                </button>
+                                                            @endif
                                                         </div>
                                                     @endif
                                                 </div>

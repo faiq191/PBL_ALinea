@@ -84,5 +84,7 @@
 
     @include("discussions.partials.scripts")
     @include("discussions.partials.modals")
+    <x-report-modal />
 </body>
 </html>
+

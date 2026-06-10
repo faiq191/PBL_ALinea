@@ -170,6 +170,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
+    // User Reports
+    Route::post('/reports/user', [\App\Http\Controllers\UserReportController::class, 'store']);
+
+
     // Temporary route to generate highly-accurate Vol 1 dummy books for testing
     Route::get('/generate-dummy-books', function (Request $request) {
         $user = auth()->user();

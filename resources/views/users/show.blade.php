@@ -89,9 +89,15 @@
                         <a href="/profile" class="w-full bg-[#1a3a5c] text-white text-center py-3 px-6 rounded-2xl font-bold text-sm hover:bg-[#122b45] shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-2">
                             <i data-lucide="settings" class="w-4 h-4"></i> Edit Akun Saya
                         </a>
-                    @elseif(auth()->check())
-                        <button onclick="window.openChatWithUser({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->profile_photo ? (str_starts_with($user->profile_photo, 'http') ? $user->profile_photo : asset('storage/' . $user->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="w-full bg-[#e84b7a] hover:bg-[#d83a69] text-white text-center py-3 px-6 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-2">
-                            <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim Pesan
+                    @else
+                        @auth
+                            <button onclick="window.openChatWithUser({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ $user->profile_photo ? (str_starts_with($user->profile_photo, 'http') ? $user->profile_photo : asset('storage/' . $user->profile_photo)) : asset('Gambar/default_avatar.png') }}')" class="w-full bg-[#e84b7a] hover:bg-[#d83a69] text-white text-center py-3 px-6 rounded-2xl font-bold text-sm shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-2">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i> Kirim Pesan
+                            </button>
+                        @endauth
+
+                        <button onclick="openReportModal('profile', null, {{ $user->id }}, '{{ addslashes($user->name) }}')" class="w-full bg-red-50 hover:bg-red-100 text-red-600 text-center py-2.5 px-6 rounded-2xl font-bold text-sm border border-red-200 transition duration-300 flex items-center justify-center gap-2" title="Laporkan Pengguna">
+                            <i data-lucide="flag" class="w-4 h-4"></i> Laporkan Pengguna
                         </button>
                     @endif
 
@@ -211,5 +217,6 @@
     <script>
         lucide.createIcons();
     </script>
+    <x-report-modal />
 </body>
 </html>

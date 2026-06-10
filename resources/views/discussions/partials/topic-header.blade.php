@@ -6,19 +6,24 @@
                     <div class="flex justify-between items-start mb-2">
                         <span class="text-xs font-bold text-white bg-[#1a3a5c] px-3 py-1 rounded-full uppercase tracking-wider">{{ $discussion->genre ?? 'Umum' }}</span>
                         
-                        @if(auth()->check() && (auth()->id() === $discussion->user_id || auth()->user()->is_admin))
-                            <div class="flex gap-2">
-                                <a href="/diskusi/{{ $discussion->id }}/edit" class="p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-xl transition">
+                        <div class="flex gap-2">
+                            @if(auth()->check() && (auth()->id() === $discussion->user_id || auth()->user()->is_admin))
+                                <a href="/diskusi/{{ $discussion->id }}/edit" class="p-2 text-gray-400 hover:text-[#1a3a5c] hover:bg-gray-50 rounded-xl transition" title="Sunting Diskusi">
                                     <i data-lucide="pencil" class="w-4 h-4"></i>
                                 </a>
                                 <form action="/diskusi/{{ $discussion->id }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus diskusi ini?');">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
+                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition" title="Hapus Diskusi">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>
                                 </form>
-                            </div>
-                        @endif
+                            @endif
+                            @if(!auth()->check() || auth()->id() !== $discussion->user_id)
+                                <button onclick="openReportModal('discussion', {{ $discussion->id }}, {{ $discussion->user_id }}, '{{ addslashes($discussion->user->name) }}')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition" title="Laporkan Diskusi">
+                                    <i data-lucide="flag" class="w-4 h-4"></i>
+                                </button>
+                            @endif
+                        </div>
                     </div>
                     
                     <h1 class="notranslate text-3xl font-extrabold text-[#1a3a5c] leading-tight mb-4">
