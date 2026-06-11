@@ -27,6 +27,7 @@ class EventForm
                     ->label('Poster / Pamflet Acara')
                     ->image()
                     ->directory('events')
+                    ->disk('public')
                     ->columnSpanFull(),
                 TextInput::make('link')
                     ->label('Tautan Pendaftaran / Informasi')
