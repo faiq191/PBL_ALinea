@@ -99,7 +99,7 @@
                                 <span class="hidden md:inline">Filter</span>
                             </button>
 
-                            @if(request()->hasAny(['search', 'genre_ids', 'type_ids', 'demo_ids', 'year_ids', 'author']))
+                            @if(request()->hasAny(['search', 'genre_ids', 'type_ids', 'demo_ids', 'year_from', 'year_to', 'author']))
                                 <a href="/perpustakaan" title="Reset Pencarian"
                                     class="bg-red-50 text-red-500 p-4 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition-all active:scale-95 flex items-center justify-center shrink-0">
                                     <i data-lucide="refresh-cw" class="w-5 h-5"></i>
@@ -190,24 +190,6 @@
                                 </div>
                             </div>
 
-                            <!-- Pengarang Filter -->
-                            <div class="relative">
-                                <button type="button" @click="toggle('author')"
-                                    class="bg-white border border-slate-200 text-[#1a3a5c] px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 hover:border-[#1a3a5c]/30 transition-all shadow-sm">
-                                    Pengarang
-                                    <i data-lucide="chevron-down" :class="menuOpen === 'author' ? 'rotate-180' : ''" class="w-4 h-4 transition-transform"></i>
-                                </button>
-                                <div x-show="menuOpen === 'author'" @click.away="menuOpen = null" x-transition x-cloak
-                                    class="absolute left-0 mt-3 bg-white p-5 rounded-2xl shadow-2xl w-72 border border-gray-100 z-50">
-                                    <h4 class="text-[#1a3a5c] font-bold mb-3">Nama Pengarang</h4>
-                                    <div class="relative">
-                                        <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                                        <input type="text" name="author" value="{{ request('author') }}"
-                                            placeholder="Ketik nama..."
-                                            class="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#e8edf2] text-[#1a3a5c] outline-none text-sm focus:ring-2 focus:ring-[#1a3a5c]/30 border border-transparent focus:border-[#1a3a5c]/20">
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Tahun Rilis Filter -->
                             <div class="relative">
@@ -332,7 +314,7 @@
             @else
                 <!-- NETFLIX STYLE CAROUSEL ROWS (No Search) -->
                 @forelse($booksByGenre as $genre => $genreBooks)
-                    <div class="mb-14 relative group">
+                    <div class="mb-14 relative group/row">
                         
                         <!-- Row Header -->
                         <div class="flex justify-between items-end mb-4 px-2 md:px-4">
@@ -345,9 +327,9 @@
                                     $genreId = $genreBooks->first()->genres->where('name', $genre)->first()->id ?? '';
                                 @endphp
                                 <a href="/perpustakaan?genre_ids[]={{ $genreId }}&local_only=true" 
-                                   class="text-sm font-bold text-[#e84b7a] hover:text-[#1a3a5c] transition-colors flex items-center gap-1 group-hover:underline underline-offset-4">
+                                   class="text-sm font-bold text-[#e84b7a] hover:text-[#1a3a5c] transition-colors flex items-center gap-1 group-hover/row:underline underline-offset-4">
                                     Lihat Semua 
-                                    <i data-lucide="chevron-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 group-hover/row:translate-x-1 transition-transform"></i>
                                 </a>
                             @endif
                         </div>
@@ -371,6 +353,17 @@
     />
 </div>
                             @endforeach
+
+                            <!-- CTA Card: Bagikan Buku -->
+                            <a href="/koleksi" 
+                               class="w-[140px] sm:w-[160px] md:w-[180px] lg:w-[200px] h-[300px] shrink-0 snap-start border-2 border-dashed border-slate-200 hover:border-[#e84b7a]/50 rounded-2xl flex flex-col items-center justify-center p-4 text-center transition-all duration-300 hover:bg-[#e84b7a]/5 group shadow-sm bg-white/60">
+                                <div class="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#e84b7a]/10 group-hover:text-[#e84b7a] transition-all mb-4">
+                                    <i data-lucide="plus-circle" class="w-6 h-6"></i>
+                                </div>
+                                <h5 class="font-bold text-xs sm:text-sm text-[#1a3a5c] group-hover:text-[#e84b7a] transition-colors leading-tight mb-2">Bagikan Buku</h5>
+                                <p class="text-[10px] text-gray-400 leading-normal">Punya buku {{ strtolower($genre) }}? Tambahkan ke katalog Anda.</p>
+                            </a>
+
                             <!-- Gradient Fade for right edge hinting more content -->
                             <div class="w-[40px] shrink-0 pointer-events-none"></div>
                         </div>
@@ -382,6 +375,14 @@
                         <p class="text-gray-500 font-medium text-lg">Belum ada koleksi buku di perpustakaan ini.</p>
                     </div>
                 @endforelse
+
+                @if(isset($genresPaginated) && $genresPaginated->hasPages())
+                    <div class="mt-8 mb-6 flex justify-center">
+                        <div class="bg-white px-4 py-2 rounded-2xl shadow-md border border-gray-100">
+                            {{ $genresPaginated->links() }}
+                        </div>
+                    </div>
+                @endif
             @endif
 
         </div>

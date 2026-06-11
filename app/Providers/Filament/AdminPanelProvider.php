@@ -20,6 +20,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 use Filament\Enums\ThemeMode;
+use Filament\Navigation\MenuItem;
+use Illuminate\Support\Facades\Blade;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -42,6 +44,27 @@ class AdminPanelProvider extends PanelProvider
             ->font('Instrument Sans')
             ->defaultThemeMode(ThemeMode::Light)
             ->sidebarCollapsibleOnDesktop()
+            ->userMenuItems([
+                'back_to_site' => MenuItem::make()
+                    ->label('Kembali ke Situs')
+                    ->url(fn () => session('last_non_admin_url', session('admin_back_url', '/')))
+                    ->icon('heroicon-o-arrow-left-on-rectangle'),
+            ])
+            ->renderHook(
+                'panels::user-menu.before',
+                fn (): string => Blade::render('
+                    <x-filament::button
+                        href="{{ session(\'last_non_admin_url\', session(\'admin_back_url\', \'/\')) }}"
+                        tag="a"
+                        color="gray"
+                        icon="heroicon-m-arrow-left"
+                        size="sm"
+                        class="mr-4"
+                    >
+                        Kembali ke Situs
+                    </x-filament::button>
+                '),
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

@@ -13,13 +13,13 @@
     <div id="chat-conversation-view" class="hidden flex-1 flex flex-col h-full bg-slate-50 overflow-hidden">
         <!-- Chat Header -->
         <div class="px-5 py-4 bg-white border-b border-gray-100 flex items-center justify-between">
-            <div class="flex items-center gap-3">
+            <a id="chat-header-profile-link" href="#" class="flex items-center gap-3 hover:opacity-85 transition group">
                 <img id="chat-header-avatar" class="w-8 h-8 rounded-full object-cover border border-gray-100" src="" alt="Avatar">
                 <div>
-                    <h4 id="chat-header-name" class="text-xs font-extrabold text-[#1a3a5c] leading-none">Username</h4>
+                    <h4 id="chat-header-name" class="text-xs font-extrabold text-[#1a3a5c] leading-none group-hover:underline">Username</h4>
                     <span id="chat-header-status" class="text-[9px] text-slate-400 font-bold mt-1 block">Offline</span>
                 </div>
-            </div>
+            </a>
             <div class="flex items-center gap-2">
                 <button onclick="closeActiveChat()" class="text-slate-400 hover:text-[#1a3a5c] transition p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">

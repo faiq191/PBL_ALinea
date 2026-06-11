@@ -53,10 +53,10 @@ class BookController extends Controller
 
         return view('koleksi', [
             'books'            => $query->get(),
-            'genres'           => Genre::all(),
-            'types'            => Type::all(),
-            'years'            => Year::all(),
-            'demographics'     => Demographic::all(),
+            'genres'           => Genre::orderBy('name', 'asc')->get(),
+            'types'            => Type::orderBy('name', 'asc')->get(),
+            'years'            => Year::orderBy('year', 'desc')->get(),
+            'demographics'     => Demographic::orderBy('name', 'asc')->get(),
             'myLoans'          => $myLoans,
             'incomingRequests' => $incomingRequests,
             'lentBooks'        => $lentBooks,
@@ -67,13 +67,13 @@ class BookController extends Controller
     {
         $allLibraryBooks = Book::all()->unique(function ($book) {
             return $book->title . $book->author;
-        });
+        })->sortBy('title', SORT_NATURAL | SORT_FLAG_CASE)->values();
 
         return view('books.create', [
-            'genres'           => Genre::all(),
-            'types'            => Type::all(),
-            'years'            => Year::all(),
-            'demographics'     => Demographic::all(),
+            'genres'           => Genre::orderBy('name', 'asc')->get(),
+            'types'            => Type::orderBy('name', 'asc')->get(),
+            'years'            => Year::orderBy('year', 'desc')->get(),
+            'demographics'     => Demographic::orderBy('name', 'asc')->get(),
             'allLibraryBooks'  => $allLibraryBooks,
         ]);
     }
@@ -402,10 +402,10 @@ class BookController extends Controller
 
         return view('books.edit', [
             'book'         => $book,
-            'genres'       => Genre::all(),
-            'types'        => Type::all(),
-            'years'        => Year::all(),
-            'demographics' => Demographic::all(),
+            'genres'       => Genre::orderBy('name', 'asc')->get(),
+            'types'        => Type::orderBy('name', 'asc')->get(),
+            'years'        => Year::orderBy('year', 'desc')->get(),
+            'demographics' => Demographic::orderBy('name', 'asc')->get(),
         ]);
     }
 

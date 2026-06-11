@@ -169,6 +169,7 @@
 
         document.getElementById('chat-header-avatar').src = avatar;
         document.getElementById('chat-header-name').textContent = name;
+        document.getElementById('chat-header-profile-link').href = `/users/${id}`;
 
         // Update active header online/offline indicator
         updateHeaderStatus();
@@ -270,7 +271,7 @@
             : '{{ auth()->user()->profile_photo ? (str_starts_with(auth()->user()->profile_photo, "http") ? auth()->user()->profile_photo : asset("storage/" . auth()->user()->profile_photo)) : asset("Gambar/default_avatar.png") }}';
 
         wrapper.innerHTML = `
-            ${!isMe ? `<img src="${avatarUrl}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-150 mt-0.5">` : ''}
+            ${!isMe ? `<a href="/users/${msg.sender_id}" title="Lihat Profil"><img src="${avatarUrl}" class="w-7 h-7 rounded-full object-cover shrink-0 border border-gray-150 mt-0.5 hover:opacity-80 transition duration-150"></a>` : ''}
             <div class="flex flex-col ${isMe ? 'items-end' : 'items-start'}">
                 <div class="px-3.5 py-2 rounded-2xl text-[11px] leading-relaxed break-words break-all max-w-full ${isMe ? 'bg-[#1a3a5c] text-white rounded-tr-none shadow-sm' : 'bg-white text-slate-800 rounded-tl-none border border-gray-200 shadow-sm'}">
                     ${msg.message ? escapeChatHtml(msg.message) : ''}

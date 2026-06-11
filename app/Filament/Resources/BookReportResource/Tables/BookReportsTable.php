@@ -56,59 +56,35 @@ class BookReportsTable
                 EditAction::make(),
             ])
             ->actions([
-                // Aksi Beri Peringatan Kustom ke Pemilik Buku (Bahasa Indonesia sesuai KBBI)
-                Action::make('give_warning')
-                    ->label('Beri Peringatan')
-                    ->icon('heroicon-o-exclamation-triangle')
-                    ->color('warning')
-                    ->form([
-                        Select::make('preset_warning')
-                            ->label('Pilih Peringatan Standar')
-                            ->options([
-                                'custom' => 'Tulis Peringatan Kustom...',
-                                'hak_cipta' => 'Pelanggaran Hak Cipta / Konten Duplikat',
-                                'konten' => 'Buku mengandung konten tidak pantas',
-                                'spam' => 'Katalog buku terindikasi spam / tidak valid',
-                                'pedoman' => 'Pelanggaran pedoman komunitas Alinea',
-                            ])
-                            ->reactive()
-                            ->afterStateUpdated(fn ($state, callable $set) => match ($state) {
-                                'hak_cipta' => $set('warning_message', 'Buku yang Anda bagikan dilaporkan karena terindikasi melanggar hak cipta atau memiliki konten duplikat. Harap unggah karya orisinal atau buku yang sah di komunitas Alinea.'),
-                                'konten' => $set('warning_message', 'Buku yang Anda bagikan dilaporkan karena mengandung deskripsi atau metadata tidak pantas. Buku tersebut telah ditinjau dan disesuaikan oleh administrator.'),
-                                'spam' => $set('warning_message', 'Buku yang Anda bagikan dilaporkan karena memiliki data tidak valid, spam katalog, atau informasi palsu.'),
-                                'pedoman' => $set('warning_message', 'Buku yang Anda bagikan dilaporkan karena melanggar pedoman komunitas Alinea. Pelanggaran berulang dapat mengakibatkan penangguhan akun.'),
-                                default => $set('warning_message', ''),
-                            }),
-                        Textarea::make('warning_message')
-                            ->label('Pesan Peringatan (Teks Notifikasi)')
-                            ->required()
-                            ->rows(4)
-                            ->placeholder('Tulis pesan peringatan yang akan dikirim ke pemilik buku terlapor...'),
-                    ])
-                    ->action(function ($record, array $data) {
+                // Aksi Edit Buku
+                Action::make('edit_book')
+                    ->label('Edit Buku')
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary')
+                    ->url(fn ($record) => $record->book ? route('filament.admin.resources.books.edit', ['record' => $record->book]) : null)
+                    ->openUrlInNewTab()
+                    ->visible(fn ($record) => $record->book !== null),
+
+                // Aksi Hapus Buku
+                Action::make('delete_book')
+                    ->label('Hapus Buku')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Hapus Buku Terlapor')
+                    ->modalDescription('Apakah Anda yakin ingin menghapus buku ini? Tindakan ini tidak dapat dibatalkan.')
+                    ->action(function ($record) {
                         $book = $record->book;
-                        if ($book && $book->user_id) {
-                            // Kirim notifikasi peringatan ke pemilik buku terlapor
-                            CustomNotification::send(
-                                $book->user_id,
-                                'Peringatan tentang Buku Anda',
-                                $data['warning_message'],
-                                '/books/' . $book->id,
-                                auth()->id()
-                            );
+                        if ($book) {
+                            $book->delete();
                         }
-
-                        // Ubah status laporan menjadi selesai (resolved)
                         $record->update(['status' => 'resolved']);
-
-                        // Tampilkan notifikasi toast di admin panel
                         Notification::make()
-                            ->title('Peringatan Berhasil Dikirim')
-                            ->body('Peringatan telah dikirim ke pemilik buku terlapor dan status laporan diselesaikan.')
+                            ->title('Buku Berhasil Dihapus')
                             ->success()
                             ->send();
                     })
-                    ->visible(fn ($record) => $record->status === 'pending' && $record->book && $record->book->user_id),
+                    ->visible(fn ($record) => $record->status === 'pending' && $record->book !== null),
 
                 // Aksi Tandai Selesai Cepat
                 Action::make('resolve')

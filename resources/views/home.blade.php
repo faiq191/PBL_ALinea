@@ -263,7 +263,7 @@
                             </div>
                         @endif
                         <div class="absolute top-4 left-4 bg-emerald-500 text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-sm">
-                            Running
+                            Berlangsung
                         </div>
                     </div>
 

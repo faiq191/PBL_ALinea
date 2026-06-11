@@ -31,7 +31,7 @@ class DiscussionController extends Controller
         }
 
         $discussions = $query->get();
-        $genres = Genre::pluck('name');
+        $genres = Genre::orderBy('name', 'asc')->pluck('name');
 
         return view('komunitas', compact('discussions', 'genres'));
     }
@@ -42,7 +42,7 @@ class DiscussionController extends Controller
             return $book->title . $book->author;
         });
         
-        $genres = Genre::all();
+        $genres = Genre::orderBy('name', 'asc')->get();
 
         return view('discussions.create', compact('allLibraryBooks', 'genres'));
     }
@@ -284,7 +284,7 @@ class DiscussionController extends Controller
         if ($discussion->user_id !== auth()->id() && !auth()->user()->is_admin) {
             abort(403);
         }
-        $genres = Genre::all();
+        $genres = Genre::orderBy('name', 'asc')->get();
         return view('discussions.edit', compact('discussion', 'genres'));
     }
 

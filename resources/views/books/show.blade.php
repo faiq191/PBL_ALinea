@@ -76,10 +76,15 @@
                                 class="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                                 <a href="/users/{{ $otherBook->user->id }}"
                                     class="flex items-center gap-3 hover:opacity-85 transition">
-                                    <div
-                                        class="notranslate w-10 h-10 rounded-full bg-[#1a3a5c] flex items-center justify-center text-white font-bold shadow-sm">
-                                        {{ substr($otherBook->user->name, 0, 1) }}
-                                    </div>
+                                    @if($otherBook->user->profile_photo)
+                                        <img src="{{ \Illuminate\Support\Str::startsWith($otherBook->user->profile_photo, 'http') ? $otherBook->user->profile_photo : asset('storage/' . $otherBook->user->profile_photo) }}"
+                                             class="w-10 h-10 rounded-full object-cover shadow-sm border border-gray-100">
+                                    @else
+                                        <div
+                                            class="notranslate w-10 h-10 rounded-full bg-[#1a3a5c] flex items-center justify-center text-white font-bold shadow-sm">
+                                            {{ substr($otherBook->user->name, 0, 1) }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <p class="notranslate font-bold text-sm hover:underline">
                                             {{ $otherBook->user->name }}</p>
@@ -110,11 +115,17 @@
                 {{-- Kumpulan Tombol Aksi --}}
                 <div class="flex flex-wrap gap-4 mt-8 pt-6 border-t border-gray-200">
 
-                    {{-- Tombol Kembali --}}
-                    <a href="{{ url()->previous() }}"
-                        class="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition">
-                        ← Kembali
-                    </a>
+                     @php
+                        $previousUrl = url()->previous();
+                        if ($previousUrl === request()->url()) {
+                            $previousUrl = '/perpustakaan';
+                        }
+                     @endphp
+                     {{-- Tombol Kembali --}}
+                     <a href="{{ $previousUrl }}"
+                         class="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition">
+                         ← Kembali
+                     </a>
 
                     <button type="button" onclick="openBookReportModal({{ $book->id }}, '{{ addslashes($book->title) }}', {{ $book->user_id ?? 0 }}, '{{ addslashes($book->user->name ?? 'Pengunggah') }}')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold px-6 py-2.5 rounded-xl transition flex items-center gap-2">
                         <i data-lucide="flag" class="w-4 h-4"></i>

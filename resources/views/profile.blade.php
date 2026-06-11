@@ -21,10 +21,12 @@
          x-data="{
              photoMode: '{{ old('photo_source', \Illuminate\Support\Str::startsWith(auth()->user()->profile_photo, 'http') ? 'url' : 'file') }}',
              filePreview: '',
+             fileName: '',
              imageUrl: '{{ old('profile_photo_url', \Illuminate\Support\Str::startsWith(auth()->user()->profile_photo, 'http') ? auth()->user()->profile_photo : '') }}',
              handleFileChange(event) {
                  const file = event.target.files[0];
                  if (file) {
+                     this.fileName = file.name;
                      const reader = new FileReader();
                      reader.onload = (e) => {
                          this.filePreview = e.target.result;
@@ -32,6 +34,7 @@
                      reader.readAsDataURL(file);
                  } else {
                      this.filePreview = '';
+                     this.fileName = '';
                  }
              }
          }">
@@ -125,17 +128,21 @@
                     <input type="hidden" name="photo_source" :value="photoMode">
 
                     <!-- Upload File Input -->
-                    <div x-show="photoMode === 'file'" x-transition x-cloak>
+                    <div x-show="photoMode === 'file'" x-transition x-cloak class="flex flex-col gap-2">
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="document.getElementById('profile_photo_input').click()"
+                                class="py-2.5 px-4 rounded-xl border-0 text-xs font-bold bg-[#e8edf2] text-[#1a3a5c] hover:bg-[#d0e4f5] transition cursor-pointer">
+                                Pilih Berkas...
+                            </button>
+                            <span x-text="fileName ? fileName : 'Belum ada berkas terpilih.'" class="text-xs text-gray-500 truncate max-w-[220px]"></span>
+                        </div>
                         <input
+                            id="profile_photo_input"
                             type="file"
                             name="profile_photo"
                             @change="handleFileChange($event)"
-                            class="w-full text-sm text-gray-500 
-                                   file:mr-4 file:py-2.5 file:px-4 
-                                   file:rounded-xl file:border-0 
-                                   file:text-xs file:font-bold 
-                                   file:bg-[#e8edf2] file:text-[#1a3a5c] 
-                                   hover:file:bg-[#d0e4f5] cursor-pointer transition">
+                            class="hidden"
+                            accept="image/*">
                         @error('profile_photo')
                             <p class="text-red-500 text-xs mt-2 font-semibold flex items-center gap-1"><i data-lucide="alert-circle" class="w-3 h-3"></i> {{ $message }}</p>
                         @enderror

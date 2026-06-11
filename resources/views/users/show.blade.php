@@ -87,7 +87,7 @@
                 <div class="flex flex-col gap-3 min-w-[200px] w-full md:w-auto">
                     @if(auth()->check() && auth()->id() === $user->id)
                         <a href="/profile" class="w-full bg-[#1a3a5c] text-white text-center py-3 px-6 rounded-2xl font-bold text-sm hover:bg-[#122b45] shadow-md hover:shadow-lg transition duration-300 flex items-center justify-center gap-2">
-                            <i data-lucide="settings" class="w-4 h-4"></i> Edit Akun Saya
+                            <i data-lucide="settings" class="w-4 h-4"></i> Sunting Akun Saya
                         </a>
                     @else
                         @auth
