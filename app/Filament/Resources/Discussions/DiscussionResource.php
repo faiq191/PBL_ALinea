@@ -26,7 +26,9 @@ class DiscussionResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Diskusi';
 
-    protected static ?int $navigationSort = 2;
+    protected static string|\UnitEnum|null $navigationGroup = 'Komunitas';
+
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'title';
 

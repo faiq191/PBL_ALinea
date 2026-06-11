@@ -18,7 +18,7 @@ class UserReportResource extends Resource
 {
     protected static ?string $model = UserReport::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFlag;
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-exclamation-triangle';
 
     protected static ?string $navigationLabel = 'Laporan Pengguna';
 
@@ -26,7 +26,9 @@ class UserReportResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Laporan Pengguna';
 
-    protected static ?int $navigationSort = 6;
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan & Moderasi';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {

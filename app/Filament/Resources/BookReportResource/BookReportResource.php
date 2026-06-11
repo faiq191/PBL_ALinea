@@ -26,7 +26,9 @@ class BookReportResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Laporan Buku';
 
-    protected static ?int $navigationSort = 5;
+    protected static string|\UnitEnum|null $navigationGroup = 'Laporan & Moderasi';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {

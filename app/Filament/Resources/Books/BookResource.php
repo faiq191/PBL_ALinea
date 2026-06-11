@@ -26,6 +26,8 @@ class BookResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Buku';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Katalog & Konten';
+
     protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'title';

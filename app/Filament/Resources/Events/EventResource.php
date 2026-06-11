@@ -26,7 +26,9 @@ class EventResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Kegiatan';
 
-    protected static ?int $navigationSort = 3;
+    protected static string|\UnitEnum|null $navigationGroup = 'Komunitas';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'title';
 
