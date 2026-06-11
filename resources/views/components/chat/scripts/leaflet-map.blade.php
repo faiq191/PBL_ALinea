@@ -89,6 +89,14 @@
 
     function openChatMapModal() {
         document.getElementById('chat-map-modal').classList.remove('hidden');
+        // Reset search state setiap kali modal dibuka
+        const searchInput = document.getElementById('chat-map-search-input');
+        const resultsContainer = document.getElementById('chat-map-search-results');
+        if (searchInput) searchInput.value = '';
+        if (resultsContainer) {
+            resultsContainer.classList.add('hidden');
+            resultsContainer.innerHTML = '';
+        }
         ensureLeafletLoaded(() => {
             initChatMap();
         });
@@ -139,7 +147,10 @@
         const query = document.getElementById('chat-map-search-input').value.trim();
         if (!query) return;
 
+        const searchBtn = document.getElementById('chat-map-search-btn');
         const resultsContainer = document.getElementById('chat-map-search-results');
+
+        if (searchBtn) searchBtn.disabled = true;
         resultsContainer.innerHTML = '<div class="p-2.5 text-center text-slate-400 text-xs">Mencari...</div>';
         resultsContainer.classList.remove('hidden');
 
@@ -149,6 +160,7 @@
             
             resultsContainer.innerHTML = '';
             if (data.length > 0) {
+                resultsContainer.classList.remove('hidden');
                 data.forEach(item => {
                     const row = document.createElement('div');
                     row.className = 'p-2.5 hover:bg-gray-50 cursor-pointer text-xs transition text-gray-700 border-b border-gray-100 flex items-start gap-2';
@@ -160,8 +172,9 @@
                         const lat = parseFloat(item.lat);
                         const lng = parseFloat(item.lon);
                         chatMapSelectedCoords = [lat, lng];
-                        chatMapMarker.setLatLng(chatMapSelectedCoords);
-                        chatMap.setView(chatMapSelectedCoords, 15);
+                        // Guard: pastikan map dan marker sudah init sebelum dipakai
+                        if (chatMapMarker) chatMapMarker.setLatLng(chatMapSelectedCoords);
+                        if (chatMap) chatMap.setView(chatMapSelectedCoords, 15);
                         document.getElementById('chat-selected-coords-text').textContent = `Koordinat: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                         document.getElementById('chat-map-search-input').value = item.display_name;
                         resultsContainer.classList.add('hidden');
@@ -170,9 +183,13 @@
                 });
             } else {
                 resultsContainer.innerHTML = '<div class="p-2.5 text-center text-slate-400 text-xs">Lokasi tidak ditemukan.</div>';
+                resultsContainer.classList.remove('hidden');
             }
         } catch (e) {
             resultsContainer.innerHTML = '<div class="p-2.5 text-center text-red-500 text-xs">Gagal melakukan pencarian.</div>';
+            resultsContainer.classList.remove('hidden');
+        } finally {
+            if (searchBtn) searchBtn.disabled = false;
         }
     }
 
