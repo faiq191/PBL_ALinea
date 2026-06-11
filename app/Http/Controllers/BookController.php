@@ -99,13 +99,20 @@ class BookController extends Controller
         if ($request->source_mode === 'existing') {
             $existingBook = Book::with('genres')->findOrFail($request->existing_book_id);
 
-            $newBook = $existingBook->replicate();
-            $newBook->user_id = auth()->id();
-            $newBook->save();
+            // Cek apakah user sudah punya buku dengan title+author yang sama
+            $alreadyOwns = Book::where('user_id', auth()->id())
+                ->where('title', $existingBook->title)
+                ->where('author', $existingBook->author)
+                ->exists();
 
-            $newBook->genres()->sync($existingBook->genres->pluck('id'));
+            if (!$alreadyOwns) {
+                $newBook = $existingBook->replicate();
+                $newBook->user_id = auth()->id();
+                $newBook->save();
+                $newBook->genres()->sync($existingBook->genres->pluck('id'));
 
-            try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+                try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
+            }
 
             return redirect('/koleksi');
         }
@@ -189,23 +196,34 @@ class BookController extends Controller
                 }
             }
 
-            $newBook = Book::create([
-                'title'          => $bookData['title'] ?? 'Unknown Title',
-                'author'         => isset($bookData['authors']) ? implode(', ', $bookData['authors']) : 'Unknown Author',
-                'image'          => $imagePath,
-                'user_id'        => auth()->id(),
-                'type_id'        => $request->type_id ?? $typeRecord->id,
-                'year_id'        => $yearRecord->id,
-                'demographic_id' => $request->demographic_id ?? 1,
-                'description'    => $description,
-            ]);
+            $bookTitle  = $bookData['title'] ?? 'Unknown Title';
+            $bookAuthor = isset($bookData['authors']) ? implode(', ', $bookData['authors']) : 'Unknown Author';
 
-            foreach ($genreNames as $gName) {
-                $genreRecord = Genre::firstOrCreate(['name' => $gName]);
-                $newBook->genres()->attach($genreRecord->id);
+            // Cek apakah user sudah punya buku dengan title+author yang sama
+            $alreadyOwns = Book::where('user_id', auth()->id())
+                ->where('title', $bookTitle)
+                ->where('author', $bookAuthor)
+                ->exists();
+
+            if (!$alreadyOwns) {
+                $newBook = Book::create([
+                    'title'          => $bookTitle,
+                    'author'         => $bookAuthor,
+                    'image'          => $imagePath,
+                    'user_id'        => auth()->id(),
+                    'type_id'        => $request->type_id ?? $typeRecord->id,
+                    'year_id'        => $yearRecord->id,
+                    'demographic_id' => $request->demographic_id ?? 1,
+                    'description'    => $description,
+                ]);
+
+                foreach ($genreNames as $gName) {
+                    $genreRecord = Genre::firstOrCreate(['name' => $gName]);
+                    $newBook->genres()->attach($genreRecord->id);
+                }
+
+                try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
             }
-
-            try { broadcast(new \App\Events\StatsUpdated()); } catch (\Exception $e) {}
 
             return redirect('/koleksi');
         }
@@ -378,6 +396,16 @@ class BookController extends Controller
         // ---------------------------------------------------------
         $book = Book::with(['genres', 'type', 'year', 'demographic', 'user'])->findOrFail($id);
         
+        // Find the first book with the same title and author to avoid duplicate pages
+        $firstBook = Book::where('title', $book->title)
+            ->where('author', $book->author)
+            ->orderBy('id', 'asc')
+            ->first();
+
+        if ($firstBook && $firstBook->id != $book->id) {
+            return redirect("/books/{$firstBook->id}");
+        }
+
         // Tandai bahwa ini bukan buku API
         $book->is_google_api = false;
         
