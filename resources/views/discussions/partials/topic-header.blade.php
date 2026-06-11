@@ -1,6 +1,6 @@
         <div class="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 mb-8">
             <div class="flex gap-8">
-                <img src="{{ \Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-32 h-48 object-cover rounded-2xl shadow-md">
+                <img src="{{ ($discussion->image && \Illuminate\Support\Str::startsWith($discussion->image, 'http')) ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-32 h-48 object-cover rounded-2xl shadow-md">
                 
                 <div class="flex-1">
                     <div class="flex justify-between items-start mb-2">

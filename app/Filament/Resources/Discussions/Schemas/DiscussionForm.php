@@ -6,6 +6,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class DiscussionForm
@@ -30,11 +31,19 @@ class DiscussionForm
                     ->searchable()
                     ->preload()
                     ->required(),
-                FileUpload::make('image')
-                    ->label('Gambar / Media Lampiran')
-                    ->image()
-                    ->directory('discussions')
-                    ->columnSpanFull(),
+                Section::make('Gambar / Media Lampiran')
+                    ->description('Pilih salah satu: upload file gambar atau masukkan link URL gambar. Jika keduanya diisi, URL lebih diprioritaskan.')
+                    ->components([
+                        FileUpload::make('image_file')
+                            ->label('Upload File')
+                            ->image()
+                            ->directory('discussions')
+                            ->dehydrated(false),
+                        TextInput::make('image_url')
+                            ->label('Atau Link URL Gambar')
+                            ->url()
+                            ->placeholder('https://example.com/image.jpg'),
+                    ]),
                 Textarea::make('content')
                     ->label('Konten Diskusi')
                     ->required()

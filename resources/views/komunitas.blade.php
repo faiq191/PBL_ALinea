@@ -67,7 +67,7 @@
                 @forelse ($discussions ?? [] as $discussion)
                     <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
                         <div class="flex gap-5">
-                            <img src="{{ \Illuminate\Support\Str::startsWith($discussion->image, 'http') ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-20 h-28 object-cover rounded-xl shadow-sm">
+                            <img src="{{ ($discussion->image && \Illuminate\Support\Str::startsWith($discussion->image, 'http')) ? $discussion->image : asset('storage/' . $discussion->image) }}" class="w-20 h-28 object-cover rounded-xl shadow-sm">
                             <div class="flex-1 flex flex-col justify-center">
                                 <span class="notranslate text-[10px] font-bold text-[#1a3a5c] uppercase tracking-wider mb-1">{{ $discussion->genre ?? 'Umum' }}</span>
                                 <h4 class="notranslate text-xl font-bold text-[#1a3a5c] leading-tight mb-2">

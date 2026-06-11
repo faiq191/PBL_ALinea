@@ -3,7 +3,7 @@
 <a href="/books/{{ $id }}"
     class="group relative block rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 h-full min-h-[200px] bg-gray-200">
 
-    <img src="{{ \Illuminate\Support\Str::startsWith($image, 'http') ? $image : asset('storage/' . $image) }}"
+    <img src="{{ ($image && \Illuminate\Support\Str::startsWith($image, 'http')) ? $image : asset('storage/' . $image) }}"
         class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
 
     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>

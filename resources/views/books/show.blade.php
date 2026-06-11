@@ -19,7 +19,7 @@
 
             {{-- Kiri: Sampul & Informasi --}}
             <div class="w-full md:w-1/3 lg:w-1/4 shrink-0">
-                <img src="{{ \Illuminate\Support\Str::startsWith($book->image, 'http') ? $book->image : asset('storage/' . $book->image) }}"
+                <img src="{{ ($book->image && \Illuminate\Support\Str::startsWith($book->image, 'http')) ? $book->image : asset('storage/' . $book->image) }}"
                     class="w-full aspect-[2/3] object-cover rounded-xl shadow-md mb-8">
 
                 <div class="mb-8">

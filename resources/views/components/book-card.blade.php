@@ -14,7 +14,7 @@
 <div class="bg-white rounded-xl p-4 shadow hover:shadow-xl hover:-translate-y-2 transition duration-300 flex flex-col">
 
     <div class="w-full aspect-[3/4] rounded-lg overflow-hidden mb-3 bg-slate-50 border border-slate-100/50">
-        <img src="{{ \Illuminate\Support\Str::startsWith($image, 'http') ? $image : asset('storage/' . $image) }}"
+        <img src="{{ ($image && \Illuminate\Support\Str::startsWith($image, 'http')) ? $image : asset('storage/' . $image) }}"
             class="w-full h-full object-cover">
     </div>
 
