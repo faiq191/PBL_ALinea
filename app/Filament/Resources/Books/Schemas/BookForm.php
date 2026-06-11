@@ -22,10 +22,46 @@ class BookForm
                     ->label('Nama Pengarang')
                     ->required()
                     ->maxLength(255),
-                FileUpload::make('image')
-                    ->label('Sampul Buku')
-                    ->image()
-                    ->directory('books'),
+                \Filament\Forms\Components\Hidden::make('image')
+                    ->dehydrated(true),
+                \Filament\Forms\Components\Section::make('Sampul Buku')
+                    ->description('Pilih salah satu: upload file gambar atau masukkan link URL gambar.')
+                    ->columns(2)
+                    ->schema([
+                        FileUpload::make('image_upload')
+                            ->label('Upload File Sampul')
+                            ->image()
+                            ->directory('books')
+                            ->live()
+                            ->afterStateHydrated(function ($state, $record, $set) {
+                                if ($record && $record->image && !\Illuminate\Support\Str::startsWith($record->image, 'http')) {
+                                    $set('image_upload', $record->image);
+                                }
+                            })
+                            ->afterStateUpdated(function ($state, $set) {
+                                $set('image', $state);
+                                if ($state) {
+                                    $set('image_url', null);
+                                }
+                            })
+                            ->dehydrated(false),
+                        TextInput::make('image_url')
+                            ->label('Atau Link URL Sampul')
+                            ->url()
+                            ->live()
+                            ->afterStateHydrated(function ($state, $record, $set) {
+                                if ($record && $record->image && \Illuminate\Support\Str::startsWith($record->image, 'http')) {
+                                    $set('image_url', $record->image);
+                                }
+                            })
+                            ->afterStateUpdated(function ($state, $set) {
+                                $set('image', $state);
+                                if ($state) {
+                                    $set('image_upload', null);
+                                }
+                            })
+                            ->dehydrated(false),
+                    ]),
                 Select::make('user_id')
                     ->relationship('user', 'name')
                     ->label('Pemilik / Pengunggah')
