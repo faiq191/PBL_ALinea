@@ -134,21 +134,26 @@
 
                     @auth
                         @php
-                            $userOwnsBook = \App\Models\Book::where('user_id', auth()->id())
+                            // $userOwnedBook dipass dari controller untuk local books; fallback null untuk Google Books
+                            $userOwnedBook = $userOwnedBook ?? null;
+                            $userOwnsBook  = $userOwnedBook !== null || \App\Models\Book::where('user_id', auth()->id())
                                 ->where('title', $book->title)
                                 ->exists();
                         @endphp
 
                         {{-- Tombol Sunting & Hapus Buku --}}
                         @if(!isset($book->is_google_api) || !$book->is_google_api)
-                            @if(auth()->id() === $book->user_id || auth()->user()->is_admin)
-                                <a href="/books/{{ $book->id }}/edit"
+                            @if($userOwnedBook || auth()->user()->is_admin)
+                                @php
+                                    $editableBook = $userOwnedBook ?? $book;
+                                @endphp
+                                <a href="/books/{{ $editableBook->id }}/edit"
                                     class="bg-[#e8edf2] text-[#1a3a5c] font-bold px-6 py-2.5 rounded-xl hover:bg-[#d0e4f5] transition">
                                     Sunting Buku
                                 </a>
 
                                 {{-- Tombol Hapus Buku --}}
-                                <form action="/books/{{ $book->id }}" method="POST" class="inline-flex"
+                                <form action="/books/{{ $editableBook->id }}" method="POST" class="inline-flex"
                                     onsubmit="return confirm('Apakah Anda yakin ingin menghapus buku ini? Tindakan ini akan menghapus data secara permanen.');">
                                     @csrf
                                     @method('DELETE')

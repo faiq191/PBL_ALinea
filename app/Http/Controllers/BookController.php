@@ -417,14 +417,28 @@ class BookController extends Controller
             ->with('user')
             ->get();
 
-        return view('books.show', compact('book', 'otherOwners'));
+        // Record milik user yang sedang login untuk buku yang sama (bisa beda ID dari canonical)
+        $userOwnedBook = auth()->check()
+            ? Book::where('user_id', auth()->id())
+                ->where('title', $book->title)
+                ->where('author', $book->author)
+                ->first()
+            : null;
+
+        return view('books.show', compact('book', 'otherOwners', 'userOwnedBook'));
     }
 
     public function edit($id)
     {
         $book = Book::findOrFail($id);
 
-        if ($book->user_id !== auth()->id() && !auth()->user()->is_admin) {
+        // Izinkan jika user adalah pemilik record ini, ATAU punya salinan buku yang sama, ATAU admin
+        $isCoOwner = Book::where('user_id', auth()->id())
+            ->where('title', $book->title)
+            ->where('author', $book->author)
+            ->exists();
+
+        if (!$isCoOwner && !auth()->user()->is_admin) {
             abort(403);
         }
 
@@ -483,7 +497,13 @@ class BookController extends Controller
     {
         $book = Book::findOrFail($id);
 
-        if ($book->user_id !== auth()->id() && !auth()->user()->is_admin) {
+        // Izinkan jika user adalah pemilik record ini, ATAU punya salinan buku yang sama, ATAU admin
+        $isCoOwner = Book::where('user_id', auth()->id())
+            ->where('title', $book->title)
+            ->where('author', $book->author)
+            ->exists();
+
+        if (!$isCoOwner && !auth()->user()->is_admin) {
             abort(403);
         }
 
