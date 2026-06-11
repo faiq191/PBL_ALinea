@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Events\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -23,11 +22,8 @@ class EventForm
                     ->label('Deskripsi / Penjelasan Acara')
                     ->required()
                     ->columnSpanFull(),
-                FileUpload::make('image')
-                    ->label('Poster / Pamflet Acara')
-                    ->image()
-                    ->directory('events')
-                    ->disk('public')
+                TextInput::make('image')
+                    ->label('Poster / Pamflet Acara (URL)')
                     ->columnSpanFull(),
                 TextInput::make('link')
                     ->label('Tautan Pendaftaran / Informasi')
