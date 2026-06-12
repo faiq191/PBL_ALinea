@@ -30,7 +30,7 @@
     <div class="p-8 pt-28 flex justify-center">
         <div class="max-w-2xl w-full bg-[#ffffff] border border-gray-100 rounded-3xl p-8 shadow-xl">
             <h1 class="text-2xl font-bold text-[#1a3a5c] mb-2">Tambah Buku Baru</h1>
-            <p class="text-sm text-gray-500 mb-6">Lengkapi detail buku untuk koleksi Ali.nea</p>
+            <p class="text-sm text-gray-500 mb-6">Lengkapi detail buku untuk koleksi Alinea</p>
 
             <div class="flex gap-2 mb-8 bg-gray-100 p-2 rounded-2xl">
                 <button @click="mode = 'manual'"
